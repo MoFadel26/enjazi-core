@@ -18,9 +18,13 @@ export function useCreateTask() {
   return api.useMutation('post', '/api/tasks', { onSuccess: invalidate })
 }
 
+// Completing a task moves the streak, so both refetch.
 export function useUpdateTask() {
-  const invalidate = useInvalidate('/api/tasks')
-  return api.useMutation('put', '/api/tasks/{id}', { onSuccess: invalidate })
+  const invalidateTasks = useInvalidate('/api/tasks')
+  const invalidateStreak = useInvalidate('/api/streak')
+  return api.useMutation('put', '/api/tasks/{id}', {
+    onSuccess: () => Promise.all([invalidateTasks(), invalidateStreak()]),
+  })
 }
 
 export function useDeleteTask() {

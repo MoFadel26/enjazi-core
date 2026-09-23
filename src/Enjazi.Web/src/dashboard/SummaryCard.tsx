@@ -6,7 +6,7 @@ type Props = {
   title: string
   to: string
   linkText: string
-  children: ReactNode
+  children?: ReactNode
 }
 
 export function SummaryCard({ title, to, linkText, children }: Props) {

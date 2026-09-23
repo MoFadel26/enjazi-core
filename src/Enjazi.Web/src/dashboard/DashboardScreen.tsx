@@ -5,6 +5,7 @@ import { useCurrentUser } from '../auth/session'
 import { useEvents } from '../calendar/queries'
 import { formatDateTime } from '../lib/dates'
 import { useRooms } from '../rooms/queries'
+import { StreakCard } from '../streak/StreakCard'
 import { useTasks } from '../tasks/queries'
 import { SummaryCard } from './SummaryCard'
 
@@ -36,7 +37,8 @@ export function DashboardScreen() {
         Signed in as {user?.email}.
       </Text>
 
-      <SimpleGrid cols={{ base: 1, md: 3 }}>
+      <SimpleGrid cols={{ base: 1, md: 2, xl: 4 }}>
+        <StreakCard />
         <SummaryCard title="Tasks" to="/tasks" linkText="All tasks">
           <Text>
             {open.length} open{overdue.length > 0 && <Text span c="red">, {overdue.length} overdue</Text>}
