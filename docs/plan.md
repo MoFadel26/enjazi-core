@@ -102,6 +102,16 @@ Dashboard, tasks, calendar, rooms, settings, admin.
 Verify: every screen fully typed against the generated client, and no single
 screen file over roughly 200 lines.
 
+Done. Six screens, each a folder with its hooks over the generated client, a
+screen and its modals; the longest file is 113 lines and
+`scripts/verify-phase-5.sh` fails on any source file over 200 or any `fetch`
+outside `src/api`. It then runs ten browser tests against the real API,
+starting it with the bootstrap admin so the admin screen is tested as an
+admin. Two things came out of the phase besides screens: the settings
+first-read race in the API, fixed in the controller with no contract change,
+and the fetch middleware giving bodiless failures a body so a 404 fails
+instead of rendering empty. ADR-0009 records the decisions and both findings.
+
 ## Phase 6 — features that never worked
 
 SignalR room chat; streak and points logic.
