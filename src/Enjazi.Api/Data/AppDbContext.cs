@@ -28,9 +28,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        // Ownership is enforced here, not in TasksController. Every read of
-        // Tasks gets "where owner_id = @current" appended, so another user's
-        // task is not found rather than found-and-refused.
+        // Ownership is enforced here, not in the controllers. Every read of
+        // these tables gets "where owner_id = @current" appended, so another
+        // user's row is not found rather than found-and-refused.
         builder.Entity<TaskItem>().HasQueryFilter(t => t.OwnerId == CurrentUserId);
+        builder.Entity<CalendarEvent>().HasQueryFilter(e => e.OwnerId == CurrentUserId);
+        builder.Entity<UserSettings>().HasQueryFilter(s => s.UserId == CurrentUserId);
+
+        // Rooms are deliberately not filtered: they are shared, and every
+        // signed-in user can see that a room exists in order to join it.
+        // Membership gates their contents instead. See ADR-0007.
     }
 }
