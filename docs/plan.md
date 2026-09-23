@@ -119,6 +119,17 @@ SignalR room chat; streak and points logic.
 Verify: two browser tabs see each other's messages; a completed day increments
 the streak and a missed day resets it.
 
+Done. Messages are REST endpoints with the membership query filter ADR-0007
+deferred here; a method-less SignalR hub pushes each saved message to the
+users who are members at that moment, and the browser appends it to the
+cached history it also renders. The streak is recorded when a task goes from
+open to completed, in the user's time zone, from a clock keyed to the streak
+alone. `scripts/verify-phase-6.sh` runs the 42 API tests, of which
+`StreakTests` walks a fake clock through consecutive and missed days, checks
+the OpenAPI document and generated client are current, and runs two browser
+tests: two tabs chatting, and a completed task showing on the dashboard.
+ADR-0010 records the decisions and the clock mistake made on the way.
+
 ## Out of scope
 
 - **OAuth integrations.** The previous version declared five (Google, Slack,
