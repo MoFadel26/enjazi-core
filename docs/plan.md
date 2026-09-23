@@ -51,6 +51,16 @@ Verify: an integration test where user A receives 404 fetching user B's task.
 This test is the proof that the previous version's ownership bug is structurally
 impossible, not merely unwritten.
 
+Done. `scripts/verify-phase-2.sh` runs eleven integration tests against a
+Postgres container. `TasksController` contains no ownership check; the global
+query filter in `AppDbContext` means user B's task is never returned to it, so
+user A gets 404 on read, update and delete alike. ADR-0006 records the auth and
+ownership decisions.
+
+The tests run through the test project directly rather than `dotnet test`. The
+.NET 10 SDK dropped VSTest and its replacement reports "Zero tests ran" for a
+xunit.v3 project, which reproduces on an empty project.
+
 ## Phase 3 — remaining API
 
 Events, rooms and membership, settings, admin endpoints behind authorization
