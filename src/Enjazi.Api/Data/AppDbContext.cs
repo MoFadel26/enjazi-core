@@ -34,6 +34,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         builder.Entity<TaskItem>().HasQueryFilter(t => t.OwnerId == CurrentUserId);
         builder.Entity<CalendarEvent>().HasQueryFilter(e => e.OwnerId == CurrentUserId);
         builder.Entity<UserSettings>().HasQueryFilter(s => s.UserId == CurrentUserId);
+        builder.Entity<Streak>().HasQueryFilter(s => s.UserId == CurrentUserId);
 
         // Messages are scoped by membership of their room, not by author: a
         // member reads everyone's messages in the room and nobody else reads

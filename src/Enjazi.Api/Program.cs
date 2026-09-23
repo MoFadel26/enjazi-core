@@ -2,6 +2,7 @@ using Enjazi.Api.Auth;
 using Enjazi.Api.Data;
 using Enjazi.Api.Data.Entities;
 using Enjazi.Api.Hubs;
+using Enjazi.Api.Streaks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -73,6 +74,13 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin));
 
 builder.Services.AddHostedService<AdminBootstrap>();
+
+// The streak asks the clock what day it is, and the tests move that clock
+// rather than wait for midnight. It is keyed so it is the streak's clock and
+// nobody else's: an unkeyed TimeProvider is also picked up by cookie
+// authentication, and a moved clock there moves cookie expiry with it.
+builder.Services.AddKeyedSingleton(StreakClock.Key, TimeProvider.System);
+builder.Services.AddScoped<StreakService>();
 
 // The hub is push-only; see RoomHub. It authenticates with the same cookie as
 // the controllers, which the browser sends on the WebSocket upgrade because

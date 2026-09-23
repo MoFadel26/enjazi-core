@@ -1256,6 +1256,36 @@
         }
       }
     },
+    "/api/streak": {
+      "get": {
+        "tags": [
+          "Streak"
+        ],
+        "operationId": "Streak_Get",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreakResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreakResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreakResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/tasks": {
       "get": {
         "tags": [
@@ -2232,6 +2262,52 @@
           }
         }
       },
+      "StreakResponse": {
+        "required": [
+          "currentLength",
+          "longestLength",
+          "points",
+          "lastCompletedOn",
+          "completedToday"
+        ],
+        "type": "object",
+        "properties": {
+          "currentLength": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "longestLength": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "points": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lastCompletedOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "completedToday": {
+            "type": "boolean"
+          }
+        }
+      },
       "TaskPriority": {
         "enum": [
           "Low",
@@ -2467,6 +2543,9 @@
     },
     {
       "name": "Settings"
+    },
+    {
+      "name": "Streak"
     },
     {
       "name": "Tasks"

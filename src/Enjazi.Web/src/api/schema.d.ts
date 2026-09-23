@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/streak": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Streak_Get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks": {
         parameters: {
             query?: never;
@@ -393,6 +409,17 @@ export interface components {
             notifications: components["schemas"]["NotificationSettingsContract"];
             /** Format: date-time */
             updatedAt: string;
+        };
+        StreakResponse: {
+            /** Format: int32 */
+            currentLength: number | string;
+            /** Format: int32 */
+            longestLength: number | string;
+            /** Format: int32 */
+            points: number | string;
+            /** Format: date */
+            lastCompletedOn: null | string;
+            completedToday: boolean;
         };
         /** @enum {unknown} */
         TaskPriority: "Low" | "Medium" | "High";
@@ -1180,6 +1207,28 @@ export interface operations {
                     "text/plain": components["schemas"]["ValidationProblemDetails"];
                     "application/json": components["schemas"]["ValidationProblemDetails"];
                     "text/json": components["schemas"]["ValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    Streak_Get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["StreakResponse"];
+                    "application/json": components["schemas"]["StreakResponse"];
+                    "text/json": components["schemas"]["StreakResponse"];
                 };
             };
         };

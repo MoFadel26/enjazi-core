@@ -1,6 +1,8 @@
 using Enjazi.Api.Data;
+using Enjazi.Api.Streaks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
@@ -26,8 +28,19 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
     }
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder) =>
+    /// <summary>
+    /// The clock the streak reads, replaced under the streak's key only. It
+    /// was first registered as the plain TimeProvider, which cookie
+    /// authentication also reads: every cookie was then issued as expiring
+    /// in March 2026 and the test client's real-time cookie jar dropped it.
+    /// </summary>
+    public FakeClock Clock { get; } = new();
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
         builder.UseSetting("ConnectionStrings:Default", _postgres.GetConnectionString());
+        builder.ConfigureTestServices(services => services.AddKeyedSingleton<TimeProvider>(StreakClock.Key, Clock));
+    }
 
     /// <summary>
     /// The auth cookie is marked Secure, so a client on http would be handed
@@ -51,3 +64,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 /// </summary>
 [CollectionDefinition(nameof(ApiCollection))]
 public sealed class ApiCollection : ICollectionFixture<ApiFactory>;
+
+public sealed class FakeClock : TimeProvider
+{
+    public DateTimeOffset Now { get; set; } = new(2026, 3, 10, 12, 0, 0, TimeSpan.Zero);
+
+    public override DateTimeOffset GetUtcNow() => Now;
+}

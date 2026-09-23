@@ -2,6 +2,7 @@ using Enjazi.Api.Auth;
 using Enjazi.Api.Contracts;
 using Enjazi.Api.Data;
 using Enjazi.Api.Data.Entities;
+using Enjazi.Api.Streaks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace Enjazi.Api.Controllers;
 [ApiController]
 [Route("api/tasks")]
 [Authorize]
-public sealed class TasksController(AppDbContext db, ICurrentUser currentUser) : ControllerBase
+public sealed class TasksController(AppDbContext db, ICurrentUser currentUser, StreakService streaks) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<IReadOnlyList<TaskResponse>>(StatusCodes.Status200OK)]
@@ -78,6 +79,10 @@ public sealed class TasksController(AppDbContext db, ICurrentUser currentUser) :
             return NotFound();
         }
 
+        // Only the open-to-completed transition feeds the streak. Saving an
+        // already completed task, or reopening one, does not.
+        var completing = request.Completed && task.CompletedAt is null;
+
         task.Title = request.Title;
         task.Description = request.Description;
         task.Priority = request.Priority;
@@ -86,6 +91,11 @@ public sealed class TasksController(AppDbContext db, ICurrentUser currentUser) :
             ? task.CompletedAt ?? DateTimeOffset.UtcNow
             : null;
         task.UpdatedAt = DateTimeOffset.UtcNow;
+
+        if (completing)
+        {
+            await streaks.RecordCompletionAsync();
+        }
 
         await db.SaveChangesAsync();
         return ToResponse(task);
