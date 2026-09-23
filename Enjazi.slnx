@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Enjazi.Api/Enjazi.Api.csproj" />
+  </Folder>
+</Solution>
