@@ -15,6 +15,9 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': 'http://127.0.0.1:5180',
+      // The SignalR hub. ws: true forwards the WebSocket upgrade, and the
+      // cookie goes with it because the hub is on the app's own origin.
+      '/hubs': { target: 'http://127.0.0.1:5180', ws: true },
     },
   },
 })

@@ -45,3 +45,21 @@ export function useRemoveMember() {
   const invalidate = useInvalidate('/api/rooms')
   return api.useMutation('delete', '/api/rooms/{id}/members/{userId}', { onSuccess: invalidate })
 }
+
+export type Message = components['schemas']['MessageResponse']
+
+// The init object is the third element of the query key, so the feed hook
+// builds the same shape to find this query in the cache. See hub.ts.
+export function messagesInit(roomId: string) {
+  return { params: { path: { roomId } } }
+}
+
+export function useMessages(roomId: string, enabled: boolean) {
+  return api.useQuery('get', '/api/rooms/{roomId}/messages', messagesInit(roomId), { enabled })
+}
+
+// No invalidation: the server pushes the sent message back over the hub to
+// every member, the sender included, and the feed hook puts it in the cache.
+export function useSendMessage() {
+  return api.useMutation('post', '/api/rooms/{roomId}/messages')
+}

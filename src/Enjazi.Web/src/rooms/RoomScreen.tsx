@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { describeError } from '../api/errors'
 import { useCurrentUser } from '../auth/session'
 import { MemberList } from './MemberList'
+import { RoomChat } from './RoomChat'
 import { RoomFormModal } from './RoomFormModal'
 import { useDeleteRoom, useJoinRoom, useRemoveMember, useRoom, useRoomMembers, type RoomMember } from './queries'
 
@@ -91,6 +92,7 @@ export function RoomScreen() {
 
       {room.isMember ? (
         <>
+          <RoomChat roomId={id} />
           <Title order={4}>Members</Title>
           {members ? (
             <MemberList
@@ -104,7 +106,7 @@ export function RoomScreen() {
           )}
         </>
       ) : (
-        <Text c="dimmed">Join the room to see its members.</Text>
+        <Text c="dimmed">Join the room to read and send messages.</Text>
       )}
 
       {editing && <RoomFormModal room={room} onClose={() => setEditing(false)} />}
