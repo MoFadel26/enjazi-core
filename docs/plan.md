@@ -38,6 +38,10 @@ user-scoped.
 Verify: migration applies to a clean database; inserting a task with no owner
 is rejected by the database, not by application code.
 
+Done. `scripts/verify-phase-1.sh` creates a throwaway database, applies the
+migration and confirms both an unowned task and a task with a non-existent
+owner are rejected by Postgres. Conventions are in ADR-0005.
+
 ## Phase 2 — auth and tasks
 
 ASP.NET Identity, roles, cookie auth. Tasks CRUD scoped to the caller through an
