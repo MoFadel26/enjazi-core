@@ -66,7 +66,11 @@ builder.Services
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin));
+
+builder.Services.AddHostedService<AdminBootstrap>();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
