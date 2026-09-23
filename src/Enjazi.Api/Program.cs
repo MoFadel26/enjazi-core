@@ -1,6 +1,7 @@
 using Enjazi.Api.Auth;
 using Enjazi.Api.Data;
 using Enjazi.Api.Data.Entities;
+using Enjazi.Api.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -73,6 +74,11 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddHostedService<AdminBootstrap>();
 
+// The hub is push-only; see RoomHub. It authenticates with the same cookie as
+// the controllers, which the browser sends on the WebSocket upgrade because
+// the hub is on the app's own origin (ADR-0008).
+builder.Services.AddSignalR();
+
 // Enums travel as their names, not their storage integers, so the OpenAPI
 // document lists the values and the generated client gets a union type
 // instead of "number". Integers are still accepted on input. MVC serialises
@@ -111,6 +117,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<RoomHub>("/hubs/rooms");
 
 app.Run();
 

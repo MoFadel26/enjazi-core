@@ -35,6 +35,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         builder.Entity<CalendarEvent>().HasQueryFilter(e => e.OwnerId == CurrentUserId);
         builder.Entity<UserSettings>().HasQueryFilter(s => s.UserId == CurrentUserId);
 
+        // Messages are scoped by membership of their room, not by author: a
+        // member reads everyone's messages in the room and nobody else reads
+        // any. The filter reaches Room and RoomMember, which are unfiltered,
+        // so it does not recurse (ADR-0007).
+        builder.Entity<Message>().HasQueryFilter(m => m.Room.Members.Any(x => x.UserId == CurrentUserId));
+
         // Rooms are deliberately not filtered: they are shared, and every
         // signed-in user can see that a room exists in order to join it.
         // Membership gates their contents instead. See ADR-0007.

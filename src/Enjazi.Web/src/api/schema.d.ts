@@ -100,6 +100,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rooms/{roomId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Messages_List"];
+        put?: never;
+        post: operations["Messages_Send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rooms": {
         parameters: {
             query?: never;
@@ -301,6 +317,18 @@ export interface components {
             email: string;
             password: string;
         };
+        MessageResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            roomId: string;
+            /** Format: uuid */
+            authorId: string;
+            authorName: string;
+            body: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
         NotificationSettingsContract: {
             emailTaskReminders: boolean;
             browserTaskReminders: boolean;
@@ -351,6 +379,9 @@ export interface components {
         };
         /** @enum {unknown} */
         RoomRole: "Member" | "Admin";
+        SendMessageRequest: {
+            body: string;
+        };
         SettingsRequest: {
             theme: string;
             timeZone: string;
@@ -725,6 +756,93 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    Messages_List: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["MessageResponse"][];
+                    "application/json": components["schemas"]["MessageResponse"][];
+                    "text/json": components["schemas"]["MessageResponse"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    Messages_Send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMessageRequest"];
+                "text/json": components["schemas"]["SendMessageRequest"];
+                "application/*+json": components["schemas"]["SendMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["MessageResponse"];
+                    "application/json": components["schemas"]["MessageResponse"];
+                    "text/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ValidationProblemDetails"];
+                    "application/json": components["schemas"]["ValidationProblemDetails"];
+                    "text/json": components["schemas"]["ValidationProblemDetails"];
+                };
             };
             /** @description Not Found */
             404: {
