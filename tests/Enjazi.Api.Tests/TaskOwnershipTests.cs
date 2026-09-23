@@ -49,7 +49,7 @@ public sealed class TaskOwnershipTests(ApiFactory factory)
         var delete = await alice.DeleteAsync($"/api/tasks/{bobsTask.Id}");
         Assert.Equal(HttpStatusCode.NotFound, delete.StatusCode);
 
-        var stillThere = await bob.GetFromJsonAsync<TaskResponse>($"/api/tasks/{bobsTask.Id}");
+        var stillThere = await bob.GetFromJsonAsync<TaskResponse>($"/api/tasks/{bobsTask.Id}", Json.Web);
         Assert.Equal("Bob's untouchable task", stillThere!.Title);
         Assert.Null(stillThere.CompletedAt);
     }
@@ -63,7 +63,7 @@ public sealed class TaskOwnershipTests(ApiFactory factory)
         await CreateTaskAsync(alice, "Alice's task");
         var bobsTask = await CreateTaskAsync(bob, "Bob's task");
 
-        var alices = (await alice.GetFromJsonAsync<List<TaskResponse>>("/api/tasks"))!;
+        var alices = (await alice.GetFromJsonAsync<List<TaskResponse>>("/api/tasks", Json.Web))!;
 
         Assert.Equal(["Alice's task"], alices.Select(t => t.Title));
         Assert.DoesNotContain(alices, t => t.Id == bobsTask.Id);
@@ -85,12 +85,12 @@ public sealed class TaskOwnershipTests(ApiFactory factory)
             owner_id = bobUser.Id,
         });
         response.EnsureSuccessStatusCode();
-        var created = await response.Content.ReadFromJsonAsync<TaskResponse>();
+        var created = await response.Content.ReadFromJsonAsync<TaskResponse>(Json.Web);
 
-        var bobs = await bob.GetFromJsonAsync<List<TaskResponse>>("/api/tasks");
+        var bobs = await bob.GetFromJsonAsync<List<TaskResponse>>("/api/tasks", Json.Web);
         Assert.DoesNotContain(bobs!, t => t.Id == created!.Id);
 
-        var alices = await alice.GetFromJsonAsync<List<TaskResponse>>("/api/tasks");
+        var alices = await alice.GetFromJsonAsync<List<TaskResponse>>("/api/tasks", Json.Web);
         Assert.Contains(alices!, t => t.Id == created!.Id);
         Assert.NotEqual(aliceUser.Id, bobUser.Id);
     }
@@ -112,6 +112,6 @@ public sealed class TaskOwnershipTests(ApiFactory factory)
             Title: title, Description: null, Priority: TaskPriority.Medium, DueAt: null));
 
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<TaskResponse>())!;
+        return (await response.Content.ReadFromJsonAsync<TaskResponse>(Json.Web))!;
     }
 }

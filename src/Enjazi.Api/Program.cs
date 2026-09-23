@@ -3,7 +3,9 @@ using Enjazi.Api.Data;
 using Enjazi.Api.Data.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,8 +73,30 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddHostedService<AdminBootstrap>();
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+// Enums travel as their names, not their storage integers, so the OpenAPI
+// document lists the values and the generated client gets a union type
+// instead of "number". Integers are still accepted on input. MVC serialises
+// with its own options and the OpenAPI generator reads the Http ones, so
+// both get the converter or the document would disagree with the wire.
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddOpenApi(options =>
+{
+    // MVC does not set operationId. Client generators name functions after
+    // it, so derive one from the controller and action: Tasks_Get, Auth_Login.
+    options.AddOperationTransformer((operation, context, _) =>
+    {
+        if (context.Description.ActionDescriptor is ControllerActionDescriptor action)
+        {
+            operation.OperationId = $"{action.ControllerName}_{action.ActionName}";
+        }
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 

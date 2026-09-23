@@ -14,7 +14,7 @@ public sealed class RoomTests(ApiFactory factory)
         var (client, user) = await factory.SignUpAsync();
 
         var room = await CreateAsync(client, "Study group");
-        var members = await client.GetFromJsonAsync<List<RoomMemberResponse>>($"/api/rooms/{room.Id}/members");
+        var members = await client.GetFromJsonAsync<List<RoomMemberResponse>>($"/api/rooms/{room.Id}/members", Json.Web);
 
         Assert.True(room.IsMember);
         Assert.Equal(1, room.MemberCount);
@@ -54,7 +54,7 @@ public sealed class RoomTests(ApiFactory factory)
         Assert.Equal(HttpStatusCode.NoContent,
             (await bob.PostAsync($"/api/rooms/{room.Id}/members", content: null)).StatusCode);
 
-        var members = await bob.GetFromJsonAsync<List<RoomMemberResponse>>($"/api/rooms/{room.Id}/members");
+        var members = await bob.GetFromJsonAsync<List<RoomMemberResponse>>($"/api/rooms/{room.Id}/members", Json.Web);
         Assert.Equal(2, members!.Count);
         Assert.Equal(RoomRole.Member, members.Single(m => m.UserId == bobUser.Id).Role);
     }
