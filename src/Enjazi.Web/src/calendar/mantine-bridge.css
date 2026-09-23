@@ -1,0 +1,43 @@
+/*
+ * Drives FullCalendar's palette from Mantine's CSS variables, so the grid
+ * follows Mantine's colour scheme. FullCalendar 7 keeps its colours in a
+ * separate palette.css; this replaces that import rather than overriding it.
+ * Carried over from the Phase 0 spike (ADR-0004, criterion 3).
+ */
+:root {
+  --fc-classic-button: var(--mantine-color-default);
+  --fc-classic-button-border: var(--mantine-color-default-border);
+  --fc-classic-button-strong: var(--mantine-color-blue-filled);
+  --fc-classic-button-strong-border: var(--mantine-color-blue-filled-hover);
+  --fc-classic-button-outline: var(--mantine-color-blue-outline);
+  --fc-classic-button-foreground: var(--mantine-color-text);
+
+  --fc-classic-primary: var(--mantine-color-blue-filled);
+  --fc-classic-primary-foreground: var(--mantine-color-white);
+
+  --fc-classic-event: var(--fc-classic-primary);
+  --fc-classic-event-contrast: var(--fc-classic-primary-foreground);
+  --fc-classic-background-event: var(--mantine-color-teal-filled);
+  --fc-classic-background-event-opacity: 15%;
+  --fc-classic-background-event-foreground-opacity: 50%;
+  /* Tints laid over the grid, not fills. Mantine's `*-light` variables are
+     opaque in dark mode, so mix an explicit alpha instead. */
+  --fc-classic-highlight: color-mix(in srgb, var(--mantine-color-blue-filled) 20%, transparent);
+  --fc-classic-today: color-mix(in srgb, var(--mantine-color-yellow-filled) 12%, transparent);
+  --fc-classic-now: var(--mantine-color-red-filled);
+
+  --fc-classic-small-dot-width: 8px;
+  --fc-classic-large-dot-width: 10px;
+
+  --fc-classic-background: var(--mantine-color-body);
+  --fc-classic-faint: var(--mantine-color-default-hover);
+  --fc-classic-muted: var(--mantine-color-default-border);
+  --fc-classic-strong: var(--mantine-color-dimmed);
+
+  --fc-classic-foreground: var(--mantine-color-text);
+  --fc-classic-faint-foreground: var(--mantine-color-dimmed);
+  --fc-classic-muted-foreground: var(--mantine-color-dimmed);
+
+  --fc-classic-border: var(--mantine-color-default-border);
+  --fc-classic-strong-border: var(--mantine-color-dimmed);
+}
