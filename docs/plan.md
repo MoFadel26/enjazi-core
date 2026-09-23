@@ -15,7 +15,7 @@ Two standing rules:
 ## Phase 0 — decisions and spikes
 
 - [x] ADR-0001 backend, ADR-0002 database, ADR-0003 UI library
-- [ ] Spike the calendar week view in FullCalendar and Schedule-X
+- [ ] Spike the calendar week view in FullCalendar and Schedule-X (not started)
 - [ ] Close ADR-0004 with the outcome
 
 Verify: both spikes render draggable events from mock data; ADR-0004 decided.
