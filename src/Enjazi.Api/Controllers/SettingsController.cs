@@ -38,7 +38,18 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
             };
 
             db.Settings.Add(settings);
-            await db.SaveChangesAsync();
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // Two first reads at once, which a page with two consumers of
+                // the settings produces: both miss, both insert, one loses on
+                // the primary key. The winner's row is the answer for both.
+                db.Entry(settings).State = EntityState.Detached;
+                settings = await db.Settings.FirstAsync();
+            }
         }
 
         return ToResponse(settings);
