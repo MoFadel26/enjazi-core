@@ -86,6 +86,15 @@ types originate in the backend.
 Verify: login, protected-route redirect and logout all work against the running
 API; no `any` in the client.
 
+Done. `src/Enjazi.Web` is the Vite project; `scripts/verify-phase-4.sh` checks
+that the generated client matches `openapi.json`, typechecks, lints with
+`no-explicit-any` as an error, builds, and then runs four Playwright tests in
+Chromium against the real API: redirect to login, register and return, logout
+and re-check, and a cookie dropped behind the app's back. The dev server
+proxies `/api` so the browser sees one origin and the cookie is first-party.
+ADR-0008 records that, the client generator, and why the signed-in user lives
+in the query cache.
+
 ## Phase 5 — screens
 
 Dashboard, tasks, calendar, rooms, settings, admin.
