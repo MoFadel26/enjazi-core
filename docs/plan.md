@@ -15,10 +15,19 @@ Two standing rules:
 ## Phase 0 — decisions and spikes
 
 - [x] ADR-0001 backend, ADR-0002 database, ADR-0003 UI library
-- [ ] Spike the calendar week view in FullCalendar and Schedule-X (not started)
-- [ ] Close ADR-0004 with the outcome
+- [x] Spike the calendar week view in FullCalendar and Schedule-X
+- [x] Close ADR-0004 with the outcome — FullCalendar
 
 Verify: both spikes render draggable events from mock data; ADR-0004 decided.
+
+Done. Both spikes render the twelve mock events. Only FullCalendar drags: on the
+current published packages `@schedule-x/drag-and-drop` is a major version behind
+the calendar it plugs into and throws on the first drag. That decided ADR-0004.
+
+The spikes themselves stay on the `phase-0-scheduler-spike` branch rather than
+on `main`. They were built to answer a question, the answer is in the ADR, and
+no later phase builds on them. `spikes/verify.mjs` on that branch re-runs the
+checks.
 
 ## Phase 1 — data model
 

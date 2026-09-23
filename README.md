@@ -21,7 +21,7 @@ decisions and their reasoning live in `docs/adr/`.
 | Frontend | React 19 + Vite + TypeScript | [ADR-0003](docs/adr/0003-ui-mantine.md) |
 | Components | Mantine 9 | [ADR-0003](docs/adr/0003-ui-mantine.md) |
 | Admin tables | mantine-datatable 9 | [ADR-0003](docs/adr/0003-ui-mantine.md) |
-| Scheduler | undecided | [ADR-0004](docs/adr/0004-scheduler-library.md) |
+| Scheduler | FullCalendar 7 | [ADR-0004](docs/adr/0004-scheduler-library.md) |
 
 ## Local requirements
 
