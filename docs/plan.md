@@ -68,6 +68,15 @@ policies.
 
 Verify: a test per endpoint; OpenAPI document generated and committed.
 
+Done. Twenty-seven operations across auth, tasks, events, rooms and membership,
+settings and admin users; thirty-five integration tests cover every one of
+them. `openapi.json` at the repository root is regenerated on every build and
+is byte-identical across rebuilds, which `scripts/verify-phase-3.sh` checks
+after running the tests. Room chat messages are deferred to Phase 6 with
+SignalR. ADR-0007 records why rooms are the one area with explicit
+authorization predicates, how the first admin is made, and the wire-format
+decisions the document fixed.
+
 ## Phase 4 — frontend shell
 
 Vite + React 19 + TypeScript, Mantine, TanStack Query, routing, auth flow, app
