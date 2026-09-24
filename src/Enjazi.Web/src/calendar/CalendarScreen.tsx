@@ -1,13 +1,24 @@
 import type { DateSelectInfo, EventDropInfo, EventResizeDoneInfo } from '@fullcalendar/react'
-import { Alert, Box, Button, Group, Title } from '@mantine/core'
+import { Alert, Button, Paper } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
+import { IconPlus } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { describeError } from '../api/errors'
+import { PageHeader } from '../ui/PageHeader'
 import { EventFormModal, type EventFormTarget } from './EventFormModal'
 import { WeekCalendar } from './WeekCalendar'
 import { movedBody, toEventInput } from './adapter'
 import { useEvents, useUpdateEvent, type EventRange } from './queries'
+
+// Everything above and below the grid, so it fills the rest of the viewport.
+// PageHeader: a 36px action row, the divider's md top margin plus its 1px
+// rule, and lg below. AppShell.Main pads lg (md below sm, under a 48px bar).
+const header = 'var(--mantine-spacing-lg) + var(--mantine-spacing-md) + 37px'
+const gridHeight = {
+  base: `calc(100vh - 48px - 2 * var(--mantine-spacing-md) - (${header}))`,
+  sm: `calc(100vh - 2 * var(--mantine-spacing-lg) - (${header}))`,
+}
 
 export function CalendarScreen() {
   const [range, setRange] = useState<EventRange | null>(null)
@@ -55,18 +66,22 @@ export function CalendarScreen() {
 
   return (
     <>
-      <Group justify="space-between" mb="md">
-        <Title order={2}>Calendar</Title>
-        <Button onClick={newEvent}>New event</Button>
-      </Group>
+      <PageHeader
+        title="Calendar"
+        actions={
+          <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={newEvent}>
+            New event
+          </Button>
+        }
+      />
       {error && (
         <Alert color="red" mb="md">
           {describeError(error)}
         </Alert>
       )}
-      <Box h="calc(100vh - 160px)">
+      <Paper p={0} h={gridHeight} style={{ overflow: 'hidden' }}>
         <WeekCalendar events={inputs} onRangeChange={setRange} onSelect={select} onEventClick={edit} onEventMove={move} />
-      </Box>
+      </Paper>
       {target && <EventFormModal target={target} onClose={() => setTarget(null)} />}
     </>
   )

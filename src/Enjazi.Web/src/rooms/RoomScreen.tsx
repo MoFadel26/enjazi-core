@@ -1,10 +1,11 @@
-import { Alert, Anchor, Button, Group, Loader, Stack, Text, Title } from '@mantine/core'
+import { Alert, Box, Button, Flex, Loader, Paper, Text, Title } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { describeError } from '../api/errors'
 import { useCurrentUser } from '../auth/session'
+import { PageHeader } from '../ui/PageHeader'
 import { MemberList } from './MemberList'
 import { RoomChat } from './RoomChat'
 import { RoomFormModal } from './RoomFormModal'
@@ -57,59 +58,63 @@ export function RoomScreen() {
   }
 
   return (
-    <Stack>
-      <Anchor component={Link} to="/rooms" size="sm">
-        All rooms
-      </Anchor>
-      <Group justify="space-between" align="flex-start">
-        <div>
-          <Title order={2}>{room.name}</Title>
-          <Text c="dimmed">{room.description ?? 'No description.'}</Text>
-        </div>
-        <Group>
-          {!room.isMember && (
-            <Button loading={join.isPending} onClick={() => join.mutate({ params: { path: { id } } }, { onError: fail })}>
-              Join
-            </Button>
-          )}
-          {room.isMember && !isOwner && me && (
-            <Button variant="default" onClick={() => removeMember({ userId: me.id, displayName: me.displayName, role: 'Member', joinedAt: '' })}>
-              Leave
-            </Button>
-          )}
-          {isAdmin && (
-            <Button variant="default" onClick={() => setEditing(true)}>
-              Edit
-            </Button>
-          )}
-          {isAdmin && (
-            <Button color="red" variant="light" onClick={confirmDelete}>
-              Delete
-            </Button>
-          )}
-        </Group>
-      </Group>
+    <>
+      <PageHeader
+        back={{ to: '/rooms', label: 'All rooms' }}
+        title={room.name}
+        description={room.description ?? 'No description.'}
+        actions={
+          <>
+            {!room.isMember && (
+              <Button loading={join.isPending} onClick={() => join.mutate({ params: { path: { id } } }, { onError: fail })}>
+                Join
+              </Button>
+            )}
+            {room.isMember && !isOwner && me && (
+              <Button variant="default" onClick={() => removeMember({ userId: me.id, displayName: me.displayName, role: 'Member', joinedAt: '' })}>
+                Leave
+              </Button>
+            )}
+            {isAdmin && (
+              <Button variant="default" onClick={() => setEditing(true)}>
+                Edit
+              </Button>
+            )}
+            {isAdmin && (
+              <Button color="red" variant="light" onClick={confirmDelete}>
+                Delete
+              </Button>
+            )}
+          </>
+        }
+      />
 
       {room.isMember ? (
-        <>
-          <RoomChat roomId={id} />
-          <Title order={4}>Members</Title>
-          {members ? (
-            <MemberList
-              members={members}
-              // The creator cannot be removed (the API refuses); admins remove others; nobody removes themselves here, that is Leave.
-              canRemove={(m) => isAdmin && m.userId !== me?.id && m.userId !== room.ownerId}
-              onRemove={removeMember}
-            />
-          ) : (
-            <Loader />
-          )}
-        </>
+        <Flex direction={{ base: 'column', md: 'row' }} gap="lg" align="flex-start">
+          <Box w="100%" flex={1} miw={0}>
+            <RoomChat roomId={id} />
+          </Box>
+          <Paper p="lg" w={{ base: '100%', md: 320 }} style={{ flexShrink: 0 }}>
+            <Title order={3} mb="sm">
+              Members
+            </Title>
+            {members ? (
+              <MemberList
+                members={members}
+                // The creator cannot be removed (the API refuses); admins remove others; nobody removes themselves here, that is Leave.
+                canRemove={(m) => isAdmin && m.userId !== me?.id && m.userId !== room.ownerId}
+                onRemove={removeMember}
+              />
+            ) : (
+              <Loader />
+            )}
+          </Paper>
+        </Flex>
       ) : (
         <Text c="dimmed">Join the room to read and send messages.</Text>
       )}
 
       {editing && <RoomFormModal room={room} onClose={() => setEditing(false)} />}
-    </Stack>
+    </>
   )
 }

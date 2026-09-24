@@ -1,9 +1,11 @@
-import { Alert, Badge, Group, TextInput, Title } from '@mantine/core'
+import { Alert, Badge, Box, Group, Text, TextInput } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
+import { IconSearch } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useState } from 'react'
 import { describeError } from '../api/errors'
 import { formatDate } from '../lib/dates'
+import { PageHeader } from '../ui/PageHeader'
 import { EditUserModal } from './EditUserModal'
 import { pageSize, useAdminUsers, type AdminUser } from './queries'
 
@@ -16,19 +18,22 @@ export function AdminUsersScreen() {
 
   return (
     <>
-      <Group justify="space-between" mb="md">
-        <Title order={2}>Users</Title>
-        <TextInput
-          placeholder="Search by name or email"
-          aria-label="Search users"
-          value={search}
-          onChange={(event) => {
-            setSearch(event.currentTarget.value)
-            setPage(1)
-          }}
-          w={280}
-        />
-      </Group>
+      <PageHeader
+        title="Users"
+        actions={
+          <TextInput
+            leftSection={<IconSearch size={16} stroke={1.75} />}
+            placeholder="Search by name or email"
+            aria-label="Search users"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value)
+              setPage(1)
+            }}
+            w={280}
+          />
+        }
+      />
 
       {error && (
         <Alert color="red" mb="md">
@@ -38,6 +43,7 @@ export function AdminUsersScreen() {
 
       <DataTable<AdminUser>
         withTableBorder
+        borderRadius="lg"
         highlightOnHover
         minHeight={180}
         fetching={isFetching}
@@ -51,7 +57,7 @@ export function AdminUsersScreen() {
             title: 'Roles',
             render: (user) =>
               user.roles.map((role) => (
-                <Badge key={role} variant="light" mr={4}>
+                <Badge key={role} mr={4}>
                   {role}
                 </Badge>
               )),
@@ -60,9 +66,10 @@ export function AdminUsersScreen() {
             accessor: 'disabled',
             title: 'Status',
             render: (user) => (
-              <Badge variant="light" color={user.disabled ? 'red' : 'green'}>
-                {user.disabled ? 'Disabled' : 'Active'}
-              </Badge>
+              <Group gap="xs" wrap="nowrap">
+                <Box component="span" w={6} h={6} bdrs="50%" bg={user.disabled ? 'red.6' : 'green.6'} />
+                <Text>{user.disabled ? 'Disabled' : 'Active'}</Text>
+              </Group>
             ),
           },
           { accessor: 'createdAt', title: 'Joined', render: (user) => formatDate(user.createdAt) },

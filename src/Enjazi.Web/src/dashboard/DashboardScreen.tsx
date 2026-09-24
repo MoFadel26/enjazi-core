@@ -1,13 +1,23 @@
-import { SimpleGrid, Text, Title } from '@mantine/core'
+import { SimpleGrid, Text } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { useCurrentUser } from '../auth/session'
-import { useEvents } from '../calendar/queries'
+import { type CalendarEvent, useEvents } from '../calendar/queries'
 import { formatDateTime } from '../lib/dates'
 import { useRooms } from '../rooms/queries'
 import { StreakCard } from '../streak/StreakCard'
-import { useTasks } from '../tasks/queries'
-import { SummaryCard } from './SummaryCard'
+import { type Task, useTasks } from '../tasks/queries'
+import { PageHeader } from '../ui/PageHeader'
+import { StatCard } from '../ui/StatCard'
+
+// Undated tasks sort last.
+function dueOrder(task: Task) {
+  return task.dueAt ? Date.parse(task.dueAt) : Number.MAX_SAFE_INTEGER
+}
+
+function eventTime(event: CalendarEvent) {
+  return event.allDay ? dayjs(event.startsAt).format('ddd D MMM') : formatDateTime(event.startsAt)
+}
 
 // Three summaries over the same queries the screens use, so a change made on
 // any screen is already in the cache when the dashboard renders again.
@@ -27,53 +37,83 @@ export function DashboardScreen() {
   const [now] = useState(() => Date.now())
   const open = (tasks ?? []).filter((task) => task.completedAt === null)
   const overdue = open.filter((task) => task.dueAt !== null && Date.parse(task.dueAt) < now)
-  const upcoming = (events ?? []).filter((event) => Date.parse(event.endsAt) > now).slice(0, 3)
+  const next = [...open].sort((a, b) => dueOrder(a) - dueOrder(b)).slice(0, 3)
+  const upcoming = (events ?? []).filter((event) => Date.parse(event.endsAt) > now)
   const mine = (rooms ?? []).filter((room) => room.isMember)
 
   return (
     <>
-      <Title order={2}>Dashboard</Title>
-      <Text c="dimmed" mb="md">
-        Signed in as {user?.email}.
-      </Text>
+      <PageHeader title="Dashboard" description={<>Signed in as {user?.email}.</>} />
 
       <SimpleGrid cols={{ base: 1, md: 2, xl: 4 }}>
         <StreakCard />
-        <SummaryCard title="Tasks" to="/tasks" linkText="All tasks">
-          <Text>
-            {open.length} open{overdue.length > 0 && <Text span c="red">, {overdue.length} overdue</Text>}
-          </Text>
-          {open.slice(0, 3).map((task) => (
-            <Text key={task.id} size="sm" c="dimmed" lineClamp={1}>
-              {task.title}
-              {task.dueAt && ` · ${formatDateTime(task.dueAt)}`}
-            </Text>
-          ))}
-        </SummaryCard>
 
-        <SummaryCard title="This week" to="/calendar" linkText="Calendar">
-          {upcoming.length === 0 && <Text c="dimmed">Nothing scheduled.</Text>}
-          {upcoming.map((event) => (
-            <Text key={event.id} size="sm" lineClamp={1}>
-              {event.title}
-              <Text span c="dimmed">
-                {' '}
-                · {event.allDay ? dayjs(event.startsAt).format('ddd D MMM') : formatDateTime(event.startsAt)}
+        <StatCard
+          label="Tasks"
+          value={open.length}
+          rows={[
+            ...(overdue.length > 0
+              ? [
+                  <Text key="overdue" size="sm" c="red">
+                    {overdue.length} overdue
+                  </Text>,
+                ]
+              : []),
+            ...next.map((task) => (
+              <div key={task.id}>
+                <Text size="sm" lineClamp={1}>
+                  {task.title}
+                </Text>
+                {task.dueAt && (
+                  <Text size="xs" c="dimmed">
+                    {formatDateTime(task.dueAt)}
+                  </Text>
+                )}
+              </div>
+            )),
+          ]}
+          footer={{ to: '/tasks', label: 'All tasks' }}
+        />
+
+        <StatCard
+          label="This week"
+          value={upcoming.length}
+          rows={
+            upcoming.length === 0
+              ? [
+                  <Text key="empty" size="sm" c="dimmed">
+                    Nothing scheduled.
+                  </Text>,
+                ]
+              : upcoming.slice(0, 3).map((event) => (
+                  <div key={event.id}>
+                    <Text size="sm" lineClamp={1}>
+                      {event.title}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {eventTime(event)}
+                    </Text>
+                  </div>
+                ))
+          }
+          footer={{ to: '/calendar', label: 'Calendar' }}
+        />
+
+        <StatCard
+          label="Rooms"
+          value={mine.length}
+          rows={[
+            <Text key="to-join" size="sm" c="dimmed">
+              {(rooms?.length ?? 0) - mine.length} to join
+            </Text>,
+            ...mine.slice(0, 3).map((room) => (
+              <Text key={room.id} size="sm" lineClamp={1}>
+                {room.name}
               </Text>
-            </Text>
-          ))}
-        </SummaryCard>
-
-        <SummaryCard title="Rooms" to="/rooms" linkText="All rooms">
-          <Text>
-            {mine.length} joined, {(rooms?.length ?? 0) - mine.length} to join
-          </Text>
-          {mine.slice(0, 3).map((room) => (
-            <Text key={room.id} size="sm" c="dimmed" lineClamp={1}>
-              {room.name}
-            </Text>
-          ))}
-        </SummaryCard>
+            )),
+          ]}
+          footer={{ to: '/rooms', label: 'All rooms' }}
+        />
       </SimpleGrid>
     </>
   )

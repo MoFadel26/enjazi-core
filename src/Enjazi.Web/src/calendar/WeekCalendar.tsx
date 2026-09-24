@@ -41,6 +41,18 @@ export function WeekCalendar({ events, onRangeChange, onSelect, onEventClick, on
       snapDuration="00:15:00"
       scrollTime="07:00:00"
       height="100%"
+      // The Paper around the grid is the frame; without this the view draws
+      // a second one just inside it.
+      borderless
+      // FullCalendar hashes its own class names, so mantine-bridge.css styles
+      // these hooks; class options are joined with the classic theme's.
+      className="enjazi-fc"
+      headerToolbarClass="enjazi-fc-toolbar"
+      toolbarTitleClass="enjazi-fc-toolbar-title"
+      buttonClass={(info) => (info.buttonGroup ? 'enjazi-fc-button' : 'enjazi-fc-button enjazi-fc-button-solo')}
+      dayHeaderInnerClass="enjazi-fc-day-header"
+      blockEventClass="enjazi-fc-event"
+      eventTitleClass="enjazi-fc-event-title"
       events={events}
       datesSet={(info) => onRangeChange({ from: info.startStr, to: info.endStr })}
       select={onSelect}

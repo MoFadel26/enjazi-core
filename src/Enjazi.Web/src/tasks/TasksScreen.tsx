@@ -1,6 +1,8 @@
-import { Alert, Button, Group, Loader, SegmentedControl, Title } from '@mantine/core'
+import { Alert, Button, Loader, SegmentedControl } from '@mantine/core'
+import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { describeError } from '../api/errors'
+import { PageHeader } from '../ui/PageHeader'
 import { TaskFormModal } from './TaskFormModal'
 import { TaskList } from './TaskList'
 import { useTasks, type Task } from './queries'
@@ -21,27 +23,28 @@ export function TasksScreen() {
 
   return (
     <>
-      <Group justify="space-between" mb="md">
-        <Title order={2}>Tasks</Title>
-        <Button onClick={() => setEditing(null)}>New task</Button>
-      </Group>
-
-      <SegmentedControl
-        value={filter}
-        onChange={(value) => setFilter(value as Filter)}
-        data={[
-          { value: 'open', label: 'Open' },
-          { value: 'done', label: 'Done' },
-          { value: 'all', label: 'All' },
-        ]}
+      <PageHeader
+        title="Tasks"
+        actions={
+          <>
+            <SegmentedControl
+              value={filter}
+              onChange={(value) => setFilter(value as Filter)}
+              data={[
+                { value: 'open', label: 'Open' },
+                { value: 'done', label: 'Done' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+            <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={() => setEditing(null)}>
+              New task
+            </Button>
+          </>
+        }
       />
 
-      {isPending && <Loader mt="md" />}
-      {error && (
-        <Alert color="red" mt="md">
-          {describeError(error)}
-        </Alert>
-      )}
+      {isPending && <Loader />}
+      {error && <Alert color="red">{describeError(error)}</Alert>}
       {tasks && <TaskList tasks={visible} onEdit={setEditing} />}
 
       {editing !== undefined && (

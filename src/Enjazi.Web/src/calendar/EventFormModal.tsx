@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Modal, Stack, Switch, Textarea, TextInput } from '@mantine/core'
+import { Alert, Box, Button, Group, Modal, Stack, Switch, Textarea, TextInput } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import { modals } from '@mantine/modals'
@@ -77,7 +77,7 @@ export function EventFormModal({ target, onClose }: Props) {
                 Delete
               </Button>
             ) : (
-              <span />
+              <Box />
             )}
             <Group>
               <Button variant="default" onClick={onClose}>

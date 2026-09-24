@@ -1,43 +1,112 @@
 /*
  * Drives FullCalendar's palette from Mantine's CSS variables, so the grid
- * follows Mantine's colour scheme. FullCalendar 7 keeps its colours in a
- * separate palette.css; this replaces that import rather than overriding it.
+ * follows the Enjazi theme in both colour schemes. FullCalendar 7 keeps its
+ * colours in a separate palette.css; this replaces that import rather than
+ * overriding it. The variables are the ones the classic theme defines; the
+ * .enjazi-fc-* rules target class hooks WeekCalendar passes in, because the
+ * theme's own class names are hashed.
  * Carried over from the Phase 0 spike (ADR-0004, criterion 3).
  */
 :root {
+  /* Toolbar buttons follow Mantine's default (secondary) button. */
   --fc-classic-button: var(--mantine-color-default);
   --fc-classic-button-border: var(--mantine-color-default-border);
-  --fc-classic-button-strong: var(--mantine-color-blue-filled);
-  --fc-classic-button-strong-border: var(--mantine-color-blue-filled-hover);
-  --fc-classic-button-outline: var(--mantine-color-blue-outline);
+  --fc-classic-button-strong: var(--mantine-color-default-hover);
+  --fc-classic-button-strong-border: var(--mantine-color-default-border);
+  --fc-classic-button-outline: var(--mantine-primary-color-filled);
   --fc-classic-button-foreground: var(--mantine-color-text);
+  --fc-classic-ring-color: var(--mantine-primary-color-filled);
 
-  --fc-classic-primary: var(--mantine-color-blue-filled);
+  --fc-classic-primary: var(--mantine-primary-color-filled);
   --fc-classic-primary-foreground: var(--mantine-color-white);
 
   --fc-classic-event: var(--fc-classic-primary);
   --fc-classic-event-contrast: var(--fc-classic-primary-foreground);
-  --fc-classic-background-event: var(--mantine-color-teal-filled);
+  --fc-classic-background-event: var(--mantine-color-green-filled);
   --fc-classic-background-event-opacity: 15%;
   --fc-classic-background-event-foreground-opacity: 50%;
-  /* Tints laid over the grid, not fills. Mantine's `*-light` variables are
-     opaque in dark mode, so mix an explicit alpha instead. */
-  --fc-classic-highlight: color-mix(in srgb, var(--mantine-color-blue-filled) 20%, transparent);
-  --fc-classic-today: color-mix(in srgb, var(--mantine-color-yellow-filled) 12%, transparent);
+  /* Tints laid over the grid, not fills. The selection highlight is the
+     accent tint at double strength. */
+  --fc-classic-today: var(--enjazi-accent-tint);
+  --fc-classic-highlight: color-mix(in srgb, var(--mantine-primary-color-filled) 16%, transparent);
   --fc-classic-now: var(--mantine-color-red-filled);
 
   --fc-classic-small-dot-width: 8px;
   --fc-classic-large-dot-width: 10px;
 
-  --fc-classic-background: var(--mantine-color-body);
-  --fc-classic-faint: var(--mantine-color-default-hover);
-  --fc-classic-muted: var(--mantine-color-default-border);
-  --fc-classic-strong: var(--mantine-color-dimmed);
+  /* The grid sits inside a Paper, so it paints on the same surface. */
+  --fc-classic-background: var(--enjazi-surface-1);
+  --fc-classic-faint: var(--enjazi-surface-2);
+  --fc-classic-muted: var(--enjazi-surface-3);
+  --fc-classic-strong: var(--mantine-color-default-border);
 
   --fc-classic-foreground: var(--mantine-color-text);
   --fc-classic-faint-foreground: var(--mantine-color-dimmed);
   --fc-classic-muted-foreground: var(--mantine-color-dimmed);
 
   --fc-classic-border: var(--mantine-color-default-border);
-  --fc-classic-strong-border: var(--mantine-color-dimmed);
+  --fc-classic-strong-border: var(--mantine-color-default-border);
+}
+
+[data-mantine-color-scheme='dark'] {
+  --fc-classic-highlight: color-mix(in srgb, var(--mantine-primary-color-filled) 28%, transparent);
+}
+
+/* The classic theme's root is 16px; the app's base is md (14px), and event
+   chips have no size class of their own, so they inherit this. */
+.enjazi-fc {
+  font-size: var(--mantine-font-size-md);
+}
+
+/* The toolbar sits inside the Paper's frame, so it carries the inset the
+   Paper no longer has. Its title is the card title: h3 at 600. */
+.enjazi-fc-toolbar {
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+}
+
+.enjazi-fc-toolbar-title {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: var(--mantine-font-weight-bold);
+  letter-spacing: -0.2px;
+}
+
+/* Toolbar buttons match the default Mantine button: 36px, 14px padding,
+   md label at 500, radius md (outer corners only inside a group). */
+.enjazi-fc-button {
+  height: 36px;
+  padding-block: 0;
+  padding-inline: 14px;
+  font-size: var(--mantine-font-size-md);
+  font-weight: var(--mantine-font-weight-medium);
+}
+
+.enjazi-fc-button-solo {
+  border-radius: var(--mantine-radius-md);
+}
+
+.enjazi-fc-button:first-child {
+  border-start-start-radius: var(--mantine-radius-md);
+  border-end-start-radius: var(--mantine-radius-md);
+}
+
+.enjazi-fc-button:last-child {
+  border-start-end-radius: var(--mantine-radius-md);
+  border-end-end-radius: var(--mantine-radius-md);
+}
+
+/* Header cells are eyebrows: xs, 500, +0.4px, uppercase, dimmed. */
+.enjazi-fc-day-header {
+  font-size: var(--mantine-font-size-xs);
+  font-weight: var(--mantine-font-weight-medium);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mantine-color-dimmed);
+}
+
+.enjazi-fc-event {
+  border-radius: var(--mantine-radius-sm);
+}
+
+.enjazi-fc-event-title {
+  font-weight: var(--mantine-font-weight-medium);
 }

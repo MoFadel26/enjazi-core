@@ -33,7 +33,7 @@ export function RegisterScreen() {
           <TextInput label="Email" type="email" autoComplete="email" {...form.getInputProps('email')} />
           <PasswordInput label="Password" autoComplete="new-password" {...form.getInputProps('password')} />
           {register.error && <Alert color="red">{register.error.message}</Alert>}
-          <Button type="submit" loading={register.isPending}>
+          <Button type="submit" fullWidth mt="xs" loading={register.isPending}>
             Create account
           </Button>
         </Stack>

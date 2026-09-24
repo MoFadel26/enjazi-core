@@ -32,7 +32,7 @@ export function LoginScreen() {
           <TextInput label="Email" type="email" autoComplete="email" {...form.getInputProps('email')} />
           <PasswordInput label="Password" autoComplete="current-password" {...form.getInputProps('password')} />
           {login.error && <Alert color="red">{login.error.message}</Alert>}
-          <Button type="submit" loading={login.isPending}>
+          <Button type="submit" fullWidth mt="xs" loading={login.isPending}>
             Log in
           </Button>
         </Stack>

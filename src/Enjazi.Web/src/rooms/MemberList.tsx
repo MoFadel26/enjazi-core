@@ -1,5 +1,7 @@
-import { Badge, Button, Table, Text } from '@mantine/core'
+import { ActionIcon, Badge, Box, Group, Table, Text } from '@mantine/core'
+import { IconUserMinus } from '@tabler/icons-react'
 import { formatDate } from '../lib/dates'
+import { UserAvatar } from '../ui/UserAvatar'
 import type { RoomMember } from './queries'
 
 type Props = {
@@ -11,28 +13,32 @@ type Props = {
 
 export function MemberList({ members, canRemove, onRemove }: Props) {
   return (
-    <Table verticalSpacing="sm">
+    <Table>
       <Table.Tbody>
         {members.map((member) => (
           <Table.Tr key={member.userId}>
             <Table.Td>
-              <Text>{member.displayName}</Text>
+              <Group gap="xs" wrap="nowrap">
+                <UserAvatar name={member.displayName} size="sm" />
+                {/* The date sits under the name so the row fits the 320px members panel. */}
+                <Box miw={0}>
+                  <Text fw={500} truncate>
+                    {member.displayName}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Joined {formatDate(member.joinedAt)}
+                  </Text>
+                </Box>
+              </Group>
             </Table.Td>
-            <Table.Td w={100}>
-              <Badge variant="light" color={member.role === 'Admin' ? 'blue' : 'gray'}>
-                {member.role}
-              </Badge>
+            <Table.Td>
+              <Badge color={member.role === 'Admin' ? 'lavender' : 'gray'}>{member.role}</Badge>
             </Table.Td>
-            <Table.Td w={160}>
-              <Text size="sm" c="dimmed">
-                Joined {formatDate(member.joinedAt)}
-              </Text>
-            </Table.Td>
-            <Table.Td w={100} align="right">
+            <Table.Td align="right" w={36}>
               {canRemove(member) && (
-                <Button variant="subtle" size="compact-sm" color="red" onClick={() => onRemove(member)}>
-                  Remove
-                </Button>
+                <ActionIcon color="red" aria-label="Remove" onClick={() => onRemove(member)}>
+                  <IconUserMinus size={18} stroke={1.75} />
+                </ActionIcon>
               )}
             </Table.Td>
           </Table.Tr>
