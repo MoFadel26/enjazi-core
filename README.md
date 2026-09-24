@@ -86,6 +86,8 @@ decisions and their reasoning live in `docs/adr/`.
 | Auth | Identity, cookie, query-filter ownership | [ADR-0006](docs/adr/0006-auth-and-ownership.md) |
 | Rooms, admin, OpenAPI | shared rooms, lockout, build-time document | [ADR-0007](docs/adr/0007-shared-data-admin-and-openapi.md) |
 | Frontend shell | dev proxy, openapi-typescript + openapi-fetch, TanStack Query, React Router 8 | [ADR-0008](docs/adr/0008-frontend-shell.md) |
+| Screens | feature folders, query wrapper as the data layer | [ADR-0009](docs/adr/0009-screens.md) |
+| Chat, streaks | push-only SignalR hub, streak clock of its own | [ADR-0010](docs/adr/0010-chat-and-streaks.md) |
 
 ## Local requirements
 
