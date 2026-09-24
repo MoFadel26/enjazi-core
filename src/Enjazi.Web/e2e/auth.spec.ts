@@ -6,8 +6,18 @@ import { expect, test } from '@playwright/test'
 const password = 'correct-horse-battery-staple'
 const email = `phase4-${Date.now()}@example.test`
 
-test('a visitor is redirected to login, and returned after signing in', async ({ page }) => {
+test('a visitor sees the landing page on / and can navigate to register', async ({ page }) => {
   await page.goto('/')
+  await expect(page).toHaveURL('/')
+  await expect(
+    page.getByRole('heading', { name: 'Tasks, calendar, streaks, and collaborative rooms — unified.' }),
+  ).toBeVisible()
+  await page.getByRole('link', { name: 'Get started for free' }).first().click()
+  await expect(page).toHaveURL('/register')
+})
+
+test('a visitor is redirected to login, and returned after signing in', async ({ page }) => {
+  await page.goto('/tasks')
   await expect(page).toHaveURL('/login')
 
   await page.getByRole('link', { name: 'Register' }).click()
@@ -33,7 +43,7 @@ test('logout ends the session', async ({ page }) => {
 
   // The cookie is gone, not merely the client state: a fresh load of a
   // protected route asks the API and is redirected again.
-  await page.goto('/')
+  await page.goto('/tasks')
   await expect(page).toHaveURL('/login')
 })
 
@@ -53,6 +63,8 @@ test('a dropped cookie is noticed on the next load', async ({ page, context }) =
   await page.getByRole('textbox', { name: 'Password' }).fill(password)
   await page.getByRole('button', { name: 'Log in' }).click()
   await expect(page).toHaveURL('/')
+
+  await page.goto('/tasks')
 
   // Expire the session behind the app's back. The protected route asks the
   // API on load rather than trusting anything cached in the browser.

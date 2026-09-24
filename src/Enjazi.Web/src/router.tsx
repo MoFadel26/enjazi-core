@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router'
 import { RequireAuth } from './auth/RequireAuth'
 import { RequireRole } from './auth/RequireRole'
 import { DashboardScreen } from './dashboard/DashboardScreen'
+import { LandingScreen } from './landing/LandingScreen'
 import { AppLayout } from './layout/AppLayout'
 import { RoomScreen } from './rooms/RoomScreen'
 import { RoomsScreen } from './rooms/RoomsScreen'
@@ -12,10 +13,14 @@ import { SettingsScreen } from './settings/SettingsScreen'
 import { TasksScreen } from './tasks/TasksScreen'
 
 export const router = createBrowserRouter([
+  { path: '/landing', element: <LandingScreen /> },
   { path: '/login', element: <LoginScreen /> },
   { path: '/register', element: <RegisterScreen /> },
   {
-    // Everything below needs a signed-in user and renders inside the shell.
+    // Everything below renders through RequireAuth:
+    // - Unauthenticated visitors at / see the landing screen.
+    // - Unauthenticated visitors at any sub-path are redirected to /login.
+    // - Authenticated users render inside the AppLayout shell.
     element: <RequireAuth />,
     // Shown while a lazy route's code is still loading on the first visit.
     hydrateFallbackElement: (
