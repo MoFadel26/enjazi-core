@@ -1,0 +1,20 @@
+/* Only what the theme object cannot reach. */
+
+/* mantine-datatable reads its own variables, not theme.components. */
+:root {
+  --mantine-datatable-border-color-light: var(--mantine-color-default-border);
+  --mantine-datatable-border-color-dark: var(--mantine-color-default-border);
+  --mantine-datatable-highlight-on-hover-color-light: var(--enjazi-surface-2);
+  --mantine-datatable-highlight-on-hover-color-dark: var(--enjazi-surface-2);
+  --mantine-datatable-background-color-light: var(--enjazi-surface-1);
+  --mantine-datatable-background-color-dark: var(--enjazi-surface-1);
+}
+
+::selection {
+  background: var(--enjazi-accent-tint);
+}
+
+/* SegmentedControl has a variable for the active label only. */
+.mantine-SegmentedControl-label:not([data-active], [data-disabled]) {
+  color: var(--mantine-color-dimmed);
+}
