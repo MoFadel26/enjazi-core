@@ -130,6 +130,34 @@ the OpenAPI document and generated client are current, and runs two browser
 tests: two tabs chatting, and a completed task showing on the dashboard.
 ADR-0010 records the decisions and the clock mistake made on the way.
 
+## Phase 7 — design system
+
+A published design system applied to the whole frontend instead of Mantine's
+defaults: Linear for the dark scheme, the surface ladder, the single accent
+and the type; Cal.com for the light scheme. Both are reduced to one Mantine
+theme in `src/theme/`, a handful of shared pieces in `src/ui/`, and a
+sidebar shell; every screen is restyled against it. `docs/design.md` is the
+resolved spec.
+
+Verify: no colour or type value anywhere but the theme; every screen paints
+on the right canvas in both schemes without a page error; the whole browser
+suite from Phases 4 to 6 still passes unchanged.
+
+Done. `src/theme/` is the whole design system: a ten-shade lavender, the
+two neutral ladders ordered so Mantine's fixed indexes land on the right
+token, Inter self-hosted, and one `components` map; five `--enjazi-*`
+variables carry the surfaces that Mantine 9 otherwise paints with the
+canvas. `src/ui/` holds five shared pieces; the sidebar shell replaces the
+header; every screen is restyled and the tests from Phases 4 to 6 pass
+without a selector changed, because icon-only buttons keep their names
+through `aria-label`. `scripts/verify-phase-7.sh` fails on a hex colour or
+a pixel font size outside the theme, then runs the Phase 5 script, whose
+suite now has a fourteenth test that sets each scheme through the account
+and checks every screen paints on that scheme's canvas in Inter. The
+longest source file is 131 lines. Two things the phase found are in
+ADR-0011: the calendar drag test failing on a height formula that had lost
+its parentheses, and `Group` dropping a streak of zero.
+
 ## Out of scope
 
 - **OAuth integrations.** The previous version declared five (Google, Slack,

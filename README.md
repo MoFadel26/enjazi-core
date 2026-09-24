@@ -48,6 +48,9 @@ scripts/verify-phase-1.sh                  # schema check on a throwaway databas
 scripts/verify-phase-2.sh                  # integration tests, needs Docker
 scripts/verify-phase-3.sh                  # the tests, then checks openapi.json is current
 scripts/verify-phase-4.sh                  # typecheck, lint, build, browser tests against the API
+scripts/verify-phase-5.sh                  # every screen in the browser, as a member and as an admin
+scripts/verify-phase-6.sh                  # API tests with a fake clock, then chat and streak in the browser
+scripts/verify-phase-7.sh                  # design tokens only in the theme, then everything phase 5 checks
 ```
 
 Open the frontend at `127.0.0.1:5182`, not `localhost:5182`; `CLAUDE.md`
@@ -88,6 +91,7 @@ decisions and their reasoning live in `docs/adr/`.
 | Frontend shell | dev proxy, openapi-typescript + openapi-fetch, TanStack Query, React Router 8 | [ADR-0008](docs/adr/0008-frontend-shell.md) |
 | Screens | feature folders, query wrapper as the data layer | [ADR-0009](docs/adr/0009-screens.md) |
 | Chat, streaks | push-only SignalR hub, streak clock of its own | [ADR-0010](docs/adr/0010-chat-and-streaks.md) |
+| Design system | Linear dark, Cal.com light, one lavender accent, Inter, Tabler icons | [ADR-0011](docs/adr/0011-design-system.md) |
 
 ## Local requirements
 
@@ -95,4 +99,4 @@ decisions and their reasoning live in `docs/adr/`.
 - Node 22+
 - PostgreSQL 16+
 - Docker, for the integration tests only
-- Chromium via Playwright, for `verify-phase-4.sh` only; it downloads on first run
+- Chromium via Playwright, for the browser tests in `verify-phase-4.sh` onwards; it downloads on first run
