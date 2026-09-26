@@ -400,11 +400,13 @@ export interface components {
         };
         SettingsRequest: {
             theme: string;
+            palette: string;
             timeZone: string;
             notifications: components["schemas"]["NotificationSettingsContract"];
         };
         SettingsResponse: {
             theme: string;
+            palette: string;
             timeZone: string;
             notifications: components["schemas"]["NotificationSettingsContract"];
             /** Format: date-time */

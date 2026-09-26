@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { ColorSchemeSync } from '../settings/ColorSchemeSync'
+import { PaletteSync } from '../settings/PaletteSync'
 import { CommandPalette } from './CommandPalette'
 import { iconProps } from './destinations'
 import { NavList } from './NavList'
@@ -45,6 +46,7 @@ export function AppLayout() {
       padding={{ base: 'md', sm: 'lg' }}
     >
       <ColorSchemeSync />
+      <PaletteSync />
       <CommandPalette isAdmin={isAdmin} />
       <AppShell.Header hiddenFrom="sm">
         <Group h="100%" px="md" gap="sm" wrap="nowrap">

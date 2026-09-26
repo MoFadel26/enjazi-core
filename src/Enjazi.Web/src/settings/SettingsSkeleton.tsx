@@ -8,6 +8,7 @@ export function SettingsSkeleton() {
     <Stack maw={560} role="progressbar" aria-label="Loading settings">
       <SectionSkeleton>
         <SelectSkeleton labelWidth={48} />
+        <SelectSkeleton labelWidth={52} />
       </SectionSkeleton>
       <SectionSkeleton>
         <SelectSkeleton labelWidth={72} />

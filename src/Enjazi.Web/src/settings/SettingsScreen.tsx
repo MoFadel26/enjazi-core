@@ -1,7 +1,9 @@
 import { Alert, Button, Group, Stack, useMantineColorScheme } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
+import { useEffect, useRef } from 'react'
 import { describeError } from '../api/errors'
+import { isPaletteId, setPaletteId } from '../theme'
 import { PageHeader } from '../ui/PageHeader'
 import { SettingsForm } from './SettingsForm'
 import { SettingsSkeleton } from './SettingsSkeleton'
@@ -28,10 +30,32 @@ function LoadedForm({ settings }: { settings: Settings }) {
   const form = useForm({
     initialValues: {
       theme: settings.theme,
+      palette: settings.palette,
       timeZone: settings.timeZone,
       notifications: { ...settings.notifications },
     },
   })
+
+  // The whole screen is the palette's preview, so the choice shows as it is
+  // picked. A ref holds what the account says, so leaving without saving puts
+  // that back: the live change must not be a silent save.
+  const picked = form.getValues().palette
+  const saved = useRef(settings.palette)
+
+  useEffect(() => {
+    saved.current = settings.palette
+  }, [settings.palette])
+
+  useEffect(() => {
+    if (isPaletteId(picked)) setPaletteId(picked)
+  }, [picked])
+
+  useEffect(
+    () => () => {
+      if (isPaletteId(saved.current)) setPaletteId(saved.current)
+    },
+    [],
+  )
 
   return (
     <form
