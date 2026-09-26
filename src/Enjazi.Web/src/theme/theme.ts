@@ -33,5 +33,7 @@ export const theme = createTheme({
   // The spec defines three shadows; lg and xl collapse onto md so raised
   // elements that ask for them (Modal, Notification) stay within the scale.
   shadows: { ...shadows, lg: shadows.md, xl: shadows.md },
+  // Mantine's own transitions drop to zero duration under the OS setting.
+  respectReducedMotion: true,
   components,
 })

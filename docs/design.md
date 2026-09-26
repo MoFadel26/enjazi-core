@@ -32,6 +32,9 @@ decides the light palette. ADR-0011 records why.
 5. **Both schemes stay.** The account's theme setting (light, dark, system)
    is a stored preference with a test on it. Dark follows Linear; light
    follows Cal.com; the accent is the same in both.
+6. **Quiet, not static.** Every change the user causes answers at once and
+   moves for 120–180ms. Motion confirms a change; it never decorates. Under
+   the OS's reduced-motion setting nothing moves, and nothing is lost.
 
 ## Colour
 
@@ -108,7 +111,8 @@ Shadows: `xs` `0 1px 2px rgba(0,0,0,.05)`, `sm` `0 1px 3px rgba(0,0,0,.06)`,
 
 Mantine's own `red`, `green`, `yellow`, `orange` tuples are kept. Use:
 `red` for destructive actions and overdue; `green` for success and active
-status; `orange` for the streak warning; `yellow` for the admin self-edit
+status; `orange` for the streak — the flame, the warning, the days of the
+current run and the points moment; `yellow` for the admin self-edit
 notice. Priority markers: Low `gray`, Medium `lavender`, High `red`.
 
 ### Avatar pastels — `src/theme/palette.ts`
@@ -159,6 +163,139 @@ on `order`, because Mantine's heading sizes carry no tracking field.
 - **Page**: `AppShell.Main` padding `lg` (md below `sm`). Content is
   full-bleed; forms cap their own width (480–560px).
 
+## Motion — `src/theme/motion.ts`
+
+Nothing here is hand-animated. Three mechanisms already in the stack carry
+all of it, and `motion.ts` holds the one set of numbers they share:
+
+- **Mantine's own transitions** (`Modal`, `Popover`, `Menu`, `Tooltip`,
+  `Spotlight`, `SegmentedControl`, `FloatingIndicator`, `AppShell`,
+  `Burger`, `Notifications`) take `transitionProps` or a duration prop in
+  milliseconds, set once in `theme.components` (or on `<Notifications>` in
+  `main.tsx`) from `durations`.
+- **CSS colour transitions** (hover and press on rows, buttons, nav links,
+  the checkbox) read `--enjazi-duration-fast` and `--enjazi-ease`, which the
+  resolver emits from the same numbers.
+- **The `motion` library** (motion.dev) for the app's own movement: rows
+  entering, leaving and changing place, the list and its empty state
+  swapping, the points float, the flame pop, the week row. Elements are
+  `m.*` from `motion/react-m` under `LazyMotion` (`domMax`, loaded after
+  the first render from `src/theme/motionFeatures.ts`); `MotionConfig` in
+  `main.tsx` sets `transitions.base` as the default and
+  `reducedMotion="user"`. Components use `transitions.*` and `offsets.*`;
+  they never write a number.
+
+| Token | Value | Used for |
+|---|---|---|
+| `durations.fast` | 120ms | hover, press, colour changes, the checkbox tick, tooltips |
+| `durations.base` | 180ms | enter and leave: modal, popover, menu, palette, rows, the nav marker, the segmented control's indicator |
+| `durations.moment` | 700ms | the points float and the flame pop. Nothing else runs longer than `base`. |
+| `durations.linger` | 800ms | a task completed in the Open view stays in place this long before it leaves. A pause, not an animation. |
+| `easing` | `cubic-bezier(0.2, 0, 0, 1)` | everything; decelerating |
+| `offsets.enter` | 4 | pixels an arriving task row rises |
+| `offsets.rise` | 16 | pixels the points float travels |
+| `offsets.pop` | 1.25 | how much the flame swells |
+| `transitions.base/moment` | the above in seconds | the `motion` library's `transition` prop |
+
+Where motion applies:
+
+| Element | Motion |
+|---|---|
+| Table rows | background colour on hover, `fast`; task rows enter, leave and move with `motion`, `base` |
+| Buttons, action icons, nav links | background, border and text colour, `fast` |
+| Checkbox | fill, border and tick, `fast` |
+| Modal | `pop` transition, `base`; overlay fades with it |
+| Popover, Menu | `pop` transition, `base` |
+| Tooltip | `fade` transition, `fast` |
+| SegmentedControl | indicator slides, `base` |
+| Sidebar nav | the active background is a `FloatingIndicator` that slides to the active link, `base` |
+| Navbar (mobile), burger | the navbar slides in and out and the burger turns, `base` |
+| Notifications | slide and fade, `base` |
+| Spotlight | `pop` transition, `base` |
+| Streak chip | `+N` floats up by `offsets.rise` and fades over `moment`; the flame swells to `offsets.pop` and back when the run grows |
+| Week row | a dot filling scales in, `base` |
+| Skeleton | Mantine's pulse |
+
+Comboboxes (`Select`, the time zone list) keep Mantine's instant dropdown:
+a list you type into should not lag behind the typing.
+
+**Reduced motion.** `theme.respectReducedMotion` makes Mantine's
+transitions run at zero duration when the OS asks, and
+`MotionConfig reducedMotion="user"` makes the `motion` library drop
+transform and layout animation while keeping opacity. So nothing moves,
+and the points moment still shows, fading in place, because it carries
+information rather than movement. Colour transitions stay: a colour fade is
+not movement.
+
+**Tokens only.** `scripts/verify-phase-8.sh` fails on a millisecond literal
+or a numeric duration prop outside `src/theme/`, the same way Phase 7's
+script fails on a hex colour.
+
+## Loading
+
+A load never swaps the layout for a spinner. While a query is pending, the
+screen renders its frame (the `PageHeader` and any section frames) and
+`Skeleton` shapes where the content will be, sized like it, so nothing moves
+when the data arrives. The skeleton container is an indeterminate
+`role="progressbar"` with an `aria-label` naming what is loading ("Loading
+tasks"); its children are presentational, which is what placeholders are.
+
+- **Tasks** — one group header bar the height of the eyebrow line and five
+  rows with the real row's cells: a checkbox square, a title bar, a priority
+  dot and short bar, a date bar, and a block the size of the two row
+  actions, so each row is as tall as a loaded one. The streak chip in the
+  header is a `Skeleton` named "Loading streak" until the streak loads.
+- **Settings** — the three section `Paper`s, each with a title bar and a
+  description bar, then the fields' shapes: a label bar over a 36px control
+  bar for Theme and for Time zone, and three switch rows (a switch shape and
+  a label bar) for Notifications. Each skeleton section is the height of the
+  loaded one.
+- **Rooms** — three card skeletons in the grid.
+- **Room** — the real "All rooms" back link, bars for the title and the
+  description, then the chat and members frames; the members list shows
+  three rows while it loads.
+- **Admin users** — the exception. `mantine-datatable` keeps its header
+  and the current rows while it fetches the next page or search, and lays
+  its own loader over them; the layout does not move, so it stays.
+
+Spinners remain only where there is no layout yet: signing in on first load
+(`RequireAuth`) and a lazy route's first fetch (`hydrateFallbackElement`).
+
+## Keyboard
+
+| Keys | Does |
+|---|---|
+| `N` | New task: goes to `/tasks?new`, which opens the create modal |
+| `G` then `D`, `T`, `C`, `R`, `S` | Go to Dashboard, Tasks, Calendar, Rooms, Settings |
+| `G` then `U` | Go to Users (admins only) |
+| `⌘K` / `Ctrl K` | Open the command palette |
+| `Esc` | Close the palette or a modal (Mantine's own) |
+
+Shortcuts are `tinykeys` subscriptions in one layout hook, one per binding:
+`n`, the `g d` … `g u` sequences (the second key within one second) and
+`$mod+k`. One per binding because a shared map stops at the first binding
+that fires and leaves the others half-matched, which drops the next quick
+`G` sequence.
+One rule applies to all of them: they are ignored on a key repeat, during
+IME composition, while typing in a text field, textarea, select or editable
+element, and inside an open dialog; modifiers must match exactly, so `N`
+does not fire with Cmd, Ctrl or Alt held. They do fire while a checkbox or
+radio has focus, so ticking a task and pressing `N` works. The palette's
+own `mod+K` binding is off, so `⌘K` follows the same rule and never opens
+the palette over a modal.
+
+**Command palette** — `@mantine/spotlight`, rendered once in the layout,
+as a dialog named "Command palette". Search placeholder "Search or jump
+to…", empty text "Nothing found.". Three
+groups: **Go to** (the nav destinations, admins also Users, each with its
+`G` hint in a `Kbd`), **Create** (New task, with `N`), **Tasks** (open
+tasks by title; choosing one goes to `/tasks?edit=<id>`, which opens its
+edit modal). Actions carry an 18/1.75 icon on the left.
+
+Shortcuts are discoverable where they apply: the sidebar's Search row shows
+`⌘K`, the "New task" button's tooltip shows `N`, the tasks empty state's
+action shows `N`, and every palette action shows its keys.
+
 ## Components — `theme.components`
 
 | Component | Defaults and styles |
@@ -171,12 +308,18 @@ on `order`, because Mantine's heading sizes carry no tracking field.
 | `Popover`, `Menu`, `Notification`, `Tooltip` | dropdown on `--enjazi-surface-raised`, radius md, shadow md (light only). Menu items radius sm. |
 | `Badge` | `variant: 'light'`, pill, weight 500, `textTransform: 'none'`, size sm. |
 | `SegmentedControl` | pill; track `--enjazi-surface-2`; indicator `--enjazi-surface-raised` with shadow xs; active label ink, inactive dimmed. |
-| `NavLink` | radius md; inactive text dimmed with dimmed icon; active background `--enjazi-surface-3`, ink text, weight 500, lavender icon. |
+| `NavLink` | radius md; inactive text dimmed with dimmed icon; active: ink text, weight 500, lavender icon, and no background of its own — the sidebar's `FloatingIndicator` paints `--enjazi-surface-3` behind it and slides between links. Hover `--enjazi-surface-3`. |
 | `Table` | `verticalSpacing: 'sm'`, `highlightOnHover`, hover row `--enjazi-surface-2`, hairline rows. |
 | `Checkbox`, `Switch` | radius sm on the checkbox; lavender when checked. |
 | `Alert` | `variant: 'light'`, radius md. |
 | `Anchor` | lavender (Mantine's default anchor for the primary colour), underline on hover only. |
-| `Loader` | lavender. |
+| `Loader` | lavender. Only for app boot; screens use `Skeleton`. |
+| `Skeleton` | `--enjazi-surface-3` in both schemes, radius sm; Mantine's pulse. |
+| `Kbd` | size xs, `--enjazi-surface-2` background, hairline border, radius sm, dimmed text, weight 500. |
+| `Spotlight` | content on `--enjazi-surface-raised`, radius lg, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the primary colour on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
+
+Transitions for each component are in the "Motion" table and set in the
+same `theme.components` entries.
 
 `mantine-datatable` reads Mantine's variables; set
 `--mantine-datatable-border-color` to the hairline and the row hover to
@@ -201,8 +344,12 @@ unchanged.
 
 **Sidebar** (`AppShell.Navbar`, 240px, `--enjazi-surface-2`, hairline right
 border): wordmark row (lavender `ThemeIcon` mark + "Enjazi" at 600 with
--0.3px tracking), then the nav: Dashboard, Tasks, Calendar, Rooms, Settings;
-an "Admin" eyebrow and Users for admins. Pinned to the bottom: the user row —
+-0.3px tracking), a Search row styled like a nav link (search icon,
+"Search", `⌘K` in a `Kbd` on the right) that opens the command palette,
+then the nav: Dashboard, Tasks, Calendar, Rooms, Settings;
+an "Admin" eyebrow and Users for admins. The active link's background is a
+`FloatingIndicator` that slides to whichever link is active. Pinned to the
+bottom: the user row —
 initials avatar, display name (500) over email (xs dimmed), both truncated,
 and a `Log out` icon button.
 
@@ -217,6 +364,8 @@ Desktop has no top bar; each screen starts with its own `PageHeader`.
   `h1`, then a hairline rule with `lg` space below.
 - `EmptyState` — icon in a 36px `--enjazi-surface-3` disc, a title at 500,
   optional description (dimmed) and optional action. Centred, `xl` padding.
+  An empty state that has an obvious next step offers it as the action,
+  with a name that differs from the page's own action (see "Test contract").
 - `UserAvatar` — initials on a pastel disc, sizes `sm` (24) and `md` (32).
 - `StatCard` — eyebrow label, value as `h2` with tabular numbers, optional
   rows beneath separated by hairlines, footer link. Used by the dashboard
@@ -232,20 +381,63 @@ type, surfaces and the few UX additions named here.
   link in the footer. Error `Alert` between the fields and the button.
 - **Dashboard** — `PageHeader` "Dashboard" with the "Signed in as …"
   sentence as its description. Four `StatCard`s in a 1/2/4 grid: Streak
-  (flame icon next to the number, the warning in `orange`), Tasks (open count,
-  overdue count in red, next three by due date), This week (next three
-  events), Rooms (joined / to join, first three joined).
-- **Tasks** — `PageHeader` with the filter `SegmentedControl` on the left of
-  the actions and "New task" as the primary action. Rows: checkbox, title
-  (struck and dimmed when done) with description beneath, priority as a
-  6px dot plus label, due date dimmed or red when overdue, Edit and Delete as
-  subtle `ActionIcon`s with `aria-label`s, always visible. Empty state:
-  "No tasks here." with no second "New task" button.
+  (flame icon next to the number, the week row, the warning in `orange`),
+  Tasks (open count, overdue count in red, next three by due date), This
+  week (next three events), Rooms (joined / to join, first three joined).
+  - **Week row** — the streak tile's first row: seven 10px dots for the
+    last seven days, oldest on the left, each over its weekday initial (xs,
+    dimmed). A day in the current run is a filled `orange` dot. Today, not
+    yet completed, is a ring: `orange` while the run is alive (the day that
+    keeps it), hairline when there is no run. Every other day is a
+    `--enjazi-surface-3` disc. The API stores the run, not a log of days
+    (ADR-0012), so a day that belonged to an earlier, broken run shows
+    empty: the row reads as "this run", not as a history. The row is one
+    `role="img"` with the label "`<n>` of the last 7 days in the current
+    streak"; the dots and initials are `aria-hidden`.
+- **Tasks** — `PageHeader` with the streak chip, the filter
+  `SegmentedControl` and "New task" (tooltip `N`) as the actions.
+  - **Streak chip** — the flame and the current length, `orange` when the
+    run is alive and dimmed otherwise, with a tooltip "`<n>`-day streak ·
+    `<p>` points". Visually hidden text makes it read "`<n>`-day streak,
+    `<p>` points" to a screen reader, since the tooltip is hover-only. When the streak's points rise, `+<Δ>` in `orange` floats
+    up from it and fades (see "Motion") and a visually hidden live region
+    says "`+<Δ>` points"; when the length rises the flame pops. The
+    delta is read from the streak query before and after, not assumed.
+  - **Groups** — one table, divided by due date: Overdue, Today, This week,
+    Later, No date, Completed, in that order, each opened by a header row
+    (eyebrow label and a dimmed count). Empty groups are omitted. Overdue is
+    open and due before now; Today is due from now until midnight; This week
+    is due from tomorrow until the end of the seventh day from today; Later
+    is after that. Completed holds every completed task. Dated groups sort
+    by due date ascending, No date by creation (newest first), Completed by
+    completion (newest first).
+  - **Rows** — checkbox, title (struck and dimmed when done) with
+    description beneath, priority as a 6px dot plus label, due date dimmed or
+    red when overdue, Edit and Delete as subtle `ActionIcon`s with
+    `aria-label`s, always visible.
+  - **Ticking** a box changes the row at once, before the request answers,
+    and reverts with a notification if the request fails (ADR-0012). In the
+    Open view a task just completed stays in its group, struck through, for
+    `durations.linger`, then leaves; in All it moves to Completed after the
+    same pause. Delete removes the row at once the same way.
+  - **Inline rename** — the title is a button; clicking it turns it into an
+    input in place, labelled `Task title`, holding the title. Enter or
+    leaving the field saves; Escape cancels; an unchanged or empty title
+    saves nothing. The save is optimistic like the tick. Edit still opens
+    the full modal for everything else.
+  - **Empty state** — "No tasks here." in every filter, with a description
+    per case: no tasks at all, "Add your first task to start a streak."; Open
+    with only completed tasks, "Everything open is done."; Done, "Completed
+    tasks show up here.". The action is "Add a task" with `N` in a `Kbd`.
+  - `?new` opens the create modal and `?edit=<id>` the edit modal of that
+    task once the list has loaded; closing either removes the parameter.
 - **Calendar** — `PageHeader` with "New event"; the grid inside a `Paper`
   with radius lg and hidden overflow, filling the viewport height below the
   header.
 - **Rooms** — cards with a room avatar (initials of the name), name at 500,
   member count as a badge, description clamped to two lines, Open or Join.
+  Empty state: "No rooms yet." / "Create the first one." with the action
+  "Start a room", which opens the same modal as "New room".
 - **Room** — `PageHeader` with the "All rooms" back link, description, and
   the Join / Leave / Edit / Delete actions. Below, on `md` and up, chat on the
   left (grows) and Members in a 320px `Paper` on the right; stacked below
@@ -269,19 +461,44 @@ keeps its name through `aria-label`.
   absent for members), `Register`, `Log in`, `All rooms`, `Open` (rooms card).
 - Buttons: `Log in`, `Create account`, `Log out` (a real button, not a menu
   item), `New task`, `New event`, `New room`, `Create`, `Save`, `Cancel`,
-  `Delete`, `Edit`, `Remove`, `Leave`, `Join`, `Send`.
+  `Delete`, `Edit`, `Remove`, `Leave`, `Join`, `Send`, `Add a task` (tasks
+  empty state), `Start a room` (rooms empty state), `Search` (sidebar, opens
+  the palette; its name ends in the shortcut, "Search ⌘K"), and each task's
+  title (the inline-rename button).
+- Dialogs: `Command palette` (open only), `New task`, `Edit task`,
+  `Delete event`.
+- Progress bars (skeletons, present only while loading): `Loading tasks`,
+  `Loading streak`, `Loading settings`, `Loading rooms`, `Loading room`,
+  `Loading members`.
+- Images: the week row, `<n> of the last 7 days in the current streak`
+  (exact).
+- Placeholders: `Search or jump to…` (the palette's search).
+- Group headers: rows whose text is the label then the count — `Overdue`,
+  `Today`, `This week`, `Later`, `No date`, `Completed`.
+- Status: the streak chip's live region, "`+<n>` points" after a completion.
 - Labels: `Name`, `Email`, `Password` (textbox role), `Title`, `Priority`
   (combobox), `Theme` (combobox, options `light`/`dark`/`system`), `Time zone`
   (combobox), `Room messages`, `Disabled`, `Message`, `Search users`,
-  `Complete <task title>` (the row checkbox).
+  `Complete <task title>` (the row checkbox), `Task title` (the inline-rename
+  input, present only while renaming).
+- **Names are substrings.** Playwright matches a name as a case-insensitive
+  substring unless a test says `exact`, within one kind of query:
+  `getByRole` compares elements of that role, `getByLabel` every label and
+  `aria-label`, `getByText` visible text. A new element must not match a
+  query an existing test makes on the same page — which is why the empty
+  states say "Add a task" and "Start a room" rather than "Create task" or
+  "New room". The command palette's actions exist only while it is open.
 - Text: `Signed in as <email>.`, `No tasks here.`, `No messages yet.`,
   `Settings saved.`, `Done` (exact, the filter), `0-day streak`,
-  `1-day streak, completed today`, `Longest 1 · 10 points`, priority label
+  `1-day streak, completed today`, `Longest 1 · 10 points`, `All` (exact,
+  the filter), `Add your first task to start a streak.`, priority label
   text (`High`) inside the task row, role text (`Admin`, `Member`) inside the
   member row.
 - Structure: task rows and member rows are `Table` rows (`role=row`); room
   cards are Mantine `Card` (`.mantine-Card-root`) containing the Join button
-  or Open link; chat messages carry `data-testid="message"`; confirm dialogs
+  or Open link; the sidebar marker is `.mantine-FloatingIndicator-root`
+  inside `role=navigation`, measured once it has `data-initialized`; a
+  Spotlight action carries `data-selected` when the keyboard selects it; chat messages carry `data-testid="message"`; confirm dialogs
   are `role=dialog` named by their title (`Delete event`); the `html`
   element carries `data-mantine-color-scheme`.
 
@@ -295,3 +512,15 @@ keeps its name through `aria-label`.
    includes `e2e/theme.spec.ts`, which sets the account to each scheme in
    turn and checks that every screen paints on that scheme's canvas, in
    Inter, with an `h1`, and without a page error.
+
+## Verification — `scripts/verify-phase-8.sh`
+
+1. No millisecond literal in a `.ts`, `.tsx` or `.css` file outside
+   `src/theme/`, and no numeric `duration`-named prop or option there
+   either.
+2. Everything `scripts/verify-phase-7.sh` checks, whose suite now includes
+   the Phase 8 browser tests: a tick shows before its request answers and
+   reverts when it fails, delete and rename the same; the shortcuts and the
+   palette navigate; the groups, the empty-state action and the skeleton
+   render; the points moment appears; and reduced motion zeroes the
+   durations.

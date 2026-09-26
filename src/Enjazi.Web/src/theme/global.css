@@ -18,3 +18,59 @@
 .mantine-SegmentedControl-label:not([data-active], [data-disabled]) {
   color: var(--mantine-color-dimmed);
 }
+
+/* NavLink's inactive hover is a fixed gray in its stylesheet; every link's
+   hover is --nl-hover, surface-3. */
+@media (hover: hover) {
+  .mantine-NavLink-root:hover {
+    background-color: var(--nl-hover);
+  }
+}
+
+/* The sidebar's nav marker. SegmentedControl's indicator is a
+   FloatingIndicator too; :where() keeps this below its own rules. */
+:where(.mantine-FloatingIndicator-root) {
+  background-color: var(--enjazi-surface-3);
+  border-radius: var(--mantine-radius-md);
+}
+
+/* Skeleton pulses on ::after, which the theme's inline styles cannot reach. */
+.mantine-Skeleton-root:where([data-visible])::after {
+  background-color: var(--enjazi-surface-3);
+}
+
+/* Spotlight fixes its hover to a gray and its selection to the primary
+   colour; both keep ink text here. Hover is surface-2. surface-2 barely
+   differs from the raised panel, so the selection is the accent tint with a
+   primary bar on its leading edge, and stays so under the pointer. */
+.mantine-Spotlight-action:hover,
+.mantine-Spotlight-action[data-selected] {
+  color: inherit;
+  --action-description-color: var(--mantine-color-dimmed);
+  --action-description-opacity: 1;
+}
+
+.mantine-Spotlight-action:hover {
+  background-color: var(--enjazi-surface-2);
+}
+
+.mantine-Spotlight-action[data-selected] {
+  background-color: var(--enjazi-accent-tint);
+  box-shadow: inset 2px 0 0 var(--mantine-primary-color-filled);
+}
+
+/* Group labels are ::before content: eyebrows, xs, 500, +0.4px, uppercase, dimmed. */
+.mantine-Spotlight-actionsGroup::before {
+  font-weight: var(--mantine-font-weight-medium);
+  letter-spacing: 0.4px;
+}
+
+/* Burger opts into Mantine's reduced-motion rule, but the rule stops at the
+   element, and the two lines that turn into a cross are its ::before and
+   ::after. */
+@media (prefers-reduced-motion: reduce) {
+  [data-respect-reduced-motion] .mantine-Burger-burger::before,
+  [data-respect-reduced-motion] .mantine-Burger-burger::after {
+    transition: none;
+  }
+}

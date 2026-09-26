@@ -1,10 +1,16 @@
 import type { CSSVariablesResolver } from '@mantine/core'
+import { durations, easing } from './motion'
 import { surfaces } from './palette'
 
 // Mantine paints Paper, Card, Modal and AppShell panels with --mantine-color-body.
 // These variables give the theme a surface ladder above the canvas per scheme.
+// The fast step and the easing are for CSS colour transitions and are the
+// same in both.
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
-  variables: {},
+  variables: {
+    '--enjazi-duration-fast': `${durations.fast}ms`,
+    '--enjazi-ease': easing,
+  },
   light: {
     '--enjazi-surface-1': surfaces.light.surface1,
     '--enjazi-surface-2': surfaces.light.surface2,
