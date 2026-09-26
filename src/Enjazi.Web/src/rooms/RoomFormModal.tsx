@@ -1,16 +1,36 @@
 import { Alert, Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { describeError } from '../api/errors'
+import { useLastDefined } from '../lib/useLastDefined'
 import { useCreateRoom, useUpdateRoom, type Room } from './queries'
 
 type Props = {
-  // null creates a room; a room edits it.
+  // undefined: closed. null: creating. A room: editing it.
+  room: Room | null | undefined
+  onClose: () => void
+  onCreated?: (room: Room) => void
+}
+
+type FormProps = {
   room: Room | null
   onClose: () => void
   onCreated?: (room: Room) => void
 }
 
+// Always mounted, so Mantine's transition plays on open and close; the form
+// lives in the content Mantine unmounts once closed, so every opening starts
+// fresh. TaskFormModal has the same shape.
 export function RoomFormModal({ room, onClose, onCreated }: Props) {
+  const current = useLastDefined(room)
+
+  return (
+    <Modal opened={room !== undefined} onClose={onClose} title={current ? 'Edit room' : 'New room'}>
+      <RoomForm key={current?.id ?? 'new'} room={current ?? null} onClose={onClose} onCreated={onCreated} />
+    </Modal>
+  )
+}
+
+function RoomForm({ room, onClose, onCreated }: FormProps) {
   const create = useCreateRoom()
   const update = useUpdateRoom()
   const mutation = room ? update : create
@@ -38,22 +58,20 @@ export function RoomFormModal({ room, onClose, onCreated }: Props) {
   }
 
   return (
-    <Modal opened onClose={onClose} title={room ? 'Edit room' : 'New room'}>
-      <form onSubmit={form.onSubmit(submit)}>
-        <Stack>
-          <TextInput label="Name" data-autofocus {...form.getInputProps('name')} />
-          <Textarea label="Description" autosize minRows={2} {...form.getInputProps('description')} />
-          {mutation.error && <Alert color="red">{describeError(mutation.error)}</Alert>}
-          <Group justify="flex-end">
-            <Button variant="default" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" loading={mutation.isPending}>
-              {room ? 'Save' : 'Create'}
-            </Button>
-          </Group>
-        </Stack>
-      </form>
-    </Modal>
+    <form onSubmit={form.onSubmit(submit)}>
+      <Stack>
+        <TextInput label="Name" data-autofocus {...form.getInputProps('name')} />
+        <Textarea label="Description" autosize minRows={2} {...form.getInputProps('description')} />
+        {mutation.error && <Alert color="red">{describeError(mutation.error)}</Alert>}
+        <Group justify="flex-end">
+          <Button variant="default" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={mutation.isPending}>
+            {room ? 'Save' : 'Create'}
+          </Button>
+        </Group>
+      </Stack>
+    </form>
   )
 }

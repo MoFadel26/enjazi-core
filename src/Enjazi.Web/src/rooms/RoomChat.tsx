@@ -9,6 +9,9 @@ import { UserAvatar } from '../ui/UserAvatar'
 import { useRoomFeed } from './hub'
 import { useMessages, useSendMessage, type Message } from './queries'
 
+// The message area's height, which RoomSkeleton keeps too.
+export const chatHeight = 360
+
 // Messages from one author within five minutes read as one run and share a header.
 function continues(previous: Message | undefined, message: Message) {
   return previous?.authorId === message.authorId && dayjs(message.createdAt).diff(previous.createdAt, 'minute') < 5
@@ -35,7 +38,7 @@ export function RoomChat({ roomId }: { roomId: string }) {
 
   return (
     <Paper p="lg">
-      <ScrollArea h={360} viewportRef={viewport} type="auto">
+      <ScrollArea h={chatHeight} viewportRef={viewport} type="auto">
         <Stack gap="xs">
           {messages?.length === 0 && <EmptyState icon={<IconMessage size={20} stroke={1.75} />} title="No messages yet." description="Say hello." />}
           {messages?.map((message, index) => {

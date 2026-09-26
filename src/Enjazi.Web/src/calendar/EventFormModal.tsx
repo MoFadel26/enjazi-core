@@ -1,19 +1,46 @@
-import { Alert, Box, Button, Group, Modal, Stack, Switch, Textarea, TextInput } from '@mantine/core'
+import { Alert, Box, Button, Group, Modal, Stack, Switch, Textarea, TextInput, type ModalProps } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import dayjs from 'dayjs'
 import { describeError } from '../api/errors'
 import { fromPickerValue, toPickerValue } from '../lib/dates'
+import { useLastDefined } from '../lib/useLastDefined'
 import { useCreateEvent, useDeleteEvent, useUpdateEvent, type CalendarEvent, type EventBody } from './queries'
 
 export type EventFormTarget = { kind: 'new'; initial: EventBody } | { kind: 'edit'; event: CalendarEvent }
 
-type Props = { target: EventFormTarget; onClose: () => void }
+// undefined: closed.
+type Props = { target: EventFormTarget | undefined; onClose: () => void }
+
+type FormProps = { target: EventFormTarget; onClose: () => void }
 
 type FormValues = { title: string; description: string; allDay: boolean; startsAt: string | null; endsAt: string | null }
 
+// While the modal leaves, its fading overlay would take a click or drag meant
+// for the grid underneath.
+const leaving: ModalProps['styles'] = { overlay: { pointerEvents: 'none' }, content: { pointerEvents: 'none' } }
+
+// Always mounted, so Mantine's transition plays on open and close; the form
+// lives in the content Mantine unmounts once closed, so every opening starts
+// fresh. TaskFormModal has the same shape.
 export function EventFormModal({ target, onClose }: Props) {
+  const current = useLastDefined(target)
+  const opened = target !== undefined
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={current?.kind === 'edit' ? 'Edit event' : 'New event'}
+      styles={opened ? undefined : leaving}
+    >
+      {current && <EventForm key={current.kind === 'edit' ? current.event.id : 'new'} target={current} onClose={onClose} />}
+    </Modal>
+  )
+}
+
+function EventForm({ target, onClose }: FormProps) {
   const create = useCreateEvent()
   const update = useUpdateEvent()
   const remove = useDeleteEvent()
@@ -62,34 +89,32 @@ export function EventFormModal({ target, onClose }: Props) {
   }
 
   return (
-    <Modal opened onClose={onClose} title={target.kind === 'new' ? 'New event' : 'Edit event'}>
-      <form onSubmit={form.onSubmit(submit)}>
-        <Stack>
-          <TextInput label="Title" data-autofocus {...form.getInputProps('title')} />
-          <Textarea label="Description" autosize minRows={2} {...form.getInputProps('description')} />
-          <Switch label="All day" {...form.getInputProps('allDay', { type: 'checkbox' })} />
-          <DateTimePicker label="Starts" valueFormat="D MMM YYYY HH:mm" {...form.getInputProps('startsAt')} />
-          <DateTimePicker label="Ends" valueFormat="D MMM YYYY HH:mm" {...form.getInputProps('endsAt')} />
-          {(saving.error || remove.error) && <Alert color="red">{describeError(saving.error ?? remove.error)}</Alert>}
-          <Group justify="space-between">
-            {target.kind === 'edit' ? (
-              <Button variant="subtle" color="red" loading={remove.isPending} onClick={() => confirmDelete(target.event)}>
-                Delete
-              </Button>
-            ) : (
-              <Box />
-            )}
-            <Group>
-              <Button variant="default" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" loading={saving.isPending}>
-                {target.kind === 'new' ? 'Create' : 'Save'}
-              </Button>
-            </Group>
+    <form onSubmit={form.onSubmit(submit)}>
+      <Stack>
+        <TextInput label="Title" data-autofocus {...form.getInputProps('title')} />
+        <Textarea label="Description" autosize minRows={2} {...form.getInputProps('description')} />
+        <Switch label="All day" {...form.getInputProps('allDay', { type: 'checkbox' })} />
+        <DateTimePicker label="Starts" valueFormat="D MMM YYYY HH:mm" {...form.getInputProps('startsAt')} />
+        <DateTimePicker label="Ends" valueFormat="D MMM YYYY HH:mm" {...form.getInputProps('endsAt')} />
+        {(saving.error || remove.error) && <Alert color="red">{describeError(saving.error ?? remove.error)}</Alert>}
+        <Group justify="space-between">
+          {target.kind === 'edit' ? (
+            <Button variant="subtle" color="red" loading={remove.isPending} onClick={() => confirmDelete(target.event)}>
+              Delete
+            </Button>
+          ) : (
+            <Box />
+          )}
+          <Group>
+            <Button variant="default" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={saving.isPending}>
+              {target.kind === 'new' ? 'Create' : 'Save'}
+            </Button>
           </Group>
-        </Stack>
-      </form>
-    </Modal>
+        </Group>
+      </Stack>
+    </form>
   )
 }

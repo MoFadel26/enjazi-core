@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Box, Group, Table, Text } from '@mantine/core'
+import { ActionIcon, Badge, Box, Group, Skeleton, Table, Text } from '@mantine/core'
 import { IconUserMinus } from '@tabler/icons-react'
 import { formatDate } from '../lib/dates'
 import { UserAvatar } from '../ui/UserAvatar'
@@ -41,6 +41,34 @@ export function MemberList({ members, canRemove, onRemove }: Props) {
                 </ActionIcon>
               )}
             </Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
+  )
+}
+
+// Three rows shaped like the ones above while the members load: the avatar,
+// the name and date lines (two bars as tall as both together), the role badge.
+export function MemberListSkeleton() {
+  return (
+    <Table role="progressbar" aria-label="Loading members">
+      <Table.Tbody>
+        {[0, 1, 2].map((row) => (
+          <Table.Tr key={row}>
+            <Table.Td>
+              <Group gap="xs" wrap="nowrap">
+                <Skeleton circle height={24} />
+                <Box>
+                  <Skeleton height={17} width={120} />
+                  <Skeleton height={17} width={88} mt={4} />
+                </Box>
+              </Group>
+            </Table.Td>
+            <Table.Td>
+              <Skeleton height={18} width={56} />
+            </Table.Td>
+            <Table.Td w={36} />
           </Table.Tr>
         ))}
       </Table.Tbody>

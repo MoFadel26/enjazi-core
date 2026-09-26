@@ -14,7 +14,7 @@ export function AdminUsersScreen() {
   const [debouncedSearch] = useDebouncedValue(search, 300)
   const [page, setPage] = useState(1)
   const { data, isFetching, error } = useAdminUsers(debouncedSearch, page)
-  const [editing, setEditing] = useState<AdminUser | null>(null)
+  const [editing, setEditing] = useState<AdminUser>()
 
   return (
     <>
@@ -82,7 +82,7 @@ export function AdminUsersScreen() {
         noRecordsText="No users match."
       />
 
-      {editing && <EditUserModal key={editing.id} user={editing} onClose={() => setEditing(null)} />}
+      <EditUserModal user={editing} onClose={() => setEditing(undefined)} />
     </>
   )
 }

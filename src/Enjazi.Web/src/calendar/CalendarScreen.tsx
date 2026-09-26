@@ -22,7 +22,7 @@ const gridHeight = {
 
 export function CalendarScreen() {
   const [range, setRange] = useState<EventRange | null>(null)
-  const [target, setTarget] = useState<EventFormTarget | null>(null)
+  const [target, setTarget] = useState<EventFormTarget>()
   const { data: events, error } = useEvents(range)
   const update = useUpdateEvent()
 
@@ -82,7 +82,7 @@ export function CalendarScreen() {
       <Paper p={0} h={gridHeight} style={{ overflow: 'hidden' }}>
         <WeekCalendar events={inputs} onRangeChange={setRange} onSelect={select} onEventClick={edit} onEventMove={move} />
       </Paper>
-      {target && <EventFormModal target={target} onClose={() => setTarget(null)} />}
+      <EventFormModal target={target} onClose={() => setTarget(undefined)} />
     </>
   )
 }

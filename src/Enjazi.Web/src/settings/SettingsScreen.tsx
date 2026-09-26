@@ -1,9 +1,10 @@
-import { Alert, Button, Group, Loader, Stack, useMantineColorScheme } from '@mantine/core'
+import { Alert, Button, Group, Stack, useMantineColorScheme } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { describeError } from '../api/errors'
 import { PageHeader } from '../ui/PageHeader'
 import { SettingsForm } from './SettingsForm'
+import { SettingsSkeleton } from './SettingsSkeleton'
 import { toColorScheme, useSettings, useUpdateSettings, type Settings } from './queries'
 
 export function SettingsScreen() {
@@ -12,7 +13,7 @@ export function SettingsScreen() {
   return (
     <>
       <PageHeader title="Settings" />
-      {isPending && <Loader />}
+      {isPending && <SettingsSkeleton />}
       {error && <Alert color="red">{describeError(error)}</Alert>}
       {settings && <LoadedForm settings={settings} />}
     </>

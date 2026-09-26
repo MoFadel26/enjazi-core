@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Card, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core'
+import { Alert, Badge, Button, Card, Group, SimpleGrid, Stack, Text } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconMessages, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
@@ -8,6 +8,7 @@ import { EmptyState } from '../ui/EmptyState'
 import { PageHeader } from '../ui/PageHeader'
 import { UserAvatar } from '../ui/UserAvatar'
 import { RoomFormModal } from './RoomFormModal'
+import { RoomsSkeleton } from './RoomsSkeleton'
 import { useJoinRoom, useRooms } from './queries'
 
 // Every signed-in user sees every room, because joining one needs it to be
@@ -29,9 +30,21 @@ export function RoomsScreen() {
         }
       />
 
-      {isPending && <Loader />}
+      {isPending && <RoomsSkeleton />}
       {error && <Alert color="red">{describeError(error)}</Alert>}
-      {rooms?.length === 0 && <EmptyState icon={<IconMessages size={20} stroke={1.75} />} title="No rooms yet." description="Create the first one." />}
+      {rooms?.length === 0 && (
+        <EmptyState
+          icon={<IconMessages size={20} stroke={1.75} />}
+          title="No rooms yet."
+          description="Create the first one."
+          // Named apart from "New room": tests match names as substrings. docs/design.md, "Test contract".
+          action={
+            <Button variant="default" onClick={() => setCreating(true)}>
+              Start a room
+            </Button>
+          }
+        />
+      )}
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
         {rooms?.map((room) => (
@@ -76,9 +89,11 @@ export function RoomsScreen() {
         ))}
       </SimpleGrid>
 
-      {creating && (
-        <RoomFormModal room={null} onClose={() => setCreating(false)} onCreated={(room) => navigate(`/rooms/${room.id}`)} />
-      )}
+      <RoomFormModal
+        room={creating ? null : undefined}
+        onClose={() => setCreating(false)}
+        onCreated={(room) => navigate(`/rooms/${room.id}`)}
+      />
     </>
   )
 }

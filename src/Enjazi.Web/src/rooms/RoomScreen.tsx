@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Flex, Loader, Paper, Text, Title } from '@mantine/core'
+import { Alert, Button, Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
@@ -6,9 +6,11 @@ import { useNavigate, useParams } from 'react-router'
 import { describeError } from '../api/errors'
 import { useCurrentUser } from '../auth/session'
 import { PageHeader } from '../ui/PageHeader'
-import { MemberList } from './MemberList'
+import { MemberList, MemberListSkeleton } from './MemberList'
+import { RoomBody } from './RoomBody'
 import { RoomChat } from './RoomChat'
 import { RoomFormModal } from './RoomFormModal'
+import { RoomSkeleton } from './RoomSkeleton'
 import { useDeleteRoom, useJoinRoom, useRemoveMember, useRoom, useRoomMembers, type RoomMember } from './queries'
 
 export function RoomScreen() {
@@ -24,7 +26,7 @@ export function RoomScreen() {
 
   const fail = (err: unknown) => notifications.show({ color: 'red', message: describeError(err) })
 
-  if (isPending) return <Loader />
+  if (isPending) return <RoomSkeleton />
   if (error || !room) return <Alert color="red">{describeError(error)}</Alert>
 
   // Administration follows the membership row, not the owner column, so a
@@ -90,15 +92,10 @@ export function RoomScreen() {
       />
 
       {room.isMember ? (
-        <Flex direction={{ base: 'column', md: 'row' }} gap="lg" align="flex-start">
-          <Box w="100%" flex={1} miw={0}>
-            <RoomChat roomId={id} />
-          </Box>
-          <Paper p="lg" w={{ base: '100%', md: 320 }} style={{ flexShrink: 0 }}>
-            <Title order={3} mb="sm">
-              Members
-            </Title>
-            {members ? (
+        <RoomBody
+          chat={<RoomChat roomId={id} />}
+          members={
+            members ? (
               <MemberList
                 members={members}
                 // The creator cannot be removed (the API refuses); admins remove others; nobody removes themselves here, that is Leave.
@@ -106,15 +103,15 @@ export function RoomScreen() {
                 onRemove={removeMember}
               />
             ) : (
-              <Loader />
-            )}
-          </Paper>
-        </Flex>
+              <MemberListSkeleton />
+            )
+          }
+        />
       ) : (
         <Text c="dimmed">Join the room to read and send messages.</Text>
       )}
 
-      {editing && <RoomFormModal room={room} onClose={() => setEditing(false)} />}
+      <RoomFormModal room={editing ? room : undefined} onClose={() => setEditing(false)} />
     </>
   )
 }
