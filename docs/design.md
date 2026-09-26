@@ -16,12 +16,17 @@ marketing site) needs:
 Where they disagree the rule is: Linear decides structure and accent, Cal.com
 decides the light palette. ADR-0011 records why.
 
+Those two are the `enjazi` palette. Structure, type, space and motion are
+fixed for the whole app; colour is a palette, and three more published ones
+sit beside it — Nord, Solarized and Dracula. ADR-0013 records why and how
+one is chosen.
+
 ## Principles
 
-1. **One accent.** Lavender `#5e6ad2` is the only chromatic colour. It marks
-   the primary action, focus, links, the active nav item and "mine". Nothing
-   else is lavender. Red, green and amber appear only with a meaning:
-   destructive or overdue, success or active, warning.
+1. **One accent per palette.** A palette has exactly one chromatic colour.
+   It marks the primary action, focus, links, the active nav item and
+   "mine". Nothing else uses it. Red, green and amber appear only with a
+   meaning: destructive or overdue, success or active, warning.
 2. **Surfaces, not shadows.** Hierarchy is a ladder of surfaces separated by
    1px hairlines. Dark mode has no shadows at all; light mode has two faint
    ones for raised elements (dropdowns, modals).
@@ -29,98 +34,242 @@ decides the light palette. ADR-0011 records why.
    items, 24px between groups. Headings are 600, never 700.
 4. **Tokens only.** A screen file contains no hex, no `px` font size and no
    font family. If a value is needed, it is added to `src/theme/` first.
-5. **Both schemes stay.** The account's theme setting (light, dark, system)
-   is a stored preference with a test on it. Dark follows Linear; light
-   follows Cal.com; the accent is the same in both.
+5. **Both schemes stay, in every palette.** The account stores two
+   appearance settings, each with a test on it: the scheme (light, dark,
+   system) and the palette. Every palette has a light and a dark scheme,
+   and the accent hue is the same in both.
 6. **Quiet, not static.** Every change the user causes answers at once and
    moves for 120–180ms. Motion confirms a change; it never decorates. Under
    the OS's reduced-motion setting nothing moves, and nothing is lost.
 
 ## Colour
 
-### Accent — `theme.colors.lavender`, `primaryColor: 'lavender'`, `primaryShade: 6` in both schemes
+Four palettes. Each is a whole set — an accent ramp, a dark ladder, a light
+ladder and the surfaces — and each has a light and a dark scheme, so the
+scheme setting and the palette setting are independent. The account stores
+which palette is active; ADR-0013 records the decision and how switching
+works.
 
-| Shade | Hex | Used for |
+| Id | Name | Source | Accent |
+|---|---|---|---|
+| `enjazi` | Enjazi | Linear (dark) and Cal.com (light) | lavender |
+| `nord` | Nord | Nord | frost blue |
+| `solarized` | Solarized | Solarized | blue |
+| `dracula` | Dracula | Dracula (dark) and Alucard (light) | purple |
+
+`enjazi` is the default and is the Phase 7 system unchanged except where the
+contrast rule below moved a value.
+
+### Roles
+
+Every palette fills the same three tuples. Mantine reads fixed indexes of
+`theme.colors.dark` and `theme.colors.gray` for its semantic variables, so
+the ladders are ordered by what Mantine does with them, not by lightness.
+`theme.primaryColor` is always `accent`, and `primaryShade` is per scheme.
+
+| Index | `accent` | `dark` (dark scheme) | `gray` (light scheme) |
+|---|---|---|---|
+| 0 | light-variant background in light | ink — `--mantine-color-text` | `--mantine-color-default-hover` |
+| 1 | `-light` background | ink-muted | hairline-soft |
+| 2 | `-light-hover` | dimmed — `--mantine-color-dimmed` | disabled background |
+| 3 | | placeholder, disabled text | Table borders, disabled border |
+| 4 | links and `-text` in dark | hairline — `--mantine-color-default-border` | hairline — `--mantine-color-default-border` |
+| 5 | | surface-2 — `--mantine-color-default-hover` | placeholder |
+| 6 | | surface-1 — `--mantine-color-default`, inputs | dimmed — `--mantine-color-dimmed` |
+| 7 | | canvas — `--mantine-color-body` | |
+| 8 | | surface-3 | body |
+| 9 | `-light-color` in light | surface-4 | ink |
+
+`theme.black` is the light scheme's ink, `theme.white` its canvas.
+`--enjazi-surface-1` … `--enjazi-surface-raised` and
+`--enjazi-accent-tint` come from the resolver, as in Phase 7; Mantine 9
+paints `Paper`, `Card`, `Modal` and `AppShell` panels with
+`--mantine-color-body`, which is the canvas, and these lift them a step
+above it.
+
+`theme.autoContrast` is on. A filled element's label is `theme.black` or
+white, whichever reads on the fill, decided by Mantine at a 0.3 luminance
+threshold. Two palettes need it: their dark-scheme primary is the pale end
+of the accent ramp, because the mid ramp is too close to their canvas to
+read as a button at all.
+
+### Contrast
+
+Every palette clears WCAG AA, and `e2e/colors.spec.ts` checks it with
+axe-core in both schemes. The rules the values were chosen against:
+
+- Ink, body and dimmed text clear 4.5:1 on **every** surface they can land
+  on, which includes surface-3: a hovered nav link is surface-3 with dimmed
+  text.
+- Placeholder and disabled text clear 4.5:1 on surface-1, because an input
+  paints its own surface-1 background wherever it sits.
+- The accent as text — links, and an own message's author name — clears
+  4.5:1 on the canvas, on surface-1 and on the accent tint over surface-1.
+  The light scheme's `primaryShade` is the first shade that does all three
+  and still carries its own label; that is why it is 7 and not 6 in
+  `enjazi`.
+- A filled primary stands 3:1 apart from the canvas behind it.
+- `red`, `green`, `orange` and `yellow` as text clear 4.5:1 on every
+  surface, which Mantine's own ramps do not: `--mantine-color-red-text` is
+  shade 6 in light, 3.2:1 on white. Each palette overrides the four
+  `-text` variables per scheme, so `c="red"` and `c="orange"` in a screen
+  need no change.
+- Hairlines, priority dots, the week row and icons are not text and are not
+  held to 4.5:1.
+
+Values were computed, not picked: each source's own token is the starting
+point and is moved along lightness only, in Lab, until it clears the ratio,
+which keeps the hue the source chose. Where a value below differs from the
+published token, that is why. Three of them were already failing before this
+phase in `enjazi`: the placeholder gray, the overdue red and the avatar
+discs.
+
+### Enjazi — `enjazi`
+
+Linear (dark) and Cal.com (light), lavender accent. Primary shade 7 in light, 6 in dark.
+
+| Index | accent | `dark` | `gray` |
+|---|---|---|---|
+| 0 | `#eef0fb` | `#f7f8f8` | `#f8f9fa` |
+| 1 | `#dfe3f8` | `#d0d6e0` | `#f3f4f6` |
+| 2 | `#c5cbf1` | `#8a8f98` | `#eff1f3` |
+| 3 | `#a8b1ea` | `#797d84` | `#eaecef` |
+| 4 | `#8b96e3` | `#23252a` | `#e5e7eb` |
+| 5 | `#7480da` | `#141516` | `#757575` |
+| 6 | `#5e6ad2` | `#0f1011` | `#676e7c` |
+| 7 | `#5560bd` | `#010102` | `#4e5766` |
+| 8 | `#47509e` | `#18191a` | `#374151` |
+| 9 | `#383f7e` | `#191a1b` | `#111111` |
+
+`black` `#111111`, `white` `#ffffff`.
+
+| Variable | Light | Dark |
 |---|---|---|
-| 0 | `#eef0fb` | light-variant background (light scheme) |
-| 1 | `#dfe3f8` | |
-| 2 | `#c5cbf1` | |
-| 3 | `#a8b1ea` | |
-| 4 | `#8b96e3` | links and `-text` in dark (Mantine uses shade 4 there) |
-| 5 | `#7480da` | |
-| 6 | `#5e6ad2` | **primary** — filled buttons, focus ring, active states |
-| 7 | `#5560bd` | filled hover |
-| 8 | `#47509e` | |
-| 9 | `#383f7e` | |
+| `--enjazi-surface-1` | `#ffffff` | `#0f1011` |
+| `--enjazi-surface-2` | `#f8f9fa` | `#141516` |
+| `--enjazi-surface-3` | `#f3f4f6` | `#18191a` |
+| `--enjazi-surface-raised` | `#ffffff` | `#18191a` |
+| `--enjazi-accent-tint` | accent 6 at 0.08 | accent 6 at 0.14 |
+| `--mantine-color-red-text` | `#c92a2a` | `#fa5252` |
+| `--mantine-color-green-text` | `#1d7f34` | `#2f9e44` |
+| `--mantine-color-orange-text` | `#ca3a00` | `#e8590c` |
+| `--mantine-color-yellow-text` | `#b65000` | `#e67700` |
 
-### Dark scheme — `theme.colors.dark` (Linear's ladder)
+### Nord — `nord`
 
-Mantine reads specific indexes of `dark` for its semantic variables; the
-table gives the index, the Linear token it carries, and what Mantine does
-with it.
+Nord: polar night and snow storm, frost accent. Primary shade 8 in light, 4 in dark.
 
-| Index | Hex | Linear token | Mantine semantic |
+| Index | accent | `dark` | `gray` |
 |---|---|---|---|
-| 0 | `#f7f8f8` | ink | `--mantine-color-text` |
-| 1 | `#d0d6e0` | ink-muted | |
-| 2 | `#8a8f98` | ink-subtle | `--mantine-color-dimmed` |
-| 3 | `#62666d` | ink-tertiary | placeholder, disabled text |
-| 4 | `#23252a` | hairline | `--mantine-color-default-border` |
-| 5 | `#141516` | surface-2 | `--mantine-color-default-hover` |
-| 6 | `#0f1011` | surface-1 | `--mantine-color-default`, inputs, Popover |
-| 7 | `#010102` | canvas | `--mantine-color-body` |
-| 8 | `#18191a` | surface-3 | |
-| 9 | `#191a1b` | surface-4 | |
+| 0 | `#eaf2f8` | `#eceff4` | `#e5e9f0` |
+| 1 | `#d8e4ee` | `#e5e9f0` | `#dee3ed` |
+| 2 | `#b9cddf` | `#b5bfcf` | `#d8dee9` |
+| 3 | `#adc7e1` | `#9da7b8` | `#cdd5e2` |
+| 4 | `#a1c1e3` | `#4c566a` | `#c2ccdc` |
+| 5 | `#6e91b5` | `#3b4252` | `#677285` |
+| 6 | `#5e81ac` | `#343b49` | `#4c566a` |
+| 7 | `#52739a` | `#2e3440` | `#434c5e` |
+| 8 | `#466488` | `#434c5e` | `#3b4252` |
+| 9 | `#3a5576` | `#55607a` | `#2e3440` |
 
-### Light scheme — `theme.colors.gray`, `theme.black`, `theme.white` (Cal.com)
+`black` `#2e3440`, `white` `#eceff4`.
 
-| Index | Hex | Cal.com token | Mantine semantic |
+| Variable | Light | Dark |
+|---|---|---|
+| `--enjazi-surface-1` | `#f9fafc` | `#343b49` |
+| `--enjazi-surface-2` | `#e5e9f0` | `#3b4252` |
+| `--enjazi-surface-3` | `#d8dee9` | `#434c5e` |
+| `--enjazi-surface-raised` | `#f9fafc` | `#3b4252` |
+| `--enjazi-accent-tint` | accent 6 at 0.14 | accent 6 at 0.18 |
+| `--mantine-color-red-text` | `#be1c22` | `#ffa8a8` |
+| `--mantine-color-green-text` | `#007026` | `#69db7c` |
+| `--mantine-color-orange-text` | `#b82900` | `#ffc078` |
+| `--mantine-color-yellow-text` | `#a54200` | `#fab005` |
+
+### Solarized — `solarized`
+
+Solarized: base03..base3, blue accent. Primary shade 8 in light, 7 in dark.
+
+| Index | accent | `dark` | `gray` |
 |---|---|---|---|
-| 0 | `#f8f9fa` | surface-soft | `--mantine-color-default-hover` |
-| 1 | `#f3f4f6` | hairline-soft | |
-| 2 | `#eff1f3` | | disabled background |
-| 3 | `#eaecef` | | Table borders, disabled border |
-| 4 | `#e5e7eb` | hairline | `--mantine-color-default-border` |
-| 5 | `#898989` | muted-soft | placeholder |
-| 6 | `#6b7280` | muted | `--mantine-color-dimmed` |
-| 7 | `#4b5563` | | |
-| 8 | `#374151` | body | |
-| 9 | `#111111` | ink | |
+| 0 | `#e8f4fd` | `#9eacac` | `#f5efdc` |
+| 1 | `#cfe7f8` | `#9bacaf` | `#eee8d5` |
+| 2 | `#a5d2f0` | `#9aadaf` | `#e6dfcb` |
+| 3 | `#79bce8` | `#8198a0` | `#dfd9c3` |
+| 4 | `#62b0e9` | `#2e4f58` | `#d9d2bc` |
+| 5 | `#3d95d6` | `#073642` | `#5f7375` |
+| 6 | `#268bd2` | `#03303c` | `#546a71` |
+| 7 | `#1075b4` | `#002b36` | `#304f59` |
+| 8 | `#14669d` | `#1c424d` | `#073642` |
+| 9 | `#0e5583` | `#274953` | `#002b36` |
 
-`theme.black = '#111111'` (text), `theme.white = '#ffffff'` (canvas).
+`black` `#002b36`, `white` `#fdf6e3`.
 
-### Scheme-specific surfaces — `cssVariablesResolver`
+| Variable | Light | Dark |
+|---|---|---|
+| `--enjazi-surface-1` | `#fdf6e3` | `#03303c` |
+| `--enjazi-surface-2` | `#f4eedb` | `#073642` |
+| `--enjazi-surface-3` | `#eee8d5` | `#1c424d` |
+| `--enjazi-surface-raised` | `#fdf6e3` | `#1c424d` |
+| `--enjazi-accent-tint` | accent 6 at 0.12 | accent 6 at 0.16 |
+| `--mantine-color-red-text` | `#c62728` | `#ff8787` |
+| `--mantine-color-green-text` | `#0e772d` | `#51cf66` |
+| `--mantine-color-orange-text` | `#c13200` | `#ff922b` |
+| `--mantine-color-yellow-text` | `#ac4800` | `#f59f00` |
 
-Mantine 9 paints `Paper`, `Card`, `Modal` and `AppShell` panels with
-`--mantine-color-body`, which is the canvas. Linear lifts every card one step
-above the canvas, so these variables exist and the theme's component styles
-point at them.
+### Dracula — `dracula`
 
-| Variable | Light | Dark | Applied to |
+Dracula (dark) and Alucard (light), purple accent. Primary shade 8 in light, 4 in dark.
+
+| Index | accent | `dark` | `gray` |
 |---|---|---|---|
-| `--enjazi-surface-1` | `#ffffff` | `#0f1011` | Paper, Card, Table container |
-| `--enjazi-surface-2` | `#f8f9fa` | `#141516` | sidebar, SegmentedControl track, row hover |
-| `--enjazi-surface-3` | `#f3f4f6` | `#18191a` | active nav item, pressed states, empty-state icon disc |
-| `--enjazi-surface-raised` | `#ffffff` | `#18191a` | Popover, Menu, Modal, Notification, SegmentedControl indicator |
-| `--enjazi-accent-tint` | `rgba(94,106,210,.08)` | `rgba(94,106,210,.14)` | own chat messages, calendar today column, selection |
+| 0 | `#f4ecff` | `#f8f8f2` | `#f7f2e0` |
+| 1 | `#e7daff` | `#c8cfdb` | `#f2edd9` |
+| 2 | `#d6bffc` | `#a7b0d0` | `#efe9d5` |
+| 3 | `#c9a8fa` | `#9099bd` | `#e6dfc7` |
+| 4 | `#bf95fb` | `#44475a` | `#ddd5ba` |
+| 5 | `#a97ef0` | `#343746` | `#7a7458` |
+| 6 | `#9560e4` | `#2e303e` | `#6c664b` |
+| 7 | `#7f4ed6` | `#282a36` | `#4f4c3f` |
+| 8 | `#6b3fc4` | `#393c4c` | `#333333` |
+| 9 | `#5932ab` | `#4d5169` | `#1f1f1f` |
 
-Shadows: `xs` `0 1px 2px rgba(0,0,0,.05)`, `sm` `0 1px 3px rgba(0,0,0,.06)`,
-`md` `0 4px 12px rgba(0,0,0,.08)`; the dark map sets all of them to `none`.
+`black` `#1f1f1f`, `white` `#fffbeb`.
+
+| Variable | Light | Dark |
+|---|---|---|
+| `--enjazi-surface-1` | `#fffdf7` | `#2e303e` |
+| `--enjazi-surface-2` | `#f6f1df` | `#343746` |
+| `--enjazi-surface-3` | `#efe9d5` | `#393c4c` |
+| `--enjazi-surface-raised` | `#fffdf7` | `#343746` |
+| `--enjazi-accent-tint` | accent 6 at 0.12 | accent 6 at 0.17 |
+| `--mantine-color-red-text` | `#c62728` | `#ff8787` |
+| `--mantine-color-green-text` | `#11782e` | `#40c057` |
+| `--mantine-color-orange-text` | `#c13200` | `#ff922b` |
+| `--mantine-color-yellow-text` | `#ae4900` | `#f59f00` |
 
 ### Semantic colours
 
-Mantine's own `red`, `green`, `yellow`, `orange` tuples are kept. Use:
+Mantine's own `red`, `green`, `yellow`, `orange` tuples are kept, with the
+`-text` variable of each overridden per palette and scheme as above. Use:
 `red` for destructive actions and overdue; `green` for success and active
 status; `orange` for the streak — the flame, the warning, the days of the
 current run and the points moment; `yellow` for the admin self-edit
-notice. Priority markers: Low `gray`, Medium `lavender`, High `red`.
+notice. Priority markers: Low `gray`, Medium the accent, High `red`.
 
-### Avatar pastels — `src/theme/palette.ts`
+### Avatar discs — `src/theme/avatars.ts`
 
-Cal.com's badge set, chosen by a hash of the display name:
-`#fb923c` orange, `#ec4899` pink, `#8b5cf6` violet, `#34d399` emerald, plus
-`#5e6ad2` lavender. Text on them is white. This is the only place an accent
-other than lavender is used decoratively, and only inside avatars.
+Cal.com's badge set, darkened until white initials clear 4.5:1 on them, and
+the same in every palette and both schemes. The initials are `#ffffff`, set
+in the same file, not the palette's `white`: Nord, Solarized and Dracula use
+an off-white there, which falls under 4.5:1 on these discs. `#b95b00` orange, `#d52e85` pink, `#8456ef`
+violet, `#008652` emerald, `#5e6ad2` lavender. Mantine picks one by a hash
+of the display name. This is the only place a colour other than the
+palette's accent is used decoratively, and only inside avatars.
+
+Shadows are palette-independent: `xs` `0 1px 2px rgba(0,0,0,.05)`, `sm`
+`0 1px 3px rgba(0,0,0,.06)`, `md` `0 4px 12px rgba(0,0,0,.08)`; the dark
+map sets all of them to `none`.
 
 ## Typography
 
@@ -302,18 +451,18 @@ action shows `N`, and every palette action shows its keys.
 |---|---|
 | `Button` | `size: 'sm'`, weight 500, radius md. `variant="default"` is the secondary button: surface-1 background, hairline border. Destructive: `color="red"`, `variant="subtle"` in rows, `variant="light"` as a page action. |
 | `ActionIcon` | `variant: 'subtle'`, `color: 'gray'`, `size: 'md'`. Every one carries `aria-label`. |
-| `Input` (all inputs) | `size: 'sm'`, radius md, surface-1 background, hairline border, lavender focus ring. Labels weight 500, size sm. |
+| `Input` (all inputs) | `size: 'sm'`, radius md, surface-1 background, hairline border, accent focus ring. Labels weight 500, size sm. |
 | `Paper` / `Card` | `withBorder`, radius lg, padding lg, background `--enjazi-surface-1`. |
 | `Modal` | radius lg, content and header on `--enjazi-surface-raised`, overlay 55% black, title weight 600 size lg. |
 | `Popover`, `Menu`, `Notification`, `Tooltip` | dropdown on `--enjazi-surface-raised`, radius md, shadow md (light only). Menu items radius sm. |
 | `Badge` | `variant: 'light'`, pill, weight 500, `textTransform: 'none'`, size sm. |
 | `SegmentedControl` | pill; track `--enjazi-surface-2`; indicator `--enjazi-surface-raised` with shadow xs; active label ink, inactive dimmed. |
-| `NavLink` | radius md; inactive text dimmed with dimmed icon; active: ink text, weight 500, lavender icon, and no background of its own — the sidebar's `FloatingIndicator` paints `--enjazi-surface-3` behind it and slides between links. Hover `--enjazi-surface-3`. |
+| `NavLink` | radius md; inactive text dimmed with dimmed icon; active: ink text, weight 500, accent icon, and no background of its own — the sidebar's `FloatingIndicator` paints `--enjazi-surface-3` behind it and slides between links. Hover `--enjazi-surface-3`. |
 | `Table` | `verticalSpacing: 'sm'`, `highlightOnHover`, hover row `--enjazi-surface-2`, hairline rows. |
-| `Checkbox`, `Switch` | radius sm on the checkbox; lavender when checked. |
+| `Checkbox`, `Switch` | radius sm on the checkbox; the accent when checked. |
 | `Alert` | `variant: 'light'`, radius md. |
-| `Anchor` | lavender (Mantine's default anchor for the primary colour), underline on hover only. |
-| `Loader` | lavender. Only for app boot; screens use `Skeleton`. |
+| `Anchor` | the accent (Mantine's default anchor for the primary colour), underline on hover only. |
+| `Loader` | the accent. Only for app boot; screens use `Skeleton`. |
 | `Skeleton` | `--enjazi-surface-3` in both schemes, radius sm; Mantine's pulse. |
 | `Kbd` | size xs, `--enjazi-surface-2` background, hairline border, radius sm, dimmed text, weight 500. |
 | `Spotlight` | content on `--enjazi-surface-raised`, radius lg, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the primary colour on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
@@ -326,7 +475,7 @@ same `theme.components` entries.
 `--enjazi-surface-2` in `src/theme/global.css`.
 
 `FullCalendar` is driven by `src/calendar/mantine-bridge.css`, remapped:
-primary and events lavender; today column `--enjazi-accent-tint`; selection
+primary and events in the accent; today column `--enjazi-accent-tint`; selection
 highlight the same at double strength; now line `red`; borders hairline;
 header cells eyebrow-styled; toolbar buttons match the default Mantine button;
 event chips radius sm, 500 weight title.
@@ -343,7 +492,7 @@ unchanged.
 ## Layout
 
 **Sidebar** (`AppShell.Navbar`, 240px, `--enjazi-surface-2`, hairline right
-border): wordmark row (lavender `ThemeIcon` mark + "Enjazi" at 600 with
+border): wordmark row (accent `ThemeIcon` mark + "Enjazi" at 600 with
 -0.3px tracking), a Search row styled like a nav link (search icon,
 "Search", `⌘K` in a `Kbd` on the right) that opens the command palette,
 then the nav: Dashboard, Tasks, Calendar, Rooms, Settings;
@@ -441,11 +590,16 @@ type, surfaces and the few UX additions named here.
 - **Room** — `PageHeader` with the "All rooms" back link, description, and
   the Join / Leave / Edit / Delete actions. Below, on `md` and up, chat on the
   left (grows) and Members in a 320px `Paper` on the right; stacked below
-  `md`. Messages: avatar, author name at 500 (lavender when mine), time xs
+  `md`. Messages: avatar, author name at 500 (the accent when mine), time xs
   dimmed, body; consecutive messages from the same author within five
   minutes share one header. Composer: input plus a `Send` button.
-- **Settings** — three `Paper` sections with `h3` titles: Appearance (theme),
-  Time (time zone), Notifications (three switches); Save right-aligned below.
+- **Settings** — three `Paper` sections with `h3` titles: Appearance
+  (scheme, then palette), Time (time zone), Notifications (three switches);
+  Save right-aligned below. The palette `Select` shows three swatches of
+  each palette beside its name — the canvas, surface-2 and the accent of
+  that palette in the current scheme — and applies the choice as it is
+  picked, before Save, because a colour set cannot be judged from a word.
+  Save stores it; leaving without saving restores the account's palette.
 - **Admin users** — `PageHeader` with the search input (search icon on the
   left) as the action; the `DataTable` inside the themed container; status as
   a dot plus label; roles as badges.
@@ -477,7 +631,8 @@ keeps its name through `aria-label`.
   `Today`, `This week`, `Later`, `No date`, `Completed`.
 - Status: the streak chip's live region, "`+<n>` points" after a completion.
 - Labels: `Name`, `Email`, `Password` (textbox role), `Title`, `Priority`
-  (combobox), `Theme` (combobox, options `light`/`dark`/`system`), `Time zone`
+  (combobox), `Theme` (combobox, options `light`/`dark`/`system`), `Palette`
+  (combobox, options `Enjazi`/`Nord`/`Solarized`/`Dracula`), `Time zone`
   (combobox), `Room messages`, `Disabled`, `Message`, `Search users`,
   `Complete <task title>` (the row checkbox), `Task title` (the inline-rename
   input, present only while renaming).
@@ -500,7 +655,7 @@ keeps its name through `aria-label`.
   inside `role=navigation`, measured once it has `data-initialized`; a
   Spotlight action carries `data-selected` when the keyboard selects it; chat messages carry `data-testid="message"`; confirm dialogs
   are `role=dialog` named by their title (`Delete event`); the `html`
-  element carries `data-mantine-color-scheme`.
+  element carries `data-mantine-color-scheme` and `data-enjazi-palette`.
 
 ## Verification — `scripts/verify-phase-7.sh`
 
@@ -524,3 +679,13 @@ keeps its name through `aria-label`.
    palette navigate; the groups, the empty-state action and the skeleton
    render; the points moment appears; and reduced motion zeroes the
    durations.
+
+## Verification — `scripts/verify-phase-9.sh`
+
+1. The palette ids the frontend offers and the ones the API accepts are the
+   same list, read out of both files rather than repeated in the script.
+2. Everything `scripts/verify-phase-8.sh` checks, whose suite now includes
+   `e2e/colors.spec.ts`: each palette in each scheme paints its own canvas
+   and passes an axe-core colour-contrast check on the dashboard, the tasks
+   screen, a room and settings; picking a palette applies it before Save;
+   and a reload shows the account's palette without a flash of another one.

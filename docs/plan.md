@@ -190,6 +190,35 @@ instant writes could still save a failed change, that the first hotkey
 library dropped quick sequences, and that the colour scheme sync cut every
 transition short; ADR-0012 records these and the rest.
 
+## Phase 9 — palettes
+
+Four named colour palettes — Enjazi, Nord, Solarized, Dracula — each with a
+light and a dark scheme. The account stores which one is active, beside the
+scheme setting, and Settings switches it at runtime. Contrast is computed
+from each source's own tokens rather than eyeballed, which also fixes three
+failures that predate the phase: the placeholder gray, the overdue red and
+the avatar discs. `docs/design.md` ("Colour") is the spec; ADR-0013 records
+the decisions.
+
+Verify: every palette in both schemes paints its own canvas and passes an
+axe-core colour-contrast check on the dashboard, the tasks screen, a room
+and settings; the API rejects an unknown palette and defaults an account
+that has never set one; the whole browser suite from Phases 4 to 8 still
+passes.
+
+Done. `src/theme/palettes/` holds the four palettes, one file each, and
+`themeFor` and `resolverFor` turn one into a Mantine theme and its
+`--enjazi-*` variables. The active palette is a small store mirrored to
+`localStorage`, so a reload paints the right palette first; `PaletteSync`
+lets the account's value win once settings load. Settings shows each option
+with three swatches and applies it before Save; leaving without saving puts
+the account's palette back. The API stores `palette` in the settings JSON
+with no migration. `scripts/verify-phase-9.sh` checks that the frontend and
+the API offer the same ids, then runs the Phase 8 checks and the full
+browser suite, which includes `e2e/colors.spec.ts`: 32 screens, four
+palettes by two schemes by four screens, with axe-core finding no contrast
+failure. ADR-0013 records what the check found.
+
 ## Out of scope
 
 - **OAuth integrations.** The previous version declared five (Google, Slack,
