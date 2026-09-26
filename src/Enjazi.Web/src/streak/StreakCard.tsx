@@ -2,10 +2,11 @@ import { Box, Group, Text } from '@mantine/core'
 import { IconFlame } from '@tabler/icons-react'
 import { StatCard } from '../ui/StatCard'
 import { useStreak } from './queries'
+import { WeekRow } from './WeekRow'
 
 export function StreakCard() {
   const { data: streak } = useStreak()
-  const current = Number(streak?.currentLength ?? 0)
+  const current = streak?.currentLength ?? 0
 
   // The value sits inside an h2, so everything here has to be span-based.
   // Group drops falsy children, and a streak of 0 is one, hence the String.
@@ -20,11 +21,12 @@ export function StreakCard() {
 
   const rows = streak
     ? [
+        <WeekRow key="week" streak={streak} />,
         <Text key="streak" size="sm">
           {current}-day streak{streak.completedToday ? ', completed today' : ''}
         </Text>,
         <Text key="longest" size="sm" c="dimmed">
-          Longest {Number(streak.longestLength)} · {Number(streak.points)} points
+          Longest {streak.longestLength} · {streak.points} points
         </Text>,
         ...(!streak.completedToday && current > 0
           ? [
