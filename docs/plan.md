@@ -158,6 +158,38 @@ longest source file is 131 lines. Two things the phase found are in
 ADR-0011: the calendar drag test failing on a height formula that had lost
 its parentheses, and `Group` dropping a streak of zero.
 
+## Phase 8 — feel
+
+The app answers what the user does. Motion tokens and reduced motion;
+optimistic task tick, rename and delete; skeletons instead of spinners; the
+streak's week row and a points moment on completion; keyboard shortcuts and
+a command palette; the task list grouped by due date with rename in place;
+empty states with an action. `docs/design.md` ("Motion", "Loading",
+"Keyboard", Tasks and Dashboard) is the spec; ADR-0012 records the
+decisions.
+
+Verify: a tick shows before its request answers and reverts when the
+request fails; no duration outside the theme, and reduced motion stops
+movement; the shortcuts and the palette navigate; the whole browser suite
+from Phases 4 to 7 still passes.
+
+Done. `src/theme/motion.ts` holds every duration, easing and offset;
+Mantine's transitions, CSS colour transitions and the `motion` library all
+read it, and `scripts/verify-phase-8.sh` fails on a duration anywhere else.
+A task tick, rename or delete shows at once: the cached list holds only
+what the server said and `useTasks` draws pending writes on top, so a
+failed write simply stops being drawn. Skeletons replace spinners on every
+screen except app boot and the admin table's own overlay. The dashboard's
+streak tile has a week row, and the tasks screen a streak chip that floats
+the points a completion earned. `N`, `G` then a letter, and `⌘K` for a
+Spotlight palette work everywhere, through `tinykeys`. Tasks group by due
+date and rename in place; the tasks and rooms empty states offer an action.
+The script passes with 51 browser tests, 36 of them new, which also passed
+five repeats in a row. The review found that the first two designs for
+instant writes could still save a failed change, that the first hotkey
+library dropped quick sequences, and that the colour scheme sync cut every
+transition short; ADR-0012 records these and the rest.
+
 ## Out of scope
 
 - **OAuth integrations.** The previous version declared five (Google, Slack,

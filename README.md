@@ -6,12 +6,13 @@ something every day.
 
 ## What it does
 
-- **Tasks** — create, prioritise, set a due date, tick off. Overdue ones stand out.
+- **Tasks** — create, prioritise, set a due date, tick off. Grouped by when they're due; overdue ones stand out.
 - **Calendar** — a week grid you can drag events around in.
 - **Rooms** — shared spaces with live chat. Anyone can see a room and join it.
 - **Streaks** — finish a task each day to keep a run going and collect points.
 - **Settings** — light or dark theme, time zone, notification preferences.
 - **Admin panel** — search accounts, assign roles, disable users.
+- **Keyboard** — `N` for a new task, `G` then a letter to switch screens, `⌘K` for everything else.
 
 Everything is private to you unless it's in a room. That's enforced in the
 database layer, not by checks scattered through the code.
