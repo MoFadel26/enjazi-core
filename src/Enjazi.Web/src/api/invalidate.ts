@@ -3,7 +3,9 @@ import { useQueryClient } from '@tanstack/react-query'
 // openapi-react-query keys every query as [method, path, init], with the path
 // still holding its template ("/api/rooms/{id}"), so a prefix on the second
 // element covers a list and its items together. Used after every mutation:
-// the server is the source of truth, so refetch rather than patch the cache.
+// the server is the source of truth, so the cache is refetched. Task update
+// and delete also patch it first, and refetch once the last one settles
+// (ADR-0012).
 export function useInvalidate(pathPrefix: string) {
   const queryClient = useQueryClient()
   return () =>

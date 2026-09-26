@@ -1,34 +1,33 @@
-import { ActionIcon, Box, Checkbox, Group, Table, Text } from '@mantine/core'
+import { Group, Table, Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
-import { notifications } from '@mantine/notifications'
-import { IconChecklist, IconPencil, IconTrash } from '@tabler/icons-react'
-import { useState } from 'react'
-import { describeError } from '../api/errors'
-import { formatDateTime } from '../lib/dates'
-import { EmptyState } from '../ui/EmptyState'
-import { toUpdateRequest, useDeleteTask, useUpdateTask, type Task, type TaskPriority } from './queries'
-
-// Priority markers per docs/design.md: the accent marks Medium, red marks High.
-const priorityColor: Record<TaskPriority, string> = { Low: 'gray', Medium: 'lavender', High: 'red' }
+import { AnimatePresence } from 'motion/react'
+import { Eyebrow } from '../ui/Eyebrow'
+import { columnCount } from './columns'
+import type { TaskGroup } from './grouping'
+import { useDeleteTask, useUpdateTask, type Task, type TaskChanges } from './queries'
+import { MotionTr, rowMotion } from './rowMotion'
+import { TaskRow } from './TaskRow'
 
 type Props = {
-  tasks: Task[]
+  groups: TaskGroup[]
   onEdit: (task: Task) => void
+  // Called when a box is ticked, before the update, so the row lingers.
+  onComplete: (id: string) => void
 }
 
-export function TaskList({ tasks, onEdit }: Props) {
+// One table for every group, so rows keep their columns and can move between
+// groups. Failures are reported by the mutation hooks.
+export function TaskList({ groups, onEdit, onComplete }: Props) {
   const update = useUpdateTask()
   const remove = useDeleteTask()
-  // Read once per mount: a value that changes on every render would make
-  // the same render produce different output.
-  const [now] = useState(() => Date.now())
 
-  function fail(error: unknown) {
-    notifications.show({ color: 'red', message: describeError(error) })
+  function save(task: Task, changes: TaskChanges) {
+    update.mutate({ id: task.id, changes })
   }
 
   function toggle(task: Task, completed: boolean) {
-    update.mutate({ params: { path: { id: task.id } }, body: toUpdateRequest(task, { completed }) }, { onError: fail })
+    if (completed) onComplete(task.id)
+    save(task, { completed })
   }
 
   function confirmDelete(task: Task) {
@@ -37,67 +36,47 @@ export function TaskList({ tasks, onEdit }: Props) {
       children: <Text size="sm">Delete "{task.title}"? This cannot be undone.</Text>,
       labels: { confirm: 'Delete', cancel: 'Cancel' },
       confirmProps: { color: 'red' },
-      onConfirm: () => remove.mutate({ params: { path: { id: task.id } } }, { onError: fail }),
+      onConfirm: () => remove.mutate({ id: task.id }),
     })
-  }
-
-  if (tasks.length === 0) {
-    // No action here: the header's "New task" is the only button by that name.
-    return <EmptyState icon={<IconChecklist size={20} stroke={1.75} />} title="No tasks here." />
   }
 
   return (
     <Table>
       <Table.Tbody>
-        {tasks.map((task) => {
-          const done = task.completedAt !== null
-          const overdue = !done && task.dueAt !== null && Date.parse(task.dueAt) < now
-          return (
-            <Table.Tr key={task.id}>
-              <Table.Td w={40}>
-                <Checkbox
-                  aria-label={`Complete ${task.title}`}
-                  checked={done}
-                  onChange={(event) => toggle(task, event.currentTarget.checked)}
-                />
-              </Table.Td>
-              <Table.Td>
-                <Text td={done ? 'line-through' : undefined} c={done ? 'dimmed' : undefined}>
-                  {task.title}
-                </Text>
-                {task.description && (
-                  <Text size="sm" c="dimmed" lineClamp={1}>
-                    {task.description}
-                  </Text>
-                )}
-              </Table.Td>
-              <Table.Td w={110}>
-                <Group gap="xs" wrap="nowrap">
-                  <Box component="span" w={6} h={6} bdrs="50%" bg={`${priorityColor[task.priority]}.6`} />
-                  <Text size="sm">{task.priority}</Text>
-                </Group>
-              </Table.Td>
-              <Table.Td w={200}>
-                {task.dueAt && (
-                  <Text size="sm" c={overdue ? 'red' : 'dimmed'}>
-                    {formatDateTime(task.dueAt)}
-                  </Text>
-                )}
-              </Table.Td>
-              <Table.Td w={90}>
-                <Group gap="xs" justify="flex-end" wrap="nowrap">
-                  <ActionIcon aria-label="Edit" onClick={() => onEdit(task)}>
-                    <IconPencil size={18} stroke={1.75} />
-                  </ActionIcon>
-                  <ActionIcon aria-label="Delete" color="red" onClick={() => confirmDelete(task)}>
-                    <IconTrash size={18} stroke={1.75} />
-                  </ActionIcon>
-                </Group>
-              </Table.Td>
-            </Table.Tr>
-          )
-        })}
+        {/* initial={false}: the rows of the first render are already in place. */}
+        <AnimatePresence initial={false}>
+          {groups.flatMap((group) => [
+            <GroupHeader key={group.key} label={group.label} count={group.tasks.length} />,
+            ...group.tasks.map((task) => (
+              <TaskRow
+                key={task.id}
+                task={task}
+                overdue={group.key === 'overdue'}
+                onToggle={toggle}
+                onRename={(item, title) => save(item, { title })}
+                onEdit={onEdit}
+                onDelete={confirmDelete}
+              />
+            )),
+          ])}
+        </AnimatePresence>
       </Table.Tbody>
     </Table>
+  )
+}
+
+// A row, not a caption, so it enters and leaves with the rows beneath it.
+function GroupHeader({ label, count }: { label: string; count: number }) {
+  return (
+    <MotionTr {...rowMotion}>
+      <Table.Td colSpan={columnCount}>
+        <Group gap="xs">
+          <Eyebrow>{label}</Eyebrow>
+          <Text size="xs" c="dimmed">
+            {count}
+          </Text>
+        </Group>
+      </Table.Td>
+    </MotionTr>
   )
 }
