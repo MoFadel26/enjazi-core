@@ -109,7 +109,7 @@ export const components: MantineThemeComponents = {
       root: { '--nl-bg': 'transparent', '--nl-hover': 'var(--enjazi-surface-3)', '--nl-color': 'var(--mantine-color-text)' },
       children: {},
     }),
-    // Inactive links are quiet; the active one keeps ink text and a lavender icon.
+    // Inactive links are quiet; the active one keeps ink text and the accent icon.
     styles: (theme, props) => ({
       root: { borderRadius: theme.radius.md, color: props.active ? undefined : dimmed, position: 'relative', zIndex: 1, ...colour },
       section: { color: props.active ? 'var(--mantine-primary-color-filled)' : dimmed },
@@ -131,13 +131,13 @@ export const components: MantineThemeComponents = {
   // The tick slides as it appears, and Checkbox does not opt into Mantine's
   // reduced-motion rule by itself; the attribute does that for the icon.
   Checkbox: Checkbox.extend({
-    defaultProps: { radius: 'sm', color: 'lavender', attributes: { icon: { 'data-reduce-motion': true } } },
+    defaultProps: { radius: 'sm', color: 'accent', attributes: { icon: { 'data-reduce-motion': true } } },
     styles: { input: fast, icon: fast },
   }),
-  Switch: Switch.extend({ defaultProps: { color: 'lavender' } }),
+  Switch: Switch.extend({ defaultProps: { color: 'accent' } }),
   Alert: Alert.extend({ defaultProps: { variant: 'light', radius: 'md' } }),
   Anchor: Anchor.extend({ defaultProps: { underline: 'hover' } }),
-  Loader: Loader.extend({ defaultProps: { color: 'lavender' } }),
+  Loader: Loader.extend({ defaultProps: { color: 'accent' } }),
   // The pulse colour is on ::after, so it is set in global.css.
   Skeleton: Skeleton.extend({ defaultProps: { radius: 'sm' } }),
   // A quiet key: hairline all round instead of Mantine's raised bottom edge.

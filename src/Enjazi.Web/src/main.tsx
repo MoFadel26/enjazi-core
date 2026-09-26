@@ -5,7 +5,6 @@ import '@mantine/spotlight/styles.css'
 import 'mantine-datatable/styles.css'
 import '@fontsource-variable/inter'
 import './theme/global.css'
-import { MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -15,7 +14,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router/dom'
 import { queryClient } from './queryClient'
 import { router } from './router'
-import { cssVariablesResolver, theme } from './theme'
+import { PaletteProvider } from './theme'
 import { durations, transitions } from './theme/motion'
 
 // LazyMotion fetches motion's animation features in their own chunk after
@@ -30,14 +29,14 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LazyMotion features={loadMotionFeatures} strict>
       <MotionConfig reducedMotion="user" transition={transitions.base}>
-        <MantineProvider theme={theme} cssVariablesResolver={cssVariablesResolver} defaultColorScheme="auto">
+        <PaletteProvider>
           <ModalsProvider>
             <Notifications transitionDuration={durations.base} />
             <QueryClientProvider client={queryClient}>
               <RouterProvider router={router} />
             </QueryClientProvider>
           </ModalsProvider>
-        </MantineProvider>
+        </PaletteProvider>
       </MotionConfig>
     </LazyMotion>
   </StrictMode>,

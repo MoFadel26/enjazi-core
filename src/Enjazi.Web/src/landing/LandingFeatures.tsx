@@ -52,7 +52,7 @@ export function LandingFeatures() {
             bg="var(--enjazi-surface-1)"
             bd="1px solid var(--mantine-color-default-border)"
           >
-            <ThemeIcon size="md" mb="sm" variant="light" color="lavender">
+            <ThemeIcon size="md" mb="sm" variant="light" color="accent">
               <feature.icon {...iconProps} />
             </ThemeIcon>
             <Text size="sm" fw={600} mb="xs">

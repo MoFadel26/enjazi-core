@@ -7,7 +7,7 @@ import { MotionTr, rowMotion } from './rowMotion'
 import { TaskTitle } from './TaskTitle'
 
 // Priority markers per docs/design.md: the accent marks Medium, red marks High.
-const priorityColor: Record<TaskPriority, string> = { Low: 'gray', Medium: 'lavender', High: 'red' }
+const priorityColor: Record<TaskPriority, string> = { Low: 'gray', Medium: 'accent', High: 'red' }
 
 type Props = {
   task: Task

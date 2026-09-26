@@ -52,7 +52,7 @@ export function RoomChat({ roomId }: { roomId: string }) {
                     <VisuallyHidden>{message.authorName}</VisuallyHidden>
                   ) : (
                     <Group gap="xs" align="baseline">
-                      <Text size="sm" fw={500} c={message.authorId === me?.id ? 'var(--mantine-color-lavender-text)' : undefined}>
+                      <Text size="sm" fw={500} c={message.authorId === me?.id ? 'var(--mantine-color-accent-text)' : undefined}>
                         {message.authorName}
                       </Text>
                       <Text size="xs" c="dimmed">

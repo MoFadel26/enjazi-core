@@ -32,7 +32,7 @@ export function MemberList({ members, canRemove, onRemove }: Props) {
               </Group>
             </Table.Td>
             <Table.Td>
-              <Badge color={member.role === 'Admin' ? 'lavender' : 'gray'}>{member.role}</Badge>
+              <Badge color={member.role === 'Admin' ? 'accent' : 'gray'}>{member.role}</Badge>
             </Table.Td>
             <Table.Td align="right" w={36}>
               {canRemove(member) && (

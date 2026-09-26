@@ -1,2 +1,4 @@
-export { theme } from './theme'
-export { cssVariablesResolver } from './variables'
+export { PaletteProvider } from './PaletteProvider'
+export { palettes, paletteIds, defaultPaletteId, isPaletteId } from './palettes'
+export type { Palette, PaletteId } from './palettes'
+export { setPaletteId, usePaletteId } from './paletteStore'

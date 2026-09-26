@@ -131,9 +131,9 @@ function MockDashboard() {
   return (
     <Stack gap="md">
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
-        <MiniStat label="Streak" value="14 days" icon={IconFlame} color="lavender" />
+        <MiniStat label="Streak" value="14 days" icon={IconFlame} color="accent" />
         <MiniStat label="Tasks Completed" value="38 this week" icon={IconCheck} color="teal" />
-        <MiniStat label="Focus Rooms" value="4 online" icon={IconMessages} color="lavender" />
+        <MiniStat label="Focus Rooms" value="4 online" icon={IconMessages} color="accent" />
       </SimpleGrid>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
@@ -175,12 +175,12 @@ function MockTaskItem({ title, done }: { title: string; done?: boolean }) {
   return (
     <Group justify="space-between" py={4} wrap="nowrap">
       <Group gap="xs" wrap="nowrap">
-        <ThemeIcon size="xs" variant={done ? 'filled' : 'outline'} color={done ? 'lavender' : 'gray'}>
+        <ThemeIcon size="xs" variant={done ? 'filled' : 'outline'} color={done ? 'accent' : 'gray'}>
           {done && <IconCheck size={10} stroke={2} />}
         </ThemeIcon>
         <Text size="xs" td={done ? 'line-through' : undefined} c={done ? 'dimmed' : undefined}>{title}</Text>
       </Group>
-      <Badge size="xs" variant="light" color={done ? 'gray' : 'lavender'}>{done ? 'Done' : 'In progress'}</Badge>
+      <Badge size="xs" variant="light" color={done ? 'gray' : 'accent'}>{done ? 'Done' : 'In progress'}</Badge>
     </Group>
   )
 }

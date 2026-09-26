@@ -12,7 +12,7 @@ export function LandingHero() {
       <Stack align="center" gap="lg" py="xl">
         <Badge
           variant="light"
-          color="lavender"
+          color="accent"
           size="lg"
           leftSection={<IconBolt size={14} stroke={2} />}
         >
@@ -69,7 +69,7 @@ export function LandingHero() {
 function GuaranteeItem({ label }: { label: string }) {
   return (
     <Group gap="xs" wrap="nowrap">
-      <IconCheck size={14} stroke={2} color="var(--mantine-color-lavender-6)" />
+      <IconCheck size={14} stroke={2} color="var(--mantine-color-accent-6)" />
       <Text size="xs" c="dimmed">
         {label}
       </Text>
