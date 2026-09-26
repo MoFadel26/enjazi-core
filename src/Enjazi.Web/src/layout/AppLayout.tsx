@@ -1,32 +1,15 @@
-import { AppShell, Burger, Group, NavLink, Text, ThemeIcon } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import {
-  IconBolt,
-  IconCalendar,
-  IconChecklist,
-  IconLayoutDashboard,
-  IconMessages,
-  IconSettings,
-  IconUsers,
-  type IconProps,
-} from '@tabler/icons-react'
-import { NavLink as RouterNavLink, Outlet, useLocation } from 'react-router'
+import { AppShell, Burger, Group, Text, ThemeIcon } from '@mantine/core'
+import { IconBolt } from '@tabler/icons-react'
+import { useState } from 'react'
+import { Outlet, useLocation } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { ColorSchemeSync } from '../settings/ColorSchemeSync'
-import { Eyebrow } from '../ui/Eyebrow'
+import { CommandPalette } from './CommandPalette'
+import { iconProps } from './destinations'
+import { NavList } from './NavList'
+import { SearchRow } from './SearchRow'
 import { UserMenu } from './UserMenu'
-
-const iconProps: IconProps = { size: 18, stroke: 1.75 }
-
-const links = [
-  { to: '/', label: 'Dashboard', icon: IconLayoutDashboard },
-  { to: '/tasks', label: 'Tasks', icon: IconChecklist },
-  { to: '/calendar', label: 'Calendar', icon: IconCalendar },
-  { to: '/rooms', label: 'Rooms', icon: IconMessages },
-  { to: '/settings', label: 'Settings', icon: IconSettings },
-]
-
-const adminLinks = [{ to: '/admin/users', label: 'Users', icon: IconUsers }]
+import { useShortcuts } from './useShortcuts'
 
 function Wordmark() {
   return (
@@ -42,29 +25,18 @@ function Wordmark() {
 }
 
 // The frame every signed-in screen renders inside: a sidebar on desktop, a
-// header with a burger below the sm breakpoint.
+// header with a burger below the sm breakpoint. It also owns the keyboard
+// layer: the shortcuts and the command palette.
 export function AppLayout() {
-  const [opened, { toggle }] = useDisclosure()
+  // The mobile navbar is open only at the location it was opened at, so any
+  // navigation closes it: a link, a shortcut or a palette action. Opening the
+  // palette is not a navigation, so the Search row stays in view behind it.
+  const { key } = useLocation()
+  const [openedAt, setOpenedAt] = useState<string | null>(null)
+  const opened = openedAt === key
   const { data: user } = useCurrentUser()
-  const { pathname } = useLocation()
   const isAdmin = user?.roles.includes('Admin') ?? false
-
-  // Mirrors react-router's own matching so Mantine's active styles and
-  // aria-current agree.
-  const isActive = (to: string) => (to === '/' ? pathname === '/' : pathname.startsWith(to))
-
-  const renderLink = ({ to, label, icon: Icon }: (typeof links)[number]) => (
-    <NavLink
-      key={to}
-      component={RouterNavLink}
-      to={to}
-      end={to === '/'}
-      label={label}
-      leftSection={<Icon {...iconProps} />}
-      active={isActive(to)}
-      onClick={close}
-    />
-  )
+  useShortcuts(isAdmin)
 
   return (
     <AppShell
@@ -73,9 +45,15 @@ export function AppLayout() {
       padding={{ base: 'md', sm: 'lg' }}
     >
       <ColorSchemeSync />
+      <CommandPalette isAdmin={isAdmin} />
       <AppShell.Header hiddenFrom="sm">
         <Group h="100%" px="md" gap="sm" wrap="nowrap">
-          <Burger opened={opened} onClick={toggle} size="sm" aria-label="Toggle navigation" />
+          <Burger
+            opened={opened}
+            onClick={() => setOpenedAt(opened ? null : key)}
+            size="sm"
+            aria-label="Toggle navigation"
+          />
           <Wordmark />
         </Group>
       </AppShell.Header>
@@ -85,16 +63,11 @@ export function AppLayout() {
         <AppShell.Section py="sm" visibleFrom="sm">
           <Wordmark />
         </AppShell.Section>
+        <AppShell.Section mb="xs">
+          <SearchRow />
+        </AppShell.Section>
         <AppShell.Section grow>
-          {links.map(renderLink)}
-          {isAdmin && (
-            <>
-              <Eyebrow px="sm" mt="lg" mb="xs">
-                Admin
-              </Eyebrow>
-              {adminLinks.map(renderLink)}
-            </>
-          )}
+          <NavList isAdmin={isAdmin} />
         </AppShell.Section>
         <AppShell.Section>
           <UserMenu />
@@ -106,9 +79,4 @@ export function AppLayout() {
       </AppShell.Main>
     </AppShell>
   )
-
-  // Closes the mobile navbar after a link is followed; a no-op on desktop.
-  function close() {
-    if (opened) toggle()
-  }
 }
