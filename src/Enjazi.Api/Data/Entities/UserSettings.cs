@@ -16,6 +16,7 @@ public sealed class UserSettings
 public sealed class SettingsData
 {
     public string Theme { get; set; } = "system";
+    public string Palette { get; set; } = "enjazi";
     public string TimeZone { get; set; } = "UTC";
     public NotificationSettings Notifications { get; set; } = new();
 }

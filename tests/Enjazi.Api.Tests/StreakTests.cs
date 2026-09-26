@@ -57,7 +57,7 @@ public sealed class StreakTests(ApiFactory factory)
     {
         var (client, _) = await factory.SignUpAsync();
         await client.PutAsJsonAsync("/api/settings", new SettingsRequest(
-            "system", "Pacific/Auckland", new NotificationSettingsContract(true, true, true)));
+            "system", "enjazi", "Pacific/Auckland", new NotificationSettingsContract(true, true, true)));
 
         // 23:00 UTC on the 10th is already the 11th in Auckland.
         factory.Clock.Now = new DateTimeOffset(2026, 3, 10, 23, 0, 0, TimeSpan.Zero);

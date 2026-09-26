@@ -2222,12 +2222,16 @@
       "SettingsRequest": {
         "required": [
           "theme",
+          "palette",
           "timeZone",
           "notifications"
         ],
         "type": "object",
         "properties": {
           "theme": {
+            "type": "string"
+          },
+          "palette": {
             "type": "string"
           },
           "timeZone": {
@@ -2241,6 +2245,7 @@
       "SettingsResponse": {
         "required": [
           "theme",
+          "palette",
           "timeZone",
           "notifications",
           "updatedAt"
@@ -2248,6 +2253,9 @@
         "type": "object",
         "properties": {
           "theme": {
+            "type": "string"
+          },
+          "palette": {
             "type": "string"
           },
           "timeZone": {

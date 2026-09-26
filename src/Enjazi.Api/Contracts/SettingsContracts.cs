@@ -9,6 +9,7 @@ namespace Enjazi.Api.Contracts;
 /// </summary>
 public sealed record SettingsRequest(
     [Required, MaxLength(20)] string Theme,
+    [Required, MaxLength(20)] string Palette,
     [Required, MaxLength(100)] string TimeZone,
     [Required] NotificationSettingsContract Notifications);
 
@@ -19,6 +20,7 @@ public sealed record NotificationSettingsContract(
 
 public sealed record SettingsResponse(
     string Theme,
+    string Palette,
     string TimeZone,
     NotificationSettingsContract Notifications,
     DateTimeOffset UpdatedAt);

@@ -18,6 +18,7 @@ namespace Enjazi.Api.Controllers;
 public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser) : ControllerBase
 {
     private static readonly string[] Themes = ["light", "dark", "system"];
+    private static readonly string[] Palettes = ["enjazi", "nord", "solarized", "dracula"];
 
     /// <summary>
     /// Settings are created on first read rather than at registration, so an
@@ -66,6 +67,12 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
                 nameof(request.Theme), $"Theme must be one of: {string.Join(", ", Themes)}.");
         }
 
+        if (!Palettes.Contains(request.Palette))
+        {
+            ModelState.AddModelError(
+                nameof(request.Palette), $"Palette must be one of: {string.Join(", ", Palettes)}.");
+        }
+
         if (!TimeZoneInfo.TryFindSystemTimeZoneById(request.TimeZone, out _))
         {
             ModelState.AddModelError(nameof(request.TimeZone), "Unknown time zone.");
@@ -86,6 +93,7 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
         settings.Data = new SettingsData
         {
             Theme = request.Theme,
+            Palette = request.Palette,
             TimeZone = request.TimeZone,
             Notifications = new NotificationSettings
             {
@@ -102,6 +110,7 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
 
     private static SettingsResponse ToResponse(UserSettings s) => new(
         s.Data.Theme,
+        s.Data.Palette,
         s.Data.TimeZone,
         new NotificationSettingsContract(
             s.Data.Notifications.EmailTaskReminders,
