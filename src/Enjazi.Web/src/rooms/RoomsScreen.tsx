@@ -57,7 +57,7 @@ export function RoomsScreen() {
                     {room.name}
                   </Text>
                 </Group>
-                <Badge style={{ flexShrink: 0 }}>
+                <Badge variant="default" style={{ flexShrink: 0 }}>
                   {room.memberCount} {room.memberCount === 1 ? 'member' : 'members'}
                 </Badge>
               </Group>

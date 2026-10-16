@@ -22,16 +22,16 @@ export function WeekRow({ streak }: Props) {
             h={10}
             bdrs="50%"
             bg={day.state === 'empty' ? 'var(--enjazi-surface-3)' : undefined}
-            bd={day.state === 'today-open' ? `2px solid ${alive ? 'orange' : 'var(--mantine-color-default-border)'}` : undefined}
+            bd={day.state === 'today-open' ? `2px solid ${alive ? 'accent' : 'var(--mantine-color-default-border)'}` : undefined}
           >
-            {/* The orange fill sits on every dot and scales in when its day
+            {/* The accent fill sits on every dot and scales in when its day
                 joins the run. initial={false} keeps the first paint still. */}
             <Box
               component={m.div}
               pos="absolute"
               inset={0}
               bdrs="50%"
-              bg="orange"
+              bg="accent"
               initial={false}
               animate={{ scale: day.state === 'run' ? 1 : 0 }}
               transition={transitions.base}

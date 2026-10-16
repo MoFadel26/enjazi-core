@@ -12,7 +12,7 @@ export function StreakCard() {
   // Group drops falsy children, and a streak of 0 is one, hence the String.
   const value = (
     <Group component="span" gap="xs" wrap="nowrap">
-      <Box component="span" display="inline-flex" c={current > 0 ? 'orange' : 'dimmed'}>
+      <Box component="span" display="inline-flex" c={current > 0 ? 'accent' : 'dimmed'}>
         <IconFlame size={20} stroke={1.75} />
       </Box>
       {String(current)}

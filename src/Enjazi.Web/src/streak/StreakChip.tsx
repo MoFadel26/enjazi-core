@@ -27,7 +27,7 @@ export function StreakChip() {
       pos="relative"
     >
       <Tooltip label={`${current}-day streak · ${points} points`}>
-        <Group gap={4} wrap="nowrap" fw={500} c={current > 0 ? 'orange' : 'dimmed'}>
+        <Group gap={4} wrap="nowrap" fw={500} c={current > 0 ? 'accent' : 'dimmed'}>
           {/* Remounted on each growth of the run and swells as it mounts.
               Before any growth there is no animate at all: initial={false}
               would still play when StrictMode remounts it. Reduced motion
@@ -64,7 +64,7 @@ export function StreakChip() {
             left={0}
             right={0}
             ta="center"
-            c="orange"
+            c="accent"
             fz="sm"
             fw={500}
             aria-hidden
