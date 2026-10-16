@@ -10,6 +10,9 @@ WORKDIR /src/Enjazi.Web
 COPY src/Enjazi.Web/package.json src/Enjazi.Web/package-lock.json ./
 RUN npm ci
 COPY src/Enjazi.Web/ ./
+# Vite bakes VITE_ variables into the bundle at build time. The publishable
+# key is public; the deploy workflow passes it from a repository variable.
+ARG VITE_CLERK_PUBLISHABLE_KEY
 RUN npm run build
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS api

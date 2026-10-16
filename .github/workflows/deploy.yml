@@ -1,7 +1,7 @@
 # Tests, image, deploy. Every push to main that passes the tests becomes the
 # running revision on Azure Container Apps. The one-time setup this relies on
-# (the container app, the federated credential, the three secrets) is in the
-# README under "Deploy".
+# (the container app, the federated credential, the three secrets, the Clerk
+# variable) is in the README under "Deploy".
 name: deploy
 
 on:
@@ -71,6 +71,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.IMAGE }}:${{ github.sha }}
+          # Public, so a repository variable rather than a secret (ADR-0015).
+          build-args: VITE_CLERK_PUBLISHABLE_KEY=${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

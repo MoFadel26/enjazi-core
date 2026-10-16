@@ -9,8 +9,11 @@
 #   IMAGE              the image to run. Required on the first run, when the
 #                      container app does not exist. Later runs keep the image
 #                      that is running, which the deploy workflow sets.
-#   ADMIN_EMAIL        optional; the account Bootstrap:AdminEmail promotes to
-#                      admin once it is registered.
+#   CLERK_AUTHORITY    the Clerk instance's Frontend API URL, e.g.
+#                      https://example-1.clerk.accounts.dev. The API takes the
+#                      keys that sign session tokens from it.
+#   ADMIN_EMAIL        optional; the account Bootstrap:AdminEmail makes an
+#                      admin on its first sign-in.
 #
 # The README, "Deploy", gives the order this fits into.
 set -euo pipefail
@@ -31,6 +34,7 @@ if ! [[ "$PG_ADMIN_PASSWORD" =~ ^[A-Za-z0-9]{16,}$ ]]; then
   exit 1
 fi
 ADMIN_EMAIL="${ADMIN_EMAIL:-}"
+: "${CLERK_AUTHORITY:?set CLERK_AUTHORITY, e.g. https://example-1.clerk.accounts.dev}"
 
 echo "-- CLI extension and resource providers"
 az extension add --name containerapp --upgrade --only-show-errors
@@ -92,6 +96,11 @@ if ! az containerapp env show -g "$RESOURCE_GROUP" -n "$CONTAINERAPPS_ENV" -o no
     --location "$LOCATION" -o none
 fi
 ENV_ID=$(az containerapp env show -g "$RESOURCE_GROUP" -n "$CONTAINERAPPS_ENV" --query id -o tsv)
+# The app's URL is its name under the environment's domain, known before the
+# app exists. Clerk puts the origin in each token's azp claim and the API
+# accepts only the origins listed here.
+APP_ORIGIN="https://$APP_NAME.$(az containerapp env show -g "$RESOURCE_GROUP" -n "$CONTAINERAPPS_ENV" \
+  --query properties.defaultDomain -o tsv)"
 
 echo "-- container app $APP_NAME"
 
@@ -138,7 +147,11 @@ properties:
           - name: ConnectionStrings__Default
             secretRef: db-connection
           - name: ASPNETCORE_HTTPS_PORT
-            value: "443"$admin_env
+            value: "443"
+          - name: Clerk__Authority
+            value: "$CLERK_AUTHORITY"
+          - name: Clerk__AuthorizedParties__0
+            value: "$APP_ORIGIN"$admin_env
         probes:
           - type: Startup
             httpGet:
