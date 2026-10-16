@@ -13,6 +13,9 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.DisplayName).HasMaxLength(100);
         builder.Property(u => u.ClerkUserId).HasMaxLength(64);
         builder.HasIndex(u => u.ClerkUserId).IsUnique();
+
+        // The cleanup's query: expired guests.
+        builder.HasIndex(u => u.ExpiresAt).HasFilter("is_guest");
     }
 }
 

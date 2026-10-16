@@ -6,9 +6,19 @@ public sealed class User : IdentityUser<Guid>
 {
     /// <summary>
     /// The Clerk user id, the session token's sub claim. Set once, when the
-    /// first request from that Clerk user creates this row (ADR-0015).
+    /// first request from that Clerk user creates this row (ADR-0015). Null
+    /// for a guest until the guest signs up (ADR-0017).
     /// </summary>
-    public string ClerkUserId { get; set; } = string.Empty;
+    public string? ClerkUserId { get; set; }
+
+    /// <summary>
+    /// A temporary account made by "Try as guest". Deleted, with everything
+    /// it owns, once <see cref="ExpiresAt"/> passes (ADR-0017).
+    /// </summary>
+    public bool IsGuest { get; set; }
+
+    /// <summary>Set for guests only.</summary>
+    public DateTimeOffset? ExpiresAt { get; set; }
 
     public string DisplayName { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }

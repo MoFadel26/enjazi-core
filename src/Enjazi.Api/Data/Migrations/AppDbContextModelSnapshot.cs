@@ -300,7 +300,6 @@ namespace Enjazi.Api.Data.Migrations
                         .HasColumnName("access_failed_count");
 
                     b.Property<string>("ClerkUserId")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("clerk_user_id");
@@ -328,6 +327,14 @@ namespace Enjazi.Api.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean")
                         .HasColumnName("email_confirmed");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<bool>("IsGuest")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_guest");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
@@ -378,6 +385,10 @@ namespace Enjazi.Api.Data.Migrations
                     b.HasIndex("ClerkUserId")
                         .IsUnique()
                         .HasDatabaseName("ix_users_clerk_user_id");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("ix_users_expires_at")
+                        .HasFilter("is_guest");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
