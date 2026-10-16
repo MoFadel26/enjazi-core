@@ -55,29 +55,35 @@ public sealed class ClerkUserProvisioner(
             CreatedAt = DateTimeOffset.UtcNow,
         };
 
-        try
+        // The row and the admin role commit together, so a concurrent request
+        // never reads the configured admin without the role.
+        await using (var transaction = await db.Database.BeginTransactionAsync())
         {
-            if (!(await userManager.CreateAsync(user)).Succeeded)
+            try
             {
-                return null;
+                if ((await userManager.CreateAsync(user)).Succeeded)
+                {
+                    // AdminBootstrap covers a row that existed before the setting did.
+                    if (string.Equals(email, configuration["Bootstrap:AdminEmail"], StringComparison.OrdinalIgnoreCase))
+                    {
+                        await AdminBootstrap.PromoteAsync(services, email);
+                    }
+
+                    await transaction.CommitAsync();
+                    return user;
+                }
+            }
+            catch (DbUpdateException)
+            {
+                db.ChangeTracker.Clear();
             }
         }
-        catch (DbUpdateException)
-        {
-            // A new user's first page load sends several requests at once, and
-            // each finds no row. One insert wins; the rest hit the unique
-            // index on clerk_user_id and read the winner's row instead.
-            db.ChangeTracker.Clear();
-            return await db.Users.SingleOrDefaultAsync(u => u.ClerkUserId == clerkUserId);
-        }
 
-        // The configured first admin, promoted the moment the row exists.
-        // AdminBootstrap covers a row that existed before the setting did.
-        if (string.Equals(email, configuration["Bootstrap:AdminEmail"], StringComparison.OrdinalIgnoreCase))
-        {
-            await AdminBootstrap.PromoteAsync(services, email);
-        }
-
-        return user;
+        // A new user's first page load sends several requests at once, and
+        // each finds no row. One insert wins. The rest either fail Identity's
+        // duplicate user name check or wait on a unique index until the winner
+        // commits, depending on timing, and read the winner's row instead. No
+        // row means the address belongs to a different Clerk user.
+        return await db.Users.SingleOrDefaultAsync(u => u.ClerkUserId == clerkUserId);
     }
 }
