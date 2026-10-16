@@ -4,12 +4,6 @@ A productivity web app: tasks, a week calendar, shared rooms with live chat,
 and a daily streak that earns points.
 
 - **Live app:** https://enjazi-core.wittyhill-0617d6ff.centralindia.azurecontainerapps.io
-- **Repository:** https://github.com/MoFadel26/enjazi-core
-- **Run it locally:** [docs/development.md](docs/development.md)
-- **Deploy:** [docs/deploy.md](docs/deploy.md)
-- **Design spec:** [docs/design.md](docs/design.md)
-- **Build plan:** [docs/plan.md](docs/plan.md)
-- **Decisions (ADRs):** [docs/adr/](docs/adr/)
 
 ## What it does
 
@@ -39,10 +33,3 @@ cd src/Enjazi.Web && npm install && npm run dev    # app on 5182
 ```
 
 Open http://127.0.0.1:5182.
-
-## Tests
-
-```sh
-dotnet run --project tests/Enjazi.Api.Tests        # API tests
-cd src/Enjazi.Web && npm run e2e                   # browser tests
-```
