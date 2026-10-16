@@ -597,7 +597,13 @@ type, surfaces and the few UX additions named here.
   and "Try as guest" (`default`, with its icon), both `md`, and one dimmed
   line under them: "No account needed to try. Guest data is kept for 7
   days." The dashboard preview follows with `xl` margin and `xl` padding
-  above it; the four feature cards are the only list of benefits. ADR-0017.
+  above it; the four feature cards are the only list of benefits. Until the
+  user is known (Clerk loaded and `/me` answered) the signed-out actions
+  keep their space but are invisible, so a signed-in visitor never sees
+  them before "Launch App". The theme toggle shows the sun in dark and the
+  moon in light, whatever the stored setting; signed in, it also saves the
+  theme to the account, so the app keeps it, and "Try as guest" sends the
+  scheme picked here, which the new guest's account starts with. ADR-0017.
 - **Guest banner** — while signed in as a guest, every screen starts with a
   flat bar above the `PageHeader`: `Paper` on `--enjazi-accent-tint`, padding
   sm, margin-bottom lg, the sentence "Guest session — your data is deleted
@@ -670,7 +676,9 @@ type, surfaces and the few UX additions named here.
   left (grows) and Members in a 320px `Paper` on the right; stacked below
   `md`. Messages: avatar, author name at 500 (the accent when mine), time xs
   dimmed, body; consecutive messages from the same author within five
-  minutes share one header. Composer: input plus a `Send` button.
+  minutes share one header. A message whose author deleted their account
+  reads as from "Deleted user", avatar included (ADR-0019). Composer: input
+  plus a `Send` button.
 - **Settings** — three `Paper` sections with `h3` titles: Appearance
   (scheme, then palette), Time (time zone), Notifications (three switches);
   Save right-aligned below. The palette `Select` shows three swatches of
@@ -678,6 +686,17 @@ type, surfaces and the few UX additions named here.
   that palette in the current scheme — and applies the choice as it is
   picked, before Save, because a colour set cannot be judged from a word.
   Save stores it; leaving without saving restores the account's palette.
+  Below the form, outside it, a fourth `Paper`, "Delete account": what goes
+  and what stays (a guest's version says its messages go too), then a red
+  `light` `HoldButton` (`src/ui/HoldButton.tsx`). It deletes only after
+  being held for 2 seconds, with the pointer or Space or Enter; letting go
+  earlier cancels. A 3px bar in the label's colour fills along the bottom
+  edge while held, and is left out under reduced motion; the dimmed line
+  below says
+  "Press and hold for 2 seconds." and, while held, "Keep holding…". It is
+  the button's description. Then the landing page and "Your account was
+  deleted." The only admin is refused, and the red `Alert` above the button
+  says to make someone else an admin in Users first. ADR-0019.
 - **Admin users** — `PageHeader` with the search input (search icon on the
   left) as the action; the `DataTable` inside the themed container; status as
   a dot plus label; roles as badges.
@@ -697,8 +716,9 @@ keeps its name through `aria-label`.
   `Delete`, `Edit`, `Remove`, `Leave`, `Join`, `Send`, `Add a task` (tasks
   empty state), `Start a room` (rooms empty state), `Search` (sidebar, opens
   the palette; its name ends in the shortcut, "Search ⌘K"), each task's
-  title (the inline-rename button), and `Try as guest` (landing hero, inside
-  `main`; sign-in and sign-up screens).
+  title (the inline-rename button), `Try as guest` (landing hero, inside
+  `main`; sign-in and sign-up screens), and `Delete account` (Settings,
+  described by "Press and hold for 2 seconds.").
 - Dialogs: `Command palette` (open only), `New task`, `Edit task`,
   `Delete event`.
 - Progress bars (skeletons, present only while loading): `Loading tasks`,
