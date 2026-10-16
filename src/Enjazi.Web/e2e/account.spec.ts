@@ -15,7 +15,7 @@ test('holding "Delete account" deletes it; letting go early does not', async ({ 
 
   await page.getByRole('link', { name: 'Settings' }).click()
   const button = page.getByRole('button', { name: 'Delete account' })
-  await expect(button).toHaveAccessibleDescription('Press and hold for 2 seconds.')
+  await expect(button).toHaveAccessibleDescription('Press and hold for 2 seconds to delete your account.')
 
   // Half a second, then let go: nothing happens.
   await button.hover()

@@ -7,6 +7,8 @@ type Props = ButtonProps & {
   onConfirm: () => void
   // How long to hold, in milliseconds.
   duration?: number
+  // The button's description, shown below it and read with its name.
+  hint?: string
 }
 
 const holdKeys = new Set([' ', 'Enter'])
@@ -15,9 +17,10 @@ const holdKeys = new Set([' ', 'Enter'])
 // whole duration, with the pointer or with Space or Enter. Letting go early
 // cancels. A bar along the bottom edge, in the label's colour, fills over
 // the duration; the hover already paints the whole button, so a full fill
-// would not show. Under reduced motion the bar stays still, and the line
-// below the button says what is happening either way.
-export function HoldButton({ children, onConfirm, duration = 2000, ...props }: Props) {
+// would not show. Under reduced motion there is no bar; a second line,
+// "Keep holding…", shows while it is held either way and is announced. The
+// hint stays the same throughout, so the description does not change.
+export function HoldButton({ children, onConfirm, duration = 2000, hint, ...props }: Props) {
   const [holding, setHolding] = useState(false)
   const timer = useRef<number | undefined>(undefined)
   const reduceMotion = useReducedMotion()
@@ -82,8 +85,11 @@ export function HoldButton({ children, onConfirm, duration = 2000, ...props }: P
           {children}
         </Box>
       </Button>
-      <Text id={hintId} size="xs" c="dimmed" aria-live="polite">
-        {holding ? 'Keep holding…' : `Press and hold for ${seconds} seconds.`}
+      <Text id={hintId} size="xs" c="dimmed">
+        {hint ?? `Press and hold for ${seconds} seconds.`}
+      </Text>
+      <Text size="xs" c="dimmed" aria-live="polite">
+        {holding ? 'Keep holding…' : ''}
       </Text>
     </Stack>
   )

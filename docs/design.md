@@ -691,10 +691,11 @@ type, surfaces and the few UX additions named here.
   `light` `HoldButton` (`src/ui/HoldButton.tsx`). It deletes only after
   being held for 2 seconds, with the pointer or Space or Enter; letting go
   earlier cancels. A 3px bar in the label's colour fills along the bottom
-  edge while held, and is left out under reduced motion; the dimmed line
-  below says
-  "Press and hold for 2 seconds." and, while held, "Keep holding…". It is
-  the button's description. Then the landing page and "Your account was
+  edge while held, and is left out under reduced motion. The dimmed line
+  below, "Press and hold for 2 seconds to delete your account.", is the
+  button's description (`aria-describedby`) and does not change; while it
+  is held a second line, "Keep holding…", appears in a polite live region.
+  Then the landing page and "Your account was
   deleted." The only admin is refused, and the red `Alert` above the button
   says to make someone else an admin in Users first. ADR-0019.
 - **Admin users** — `PageHeader` with the search input (search icon on the
@@ -718,7 +719,7 @@ keeps its name through `aria-label`.
   the palette; its name ends in the shortcut, "Search ⌘K"), each task's
   title (the inline-rename button), `Try as guest` (landing hero, inside
   `main`; sign-in and sign-up screens), and `Delete account` (Settings,
-  described by "Press and hold for 2 seconds.").
+  described by "Press and hold for 2 seconds to delete your account.").
 - Dialogs: `Command palette` (open only), `New task`, `Edit task`,
   `Delete event`.
 - Progress bars (skeletons, present only while loading): `Loading tasks`,

@@ -20,7 +20,13 @@ export function DeleteAccount() {
   return (
     <Section title="Delete account" description={user?.isGuest ? guestText : accountText}>
       {remove.error && <Alert color="red">{describeError(remove.error)}</Alert>}
-      <HoldButton color="red" variant="light" loading={remove.isPending} onConfirm={() => remove.mutate({})}>
+      <HoldButton
+        color="red"
+        variant="light"
+        loading={remove.isPending}
+        hint="Press and hold for 2 seconds to delete your account."
+        onConfirm={() => remove.mutate({})}
+      >
         Delete account
       </HoldButton>
     </Section>
