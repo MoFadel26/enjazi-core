@@ -1,6 +1,7 @@
 import { Anchor, Box, Divider, Group, Paper, Skeleton } from '@mantine/core'
-import { IconArrowLeft } from '@tabler/icons-react'
+import { ArrowLeftIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
+import { Icon } from '../ui/Icon'
 import { MemberListSkeleton } from './MemberList'
 import { RoomBody } from './RoomBody'
 import { chatHeight } from './RoomChat'
@@ -15,7 +16,7 @@ export function RoomSkeleton() {
   return (
     <>
       <Anchor component={Link} to="/rooms" size="sm" c="dimmed" mb="xs" display="inline-flex" style={{ alignItems: 'center', gap: 4 }}>
-        <IconArrowLeft size={14} stroke={1.75} />
+        <Icon icon={ArrowLeftIcon} size="text" />
         All rooms
       </Anchor>
       <Box role="progressbar" aria-label="Loading room">

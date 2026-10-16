@@ -1,10 +1,11 @@
 import { Button, type ButtonProps } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconUserQuestion } from '@tabler/icons-react'
+import { UserCircleDashedIcon } from '@phosphor-icons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { fetchClient } from '../api/client'
 import { setGuestSession, useGuestSession } from '../api/guestSession'
+import { Icon } from '../ui/Icon'
 import { currentUserKey } from './keys'
 
 // Starts a guest session (ADR-0017): the API creates a temporary account
@@ -34,7 +35,7 @@ export function TryAsGuestButton(props: ButtonProps) {
   return (
     <Button
       variant="default"
-      leftSection={<IconUserQuestion size={18} stroke={1.75} />}
+      leftSection={<Icon icon={UserCircleDashedIcon} />}
       loading={start.isPending}
       onClick={() => start.mutate()}
       {...props}

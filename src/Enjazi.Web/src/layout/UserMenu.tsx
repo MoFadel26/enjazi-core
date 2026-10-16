@@ -1,7 +1,8 @@
 import { ActionIcon, Group, Stack, Text } from '@mantine/core'
-import { IconLogout } from '@tabler/icons-react'
+import { SignOutIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router'
 import { useCurrentUser, useLogout } from '../auth/session'
+import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
 
 // The user row pinned to the bottom of the sidebar.
@@ -28,7 +29,7 @@ export function UserMenu() {
         // A guest who leaves is sent to the landing page by RequireAuth.
         onClick={() => logout.mutate(undefined, { onSuccess: () => user?.isGuest || navigate('/login', { replace: true }) })}
       >
-        <IconLogout size={18} stroke={1.75} />
+        <Icon icon={SignOutIcon} />
       </ActionIcon>
     </Group>
   )

@@ -1,13 +1,13 @@
 import { AppShell, Burger, Group, Text, ThemeIcon } from '@mantine/core'
-import { IconBolt } from '@tabler/icons-react'
+import { LightningIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { ColorSchemeSync } from '../settings/ColorSchemeSync'
 import { PaletteSync } from '../settings/PaletteSync'
+import { Icon } from '../ui/Icon'
 import { CommandPalette } from './CommandPalette'
 import { GuestBanner } from './GuestBanner'
-import { iconProps } from './destinations'
 import { NavList } from './NavList'
 import { SearchRow } from './SearchRow'
 import { UserMenu } from './UserMenu'
@@ -17,7 +17,7 @@ function Wordmark() {
   return (
     <Group gap="xs" px="xs" wrap="nowrap">
       <ThemeIcon size="sm">
-        <IconBolt {...iconProps} />
+        <Icon icon={LightningIcon} size="text" />
       </ThemeIcon>
       <Text fw={600} lts="-0.3px">
         Enjazi

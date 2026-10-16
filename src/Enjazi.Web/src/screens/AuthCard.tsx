@@ -1,7 +1,8 @@
 import { Center, Divider, Group, Stack, Text, ThemeIcon } from '@mantine/core'
-import { IconBolt } from '@tabler/icons-react'
+import { LightningIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
+import { Icon } from '../ui/Icon'
 
 // The centred column both anonymous screens render, with the wordmark above
 // Clerk's card, and below it the way in without an account (ADR-0017). The
@@ -13,7 +14,7 @@ export function AuthCard({ children }: { children: ReactNode }) {
       <Stack align="center" gap="lg">
         <Group gap="xs" wrap="nowrap">
           <ThemeIcon size="sm">
-            <IconBolt size={18} stroke={1.75} />
+            <Icon icon={LightningIcon} size="text" />
           </ThemeIcon>
           <Text fw={600} lts="-0.3px">
             Enjazi

@@ -1,7 +1,8 @@
 import { Button, Card, Container, Group, Stack, Text, Title } from '@mantine/core'
-import { IconArrowRight } from '@tabler/icons-react'
+import { ArrowRightIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
+import { Icon } from '../ui/Icon'
 import { LandingAppPreview } from './LandingAppPreview'
 import { LandingFeatures } from './LandingFeatures'
 import { LandingFooter } from './LandingFooter'
@@ -37,7 +38,7 @@ export function LandingScreen() {
                     component={Link}
                     to="/"
                     size="md"
-                    rightSection={<IconArrowRight size={16} stroke={1.75} />}
+                    rightSection={<Icon icon={ArrowRightIcon} />}
                   >
                     Launch App
                   </Button>
@@ -47,7 +48,7 @@ export function LandingScreen() {
                       component={Link}
                       to="/register"
                       size="md"
-                      rightSection={<IconArrowRight size={16} stroke={1.75} />}
+                      rightSection={<Icon icon={ArrowRightIcon} />}
                     >
                       Get started for free
                     </Button>

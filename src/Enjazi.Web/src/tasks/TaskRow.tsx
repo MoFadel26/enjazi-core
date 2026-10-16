@@ -1,6 +1,7 @@
 import { ActionIcon, Box, Checkbox, Group, Table, Text } from '@mantine/core'
-import { IconPencil, IconTrash } from '@tabler/icons-react'
+import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import { formatDateTime } from '../lib/dates'
+import { Icon } from '../ui/Icon'
 import { columnWidths } from './columns'
 import type { Task, TaskPriority } from './queries'
 import { MotionTr, rowMotion } from './rowMotion'
@@ -54,10 +55,10 @@ export function TaskRow({ task, overdue, onToggle, onRename, onEdit, onDelete }:
       <Table.Td w={columnWidths.actions}>
         <Group gap="xs" justify="flex-end" wrap="nowrap">
           <ActionIcon aria-label="Edit" onClick={() => onEdit(task)}>
-            <IconPencil size={18} stroke={1.75} />
+            <Icon icon={PencilSimpleIcon} />
           </ActionIcon>
           <ActionIcon aria-label="Delete" color="red" onClick={() => onDelete(task)}>
-            <IconTrash size={18} stroke={1.75} />
+            <Icon icon={TrashIcon} />
           </ActionIcon>
         </Group>
       </Table.Td>

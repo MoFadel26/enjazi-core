@@ -10,15 +10,18 @@ import {
   ThemeIcon,
 } from '@mantine/core'
 import {
-  IconBolt,
-  IconCalendar,
-  IconCheck,
-  IconChecklist,
-  IconFlame,
-  IconLayoutDashboard,
-  IconMessages,
-  IconSettings,
-} from '@tabler/icons-react'
+  CalendarBlankIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  ChatsCircleIcon,
+  CircleIcon,
+  FireIcon,
+  GearIcon,
+  LightningIcon,
+  ListChecksIcon,
+  SquaresFourIcon,
+} from '@phosphor-icons/react'
+import { Icon, type Glyph } from '../ui/Icon'
 
 // App preview mockup showing the Enjazi interface inside window chrome.
 export function LandingAppPreview() {
@@ -90,23 +93,23 @@ function MockSidebar() {
       style={{ borderRadius: 'var(--mantine-radius-md)', border: '1px solid var(--mantine-color-default-border)' }}
     >
       <Group gap="xs" px="xs" py="xs">
-        <ThemeIcon size="xs">
-          <IconBolt size={14} stroke={1.75} />
+        <ThemeIcon size="sm">
+          <Icon icon={LightningIcon} size="text" />
         </ThemeIcon>
         <Text size="xs" fw={600}>
           Enjazi
         </Text>
       </Group>
-      <MockNavItem label="Dashboard" icon={IconLayoutDashboard} active />
-      <MockNavItem label="Tasks" icon={IconChecklist} />
-      <MockNavItem label="Calendar" icon={IconCalendar} />
-      <MockNavItem label="Rooms" icon={IconMessages} />
-      <MockNavItem label="Settings" icon={IconSettings} />
+      <MockNavItem label="Dashboard" icon={SquaresFourIcon} active />
+      <MockNavItem label="Tasks" icon={ListChecksIcon} />
+      <MockNavItem label="Calendar" icon={CalendarBlankIcon} />
+      <MockNavItem label="Rooms" icon={ChatsCircleIcon} />
+      <MockNavItem label="Settings" icon={GearIcon} />
     </Stack>
   )
 }
 
-function MockNavItem({ label, icon: Icon, active }: { label: string; icon: typeof IconLayoutDashboard; active?: boolean }) {
+function MockNavItem({ label, icon, active }: { label: string; icon: Glyph; active?: boolean }) {
   return (
     <Group
       gap="xs"
@@ -118,7 +121,7 @@ function MockNavItem({ label, icon: Icon, active }: { label: string; icon: typeo
         border: active ? '1px solid var(--mantine-color-default-border)' : undefined,
       }}
     >
-      <Icon size={14} stroke={1.75} />
+      <Icon icon={icon} size="text" active={active} />
       <Text size="xs" fw={active ? 500 : 400}>
         {label}
       </Text>
@@ -130,9 +133,9 @@ function MockDashboard() {
   return (
     <Stack gap="md">
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
-        <MiniStat label="Streak" value="14 days" icon={IconFlame} color="accent" />
-        <MiniStat label="Tasks Completed" value="38 this week" icon={IconCheck} color="green" />
-        <MiniStat label="Focus Rooms" value="4 online" icon={IconMessages} color="gray" />
+        <MiniStat label="Streak" value="14 days" icon={FireIcon} color="accent" />
+        <MiniStat label="Tasks Completed" value="38 this week" icon={CheckIcon} color="green" />
+        <MiniStat label="Focus Rooms" value="4 online" icon={ChatsCircleIcon} color="gray" />
       </SimpleGrid>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
@@ -158,12 +161,14 @@ function MockDashboard() {
   )
 }
 
-function MiniStat({ label, value, icon: Icon, color }: { label: string; value: string; icon: typeof IconFlame; color: string }) {
+function MiniStat({ label, value, icon, color }: { label: string; value: string; icon: Glyph; color: string }) {
   return (
     <Card p="sm" bg="var(--enjazi-surface-2)" bd="1px solid var(--mantine-color-default-border)">
       <Group justify="space-between" mb="xs">
         <Text size="xs" c="dimmed" tt="uppercase" fw={500}>{label}</Text>
-        <Icon size={16} stroke={1.75} color={`var(--mantine-color-${color}-text)`} />
+        <Box display="inline-flex" c={`var(--mantine-color-${color}-text)`}>
+          <Icon icon={icon} size="text" />
+        </Box>
       </Group>
       <Text size="lg" fw={600}>{value}</Text>
     </Card>
@@ -174,9 +179,9 @@ function MockTaskItem({ title, done }: { title: string; done?: boolean }) {
   return (
     <Group justify="space-between" py={4} wrap="nowrap">
       <Group gap="xs" wrap="nowrap">
-        <ThemeIcon size="xs" variant={done ? 'filled' : 'outline'} color={done ? 'accent' : 'gray'}>
-          {done && <IconCheck size={10} stroke={2} />}
-        </ThemeIcon>
+        <Box display="inline-flex" c={done ? 'accent' : 'dimmed'}>
+          <Icon icon={done ? CheckCircleIcon : CircleIcon} size="text" active={done} />
+        </Box>
         <Text size="xs" td={done ? 'line-through' : undefined} c={done ? 'dimmed' : undefined}>{title}</Text>
       </Group>
       {/* Status pills take their meaning's colour, never the accent. */}

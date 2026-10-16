@@ -2,7 +2,8 @@ import { Box, FloatingIndicator, NavLink } from '@mantine/core'
 import { useState } from 'react'
 import { NavLink as RouterNavLink, useLocation } from 'react-router'
 import { Eyebrow } from '../ui/Eyebrow'
-import { adminLinks, iconProps, links, type Destination } from './destinations'
+import { Icon } from '../ui/Icon'
+import { adminLinks, links, type Destination } from './destinations'
 
 type Props = { isAdmin: boolean }
 
@@ -20,7 +21,7 @@ export function NavList({ isAdmin }: Props) {
   // Only the active link hands its element to the indicator. React detaches
   // the old link's ref (null) before attaching the new one; with no active
   // link the indicator renders nothing.
-  const renderLink = ({ to, label, icon: Icon }: Destination) => (
+  const renderLink = ({ to, label, icon }: Destination) => (
     <NavLink
       key={to}
       ref={isActive(to) ? setActive : undefined}
@@ -28,7 +29,7 @@ export function NavList({ isAdmin }: Props) {
       to={to}
       end={to === '/'}
       label={label}
-      leftSection={<Icon {...iconProps} />}
+      leftSection={<Icon icon={icon} active={isActive(to)} />}
       active={isActive(to)}
     />
   )

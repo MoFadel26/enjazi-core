@@ -1,6 +1,7 @@
 import { Button, Kbd } from '@mantine/core'
-import { IconChecklist } from '@tabler/icons-react'
+import { ListChecksIcon } from '@phosphor-icons/react'
 import { EmptyState } from '../ui/EmptyState'
+import { Icon } from '../ui/Icon'
 import type { Filter } from './useTasksView'
 
 type Props = {
@@ -19,7 +20,7 @@ function describe(filter: Filter, hasTasks: boolean) {
 export function TasksEmptyState({ filter, hasTasks, onAdd }: Props) {
   return (
     <EmptyState
-      icon={<IconChecklist size={20} stroke={1.75} />}
+      icon={<Icon icon={ListChecksIcon} />}
       title="No tasks here."
       description={describe(filter, hasTasks)}
       action={

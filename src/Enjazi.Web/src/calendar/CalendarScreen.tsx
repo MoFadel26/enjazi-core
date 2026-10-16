@@ -1,10 +1,11 @@
 import type { DateSelectInfo, EventDropInfo, EventResizeDoneInfo } from '@fullcalendar/react'
 import { Alert, Button, Paper } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconPlus } from '@tabler/icons-react'
+import { PlusIcon } from '@phosphor-icons/react'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { describeError } from '../api/errors'
+import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
 import { EventFormModal, type EventFormTarget } from './EventFormModal'
 import { WeekCalendar } from './WeekCalendar'
@@ -69,7 +70,7 @@ export function CalendarScreen() {
       <PageHeader
         title="Calendar"
         actions={
-          <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={newEvent}>
+          <Button leftSection={<Icon icon={PlusIcon} />} onClick={newEvent}>
             New event
           </Button>
         }

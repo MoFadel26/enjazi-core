@@ -1,9 +1,10 @@
 import { Kbd } from '@mantine/core'
 import { Spotlight, type SpotlightActionData, type SpotlightActionGroupData } from '@mantine/spotlight'
-import { IconSquare } from '@tabler/icons-react'
+import { SquareIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router'
 import { useTasks } from '../tasks/queries'
-import { adminLinks, iconProps, links, newTask, shortcutLabel, type Destination } from './destinations'
+import { Icon } from '../ui/Icon'
+import { adminLinks, links, newTask, shortcutLabel, type Destination } from './destinations'
 
 type Props = { isAdmin: boolean }
 
@@ -14,10 +15,10 @@ export function CommandPalette({ isAdmin }: Props) {
   const navigate = useNavigate()
   const { data: tasks = [] } = useTasks()
 
-  const go = ({ to, label, icon: Icon, shortcut }: Destination): SpotlightActionData => ({
+  const go = ({ to, label, icon, shortcut }: Destination): SpotlightActionData => ({
     id: to,
     label,
-    leftSection: <Icon {...iconProps} />,
+    leftSection: <Icon icon={icon} />,
     rightSection: <Kbd>{shortcutLabel(shortcut)}</Kbd>,
     onClick: () => navigate(to),
   })
@@ -33,7 +34,7 @@ export function CommandPalette({ isAdmin }: Props) {
         .map((task) => ({
           id: task.id,
           label: task.title,
-          leftSection: <IconSquare {...iconProps} />,
+          leftSection: <Icon icon={SquareIcon} />,
           onClick: () => navigate(`/tasks?edit=${task.id}`),
         })),
     },

@@ -1,10 +1,11 @@
 import { Alert, Box, Button, Group, Paper, ScrollArea, Stack, Text, TextInput, VisuallyHidden } from '@mantine/core'
-import { IconMessage } from '@tabler/icons-react'
+import { ChatCircleIcon } from '@phosphor-icons/react'
 import dayjs from 'dayjs'
 import { useEffect, useRef, useState } from 'react'
 import { describeError } from '../api/errors'
 import { useCurrentUser } from '../auth/session'
 import { EmptyState } from '../ui/EmptyState'
+import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
 import { useRoomFeed } from './hub'
 import { useMessages, useSendMessage, type Message } from './queries'
@@ -40,7 +41,7 @@ export function RoomChat({ roomId }: { roomId: string }) {
     <Paper p="lg">
       <ScrollArea h={chatHeight} viewportRef={viewport} type="auto">
         <Stack gap="xs">
-          {messages?.length === 0 && <EmptyState icon={<IconMessage size={20} stroke={1.75} />} title="No messages yet." description="Say hello." />}
+          {messages?.length === 0 && <EmptyState icon={<Icon icon={ChatCircleIcon} />} title="No messages yet." description="Say hello." />}
           {messages?.map((message, index) => {
             const continued = continues(messages[index - 1], message)
             return (

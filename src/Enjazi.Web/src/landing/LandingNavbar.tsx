@@ -1,7 +1,8 @@
 import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useMantineColorScheme } from '@mantine/core'
-import { IconBolt, IconMoon, IconSun } from '@tabler/icons-react'
+import { LightningIcon, MoonIcon, SunIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
+import { Icon } from '../ui/Icon'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.
 export function LandingNavbar() {
@@ -15,7 +16,7 @@ export function LandingNavbar() {
           <Anchor component={Link} to="/" underline="never" c="inherit">
             <Group gap="xs" wrap="nowrap">
               <ThemeIcon size="sm">
-                <IconBolt size={18} stroke={1.75} />
+                <Icon icon={LightningIcon} size="text" />
               </ThemeIcon>
               <Text fw={600} lts="-0.3px">
                 Enjazi
@@ -30,7 +31,7 @@ export function LandingNavbar() {
               aria-label="Toggle color scheme"
               onClick={() => toggleColorScheme()}
             >
-              {colorScheme === 'dark' ? <IconSun size={16} stroke={1.75} /> : <IconMoon size={16} stroke={1.75} />}
+              {colorScheme === 'dark' ? <Icon icon={SunIcon} /> : <Icon icon={MoonIcon} />}
             </ActionIcon>
 
             {user ? (

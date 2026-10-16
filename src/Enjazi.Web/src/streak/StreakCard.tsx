@@ -1,5 +1,6 @@
 import { Box, Group, Text } from '@mantine/core'
-import { IconFlame } from '@tabler/icons-react'
+import { FireIcon } from '@phosphor-icons/react'
+import { Icon } from '../ui/Icon'
 import { StatCard } from '../ui/StatCard'
 import { useStreak } from './queries'
 import { WeekRow } from './WeekRow'
@@ -13,7 +14,7 @@ export function StreakCard() {
   const value = (
     <Group component="span" gap="xs" wrap="nowrap">
       <Box component="span" display="inline-flex" c={current > 0 ? 'accent' : 'dimmed'}>
-        <IconFlame size={20} stroke={1.75} />
+        <Icon icon={FireIcon} />
       </Box>
       {String(current)}
     </Group>

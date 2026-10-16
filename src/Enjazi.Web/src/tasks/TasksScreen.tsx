@@ -1,10 +1,11 @@
 import { Alert, Button, Kbd, SegmentedControl, Tooltip } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { PlusIcon } from '@phosphor-icons/react'
 import { AnimatePresence, type MotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { describeError } from '../api/errors'
 import { StreakChip } from '../streak/StreakChip'
 import { transitions } from '../theme/motion'
+import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
 import { TaskFormModal } from './TaskFormModal'
 import { TaskList } from './TaskList'
@@ -41,7 +42,7 @@ export function TasksScreen() {
               ]}
             />
             <Tooltip label={<Kbd>N</Kbd>}>
-              <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={modal.openCreate}>
+              <Button leftSection={<Icon icon={PlusIcon} />} onClick={modal.openCreate}>
                 New task
               </Button>
             </Tooltip>

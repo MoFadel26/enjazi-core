@@ -1,9 +1,10 @@
 import { Button, Container, Group, Stack, Text, Title } from '@mantine/core'
-import { IconArrowRight } from '@tabler/icons-react'
+import { ArrowRightIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 import { display } from '../theme/display'
+import { Icon } from '../ui/Icon'
 
 // Hero section: product headline, value proposition and CTAs.
 export function LandingHero() {
@@ -26,7 +27,7 @@ export function LandingHero() {
             to="/"
             size="md"
             mt="xs"
-            rightSection={<IconArrowRight size={16} stroke={1.75} />}
+            rightSection={<Icon icon={ArrowRightIcon} />}
           >
             Launch App
           </Button>
@@ -37,7 +38,7 @@ export function LandingHero() {
                 component={Link}
                 to="/register"
                 size="md"
-                rightSection={<IconArrowRight size={16} stroke={1.75} />}
+                rightSection={<Icon icon={ArrowRightIcon} />}
               >
                 Get started free
               </Button>

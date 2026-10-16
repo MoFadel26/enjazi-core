@@ -1,10 +1,11 @@
 import { Alert, Badge, Box, Group, Text, TextInput } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconSearch } from '@tabler/icons-react'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { DataTable } from 'mantine-datatable'
 import { useState } from 'react'
 import { describeError } from '../api/errors'
 import { formatDate } from '../lib/dates'
+import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
 import { EditUserModal } from './EditUserModal'
 import { pageSize, useAdminUsers, type AdminUser } from './queries'
@@ -22,7 +23,7 @@ export function AdminUsersScreen() {
         title="Users"
         actions={
           <TextInput
-            leftSection={<IconSearch size={16} stroke={1.75} />}
+            leftSection={<Icon icon={MagnifyingGlassIcon} size="text" />}
             placeholder="Search by name or email"
             aria-label="Search users"
             value={search}

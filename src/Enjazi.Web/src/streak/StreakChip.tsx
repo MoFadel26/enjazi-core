@@ -1,8 +1,9 @@
 import { Box, Group, Skeleton, Tooltip, VisuallyHidden } from '@mantine/core'
-import { IconFlame } from '@tabler/icons-react'
+import { FireIcon } from '@phosphor-icons/react'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { offsets, transitions } from '../theme/motion'
+import { Icon } from '../ui/Icon'
 import { useStreak } from './queries'
 import { useStreakMoment } from './useStreakMoment'
 
@@ -40,7 +41,7 @@ export function StreakChip() {
             animate={pop === undefined ? undefined : { scale: [1, offsets.pop, 1] }}
             transition={transitions.moment}
           >
-            <IconFlame size={18} stroke={1.75} />
+            <Icon icon={FireIcon} size="text" />
           </Box>
           {/* The tooltip is hover-only, so a screen reader gets the line from
               hidden text instead of the bare number. Absent while loading,

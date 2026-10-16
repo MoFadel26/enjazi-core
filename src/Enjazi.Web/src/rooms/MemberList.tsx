@@ -1,6 +1,7 @@
 import { ActionIcon, Badge, Box, Group, Skeleton, Table, Text } from '@mantine/core'
-import { IconUserMinus } from '@tabler/icons-react'
+import { UserMinusIcon } from '@phosphor-icons/react'
 import { formatDate } from '../lib/dates'
+import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
 import type { RoomMember } from './queries'
 
@@ -37,7 +38,7 @@ export function MemberList({ members, canRemove, onRemove }: Props) {
             <Table.Td align="right" w={36}>
               {canRemove(member) && (
                 <ActionIcon color="red" aria-label="Remove" onClick={() => onRemove(member)}>
-                  <IconUserMinus size={18} stroke={1.75} />
+                  <Icon icon={UserMinusIcon} />
                 </ActionIcon>
               )}
             </Table.Td>

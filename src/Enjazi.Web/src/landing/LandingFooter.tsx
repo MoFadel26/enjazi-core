@@ -1,6 +1,7 @@
 import { Anchor, Container, Group, Stack, Text, ThemeIcon } from '@mantine/core'
-import { IconBolt } from '@tabler/icons-react'
+import { LightningIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
+import { Icon } from '../ui/Icon'
 
 // Minimalist landing page footer.
 export function LandingFooter() {
@@ -15,7 +16,7 @@ export function LandingFooter() {
         <Group justify="space-between" align="center" wrap="wrap" gap="md">
           <Group gap="xs">
             <ThemeIcon size="sm">
-              <IconBolt size={18} stroke={1.75} />
+              <Icon icon={LightningIcon} size="text" />
             </ThemeIcon>
             <Stack gap={2}>
               <Text fw={600} lts="-0.3px">

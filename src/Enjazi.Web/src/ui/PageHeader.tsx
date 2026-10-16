@@ -1,7 +1,8 @@
 import { Anchor, Box, Divider, Group, Text, Title } from '@mantine/core'
-import { IconArrowLeft } from '@tabler/icons-react'
+import { ArrowLeftIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { Icon } from './Icon'
 
 type Props = {
   title: string
@@ -18,7 +19,7 @@ export function PageHeader({ title, description, actions, back }: Props) {
     <Box mb="lg">
       {back && (
         <Anchor component={Link} to={back.to} size="sm" c="dimmed" mb="xs" display="inline-flex" style={{ alignItems: 'center', gap: 4 }}>
-          <IconArrowLeft size={14} stroke={1.75} />
+          <Icon icon={ArrowLeftIcon} size="text" />
           {back.label}
         </Anchor>
       )}

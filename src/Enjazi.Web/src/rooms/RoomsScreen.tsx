@@ -1,11 +1,12 @@
 import { Alert, Badge, Button, Card, Group, SimpleGrid, Stack, Text } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconMessages, IconPlus } from '@tabler/icons-react'
+import { ChatsCircleIcon, PlusIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { describeError } from '../api/errors'
 import { useCurrentUser } from '../auth/session'
 import { EmptyState } from '../ui/EmptyState'
+import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
 import { UserAvatar } from '../ui/UserAvatar'
 import { RoomFormModal } from './RoomFormModal'
@@ -29,7 +30,7 @@ export function RoomsScreen() {
         title="Rooms"
         actions={
           canCreate && (
-            <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={() => setCreating(true)}>
+            <Button leftSection={<Icon icon={PlusIcon} />} onClick={() => setCreating(true)}>
               New room
             </Button>
           )
@@ -40,7 +41,7 @@ export function RoomsScreen() {
       {error && <Alert color="red">{describeError(error)}</Alert>}
       {rooms?.length === 0 && (
         <EmptyState
-          icon={<IconMessages size={20} stroke={1.75} />}
+          icon={<Icon icon={ChatsCircleIcon} />}
           title="No rooms yet."
           description={canCreate ? 'Create the first one.' : 'Sign up to start one.'}
           // Named apart from "New room": tests match names as substrings. docs/design.md, "Test contract".
