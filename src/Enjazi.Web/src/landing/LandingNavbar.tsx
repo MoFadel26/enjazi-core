@@ -2,7 +2,6 @@ import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useManti
 import { IconBolt, IconMoon, IconSun } from '@tabler/icons-react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
-import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.
 export function LandingNavbar() {
@@ -40,7 +39,6 @@ export function LandingNavbar() {
               </Button>
             ) : (
               <>
-                <TryAsGuestButton size="xs" visibleFrom="sm" />
                 <Button component={Link} to="/login" variant="default" size="xs">
                   Sign in
                 </Button>

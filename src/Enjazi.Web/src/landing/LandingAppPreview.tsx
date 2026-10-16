@@ -23,7 +23,7 @@ import {
 // App preview mockup showing the Enjazi interface inside window chrome.
 export function LandingAppPreview() {
   return (
-    <Container size="lg" pb="xl">
+    <Container size="lg" mt="xl" pt="xl" pb="xl">
       <Card
         p={0}
         bd="1px solid var(--mantine-color-default-border)"
@@ -180,7 +180,7 @@ function MockTaskItem({ title, done }: { title: string; done?: boolean }) {
         <Text size="xs" td={done ? 'line-through' : undefined} c={done ? 'dimmed' : undefined}>{title}</Text>
       </Group>
       {/* Status pills take their meaning's colour, never the accent. */}
-      <Badge size="xs" variant="light" color={done ? 'green' : 'blue'} c={done ? 'green' : undefined}>
+      <Badge size="xs" variant="light" color={done ? 'green' : 'yellow'} c={done ? 'green' : 'yellow'}>
         {done ? 'Done' : 'In progress'}
       </Badge>
     </Group>

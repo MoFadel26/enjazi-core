@@ -24,10 +24,8 @@ async function signInWithForm(page: Page, secret: string) {
 test('a visitor sees the landing page on / and can navigate to register', async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveURL('/')
-  await expect(
-    page.getByRole('heading', { name: 'Tasks, calendar, streaks, and collaborative rooms — unified.' }),
-  ).toBeVisible()
-  await page.getByRole('link', { name: 'Get started for free' }).first().click()
+  await expect(page.getByRole('heading', { name: 'Tasks, calendar and streaks in one quiet workspace.' })).toBeVisible()
+  await page.getByRole('link', { name: 'Get started free' }).first().click()
   await expect(page).toHaveURL('/register')
 })
 

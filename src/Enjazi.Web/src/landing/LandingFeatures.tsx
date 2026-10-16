@@ -1,4 +1,4 @@
-import { Card, Container, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core'
+import { Card, Container, SimpleGrid, Text, ThemeIcon, Title } from '@mantine/core'
 import { IconCalendar, IconChecklist, IconFlame, IconMessages, type IconProps } from '@tabler/icons-react'
 
 const iconProps: IconProps = { size: 20, stroke: 1.75 }
@@ -30,15 +30,9 @@ const features = [
 export function LandingFeatures() {
   return (
     <Container size="lg" py="xl">
-      <Stack align="center" gap="sm" mb="xl">
-        <Title order={2} ta="center">
-          Everything you need to stay on track
-        </Title>
-        <Text size="md" c="dimmed" ta="center" maw={560}>
-          Tasks, calendar, streaks and team rooms in one place, without the
-          noise.
-        </Text>
-      </Stack>
+      <Title order={2} ta="center" mb="xl">
+        What you get
+      </Title>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
         {features.map((feature) => (
