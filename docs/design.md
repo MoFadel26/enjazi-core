@@ -531,7 +531,8 @@ event chips radius sm, 500 weight title.
 `@phosphor-icons/react`, ADR-0018, always through `src/ui/Icon.tsx`, which
 sets size and weight. The glyphs come from `src/ui/icons.ts`, which imports
 each from its own module; the lint config refuses the package anywhere
-else, so a new icon is added there first. Sizes: `text` 16px (in a line of text or an input:
+else, so a new icon is added there first.
+After adding an icon, restart the Vite dev server once (Vite pre-bundles the new file). Sizes: `text` 16px (in a line of text or an input:
 the back link, the admin search, the logo mark, the streak chip, the
 landing preview), `control` 20px, the default (nav items, the command
 palette, buttons and action icons, empty states, the streak tile),
@@ -615,8 +616,11 @@ type, surfaces and the few UX additions named here.
   instead of the address, the dashboard's description reads "Trying Enjazi
   as a guest.", and Rooms hides "New room" and the empty state's action.
 - **Dashboard** — `PageHeader` "Dashboard" with the "Signed in as …"
-  sentence as its description. Four `StatCard`s in a 1/2/4 grid: Streak
-  (flame icon next to the number, the week row, the warning in `orange`),
+  sentence as its description. Four `StatCard`s in a 1/2/4 grid: "Streak ·
+  Points" (two figures at the same size, flame and "`<n>` days", star and
+  "`<p>` points", each icon in the accent above zero and dimmed at zero,
+  the unit sm dimmed; then the week row, the run line, "Longest streak
+  `<n>` days" and the warning in `orange`),
   Tasks (open count, overdue count in red, next three by due date), This
   week (next three events), Rooms (joined / to join, first three joined).
   - **Week row** — the streak tile's first row: seven 10px dots for the
@@ -631,8 +635,8 @@ type, surfaces and the few UX additions named here.
     streak"; the dots and initials are `aria-hidden`.
 - **Tasks** — `PageHeader` with the streak chip, the filter
   `SegmentedControl` and "New task" (tooltip `N`) as the actions.
-  - **Streak chip** — the flame and the current length, the accent when the
-    run is alive and dimmed otherwise, with a tooltip "`<n>`-day streak ·
+  - **Streak chip** — the flame and the current length, then a star and the
+    points, each the accent above zero and dimmed at zero, with a tooltip "`<n>`-day streak ·
     `<p>` points". Visually hidden text makes it read "`<n>`-day streak,
     `<p>` points" to a screen reader, since the tooltip is hover-only. When the streak's points rise, `+<Δ>` in the accent floats
     up from it and fades (see "Motion") and a visually hidden live region
@@ -747,12 +751,12 @@ keeps its name through `aria-label`.
   states say "Add a task" and "Start a room" rather than "Create task" or
   "New room". The command palette's actions exist only while it is open.
 - Text: `Signed in as <email>.`, `Trying Enjazi as a guest.`, the guest
-  banner sentence, `No tasks here.`, `No messages yet.`,
-  `Settings saved.`, `Done` (exact, the filter), `0-day streak`,
-  `1-day streak, completed today`, `Longest 1 · 10 points`, `All` (exact,
-  the filter), `Add your first task to start a streak.`, priority label
-  text (`High`) inside the task row, role text (`Admin`, `Member`) inside the
-  member row.
+  banner sentence, `No tasks here.`, `No messages yet.`, `Settings saved.`,
+  `Done` (exact, the filter), `0-day streak`, `1-day streak, completed
+  today`, `Longest streak 1 day`, the streak tile's heading `1 day 10
+  points`, `All` (exact, the filter), `Add your first task to start a
+  streak.`, priority label text (`High`) inside the task row, role text
+  (`Admin`, `Member`) inside the member row.
 - Structure: task rows and member rows are `Table` rows (`role=row`); room
   cards are Mantine `Card` (`.mantine-Card-root`) containing the Join button
   or Open link; the sidebar marker is `.mantine-FloatingIndicator-root`
