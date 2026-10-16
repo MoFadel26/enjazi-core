@@ -50,10 +50,13 @@ public sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .HasForeignKey(m => m.RoomId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // A deleted account's messages stay in the room without an author
+        // (ADR-0019). A guest's are deleted with it, by GuestCleanup and
+        // AccountDeletion, not by this key (ADR-0017).
         builder.HasOne(m => m.Author)
             .WithMany(u => u.Messages)
             .HasForeignKey(m => m.AuthorId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
         // Chat history is read as "latest N in this room", so the index
         // matches that query shape rather than the FK alone.

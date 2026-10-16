@@ -10,6 +10,9 @@ import { UserAvatar } from '../ui/UserAvatar'
 import { useRoomFeed } from './hub'
 import { useMessages, useSendMessage, type Message } from './queries'
 
+// A message whose author deleted their account has no author (ADR-0019).
+const deletedAuthor = 'Deleted user'
+
 // The message area's height, which RoomSkeleton keeps too.
 export const chatHeight = 360
 
@@ -44,17 +47,18 @@ export function RoomChat({ roomId }: { roomId: string }) {
           {messages?.length === 0 && <EmptyState icon={<Icon icon={ChatCircleIcon} />} title="No messages yet." description="Say hello." />}
           {messages?.map((message, index) => {
             const continued = continues(messages[index - 1], message)
+            const author = message.authorName ?? deletedAuthor
             return (
               <Group key={message.id} data-testid="message" gap="sm" align="flex-start" wrap="nowrap" mt={continued || index === 0 ? 0 : 'xs'}>
                 {/* A continued message keeps the avatar column so bodies line up. */}
-                {continued ? <Box w={24} flex="0 0 auto" /> : <UserAvatar name={message.authorName} size="sm" />}
+                {continued ? <Box w={24} flex="0 0 auto" /> : <UserAvatar name={author} size="sm" />}
                 <Box flex={1} miw={0}>
                   {continued ? (
-                    <VisuallyHidden>{message.authorName}</VisuallyHidden>
+                    <VisuallyHidden>{author}</VisuallyHidden>
                   ) : (
                     <Group gap="xs" align="baseline">
                       <Text size="sm" fw={500} c={message.authorId === me?.id ? 'var(--mantine-color-accent-text)' : undefined}>
-                        {message.authorName}
+                        {author}
                       </Text>
                       <Text size="xs" c="dimmed">
                         {dayjs(message.createdAt).format('D MMM HH:mm')}

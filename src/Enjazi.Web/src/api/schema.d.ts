@@ -324,8 +324,8 @@ export interface components {
             /** Format: uuid */
             roomId: string;
             /** Format: uuid */
-            authorId: string;
-            authorName: string;
+            authorId: null | string;
+            authorName: null | string;
             body: string;
             /** Format: date-time */
             createdAt: string;

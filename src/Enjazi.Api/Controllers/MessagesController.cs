@@ -43,7 +43,7 @@ public sealed class MessagesController(
             .OrderByDescending(m => m.CreatedAt)
             .Take(PageSize)
             .Select(m => new MessageResponse(
-                m.Id, m.RoomId, m.AuthorId, m.Author.DisplayName, m.Body, m.CreatedAt))
+                m.Id, m.RoomId, m.AuthorId, m.Author == null ? null : m.Author.DisplayName, m.Body, m.CreatedAt))
             .ToListAsync();
 
         latest.Reverse();

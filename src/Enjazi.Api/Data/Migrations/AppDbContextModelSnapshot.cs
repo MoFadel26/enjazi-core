@@ -81,7 +81,7 @@ namespace Enjazi.Api.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AuthorId")
+                    b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid")
                         .HasColumnName("author_id");
 
@@ -615,8 +615,7 @@ namespace Enjazi.Api.Data.Migrations
                     b.HasOne("Enjazi.Api.Data.Entities.User", "Author")
                         .WithMany("Messages")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_messages_users_author_id");
 
                     b.HasOne("Enjazi.Api.Data.Entities.Room", "Room")

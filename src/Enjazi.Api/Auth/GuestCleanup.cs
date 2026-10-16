@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Enjazi.Api.Auth;
 
 /// <summary>
-/// Deletes expired guests every 15 minutes (ADR-0017). One DELETE on users;
-/// every table that references a user does so with ON DELETE CASCADE, so the
-/// guest's tasks, events, settings, streak, room memberships and messages go
-/// in the same statement and nothing is left pointing at a missing row.
+/// Deletes expired guests every 15 minutes (ADR-0017). The guests' messages
+/// first, since a deleted author's messages would otherwise stay in the room
+/// (ADR-0019); then one DELETE on users, whose cascades take the tasks,
+/// events, settings, streak and room memberships.
 /// Expiry itself is enforced when a guest token is checked; this only reclaims
 /// the rows, so a missed run (the app scaled to zero) costs disk, not access.
 /// </summary>
@@ -51,6 +51,9 @@ public sealed class GuestCleanup(IServiceScopeFactory scopes, ILogger<GuestClean
     }
 
     /// <summary>Public so a test can run one pass without waiting for the timer.</summary>
-    public static Task<int> DeleteExpiredAsync(AppDbContext db, DateTimeOffset now, CancellationToken cancellationToken = default) =>
-        db.Users.Where(u => u.IsGuest && u.ExpiresAt <= now).ExecuteDeleteAsync(cancellationToken);
+    public static async Task<int> DeleteExpiredAsync(AppDbContext db, DateTimeOffset now, CancellationToken cancellationToken = default)
+    {
+        await db.Messages.Where(m => m.Author!.IsGuest && m.Author.ExpiresAt <= now).ExecuteDeleteAsync(cancellationToken);
+        return await db.Users.Where(u => u.IsGuest && u.ExpiresAt <= now).ExecuteDeleteAsync(cancellationToken);
+    }
 }

@@ -2047,11 +2047,17 @@
             "format": "uuid"
           },
           "authorId": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           },
           "authorName": {
-            "type": "string"
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "body": {
             "type": "string"
