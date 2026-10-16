@@ -3,6 +3,15 @@ import { registerAndSignIn } from './session.js'
 
 test('events can be created, edited, dragged and deleted', async ({ page }) => {
   const user = await registerAndSignIn(page, 'calendar')
+  // "New event" starts at the next full hour, and the drag below moves the
+  // event 120px down. Late in the evening that runs off the grid, so the
+  // drag does nothing, or past midnight, where FullCalendar draws the event
+  // once in each day's column. The page's clock is held at 09:15 today, so
+  // the event and the drag stay inside the day whenever the suite runs.
+  // Timers keep running, and the API keeps the real time on the same date.
+  const morning = new Date()
+  morning.setHours(9, 15, 0, 0)
+  await page.clock.setFixedTime(morning)
   await page.goto('/calendar')
 
   await page.getByRole('button', { name: 'New event' }).click()
