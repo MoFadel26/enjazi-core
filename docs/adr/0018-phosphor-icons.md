@@ -62,4 +62,12 @@ still does, through the parent's colour.
 
 - `docs/design.md`, "Icons", lists the sizes and where each is used.
 - `@tabler/icons-react` is removed from `package.json`.
+- The package's main entry re-exports every glyph in all six weights. The
+  production build drops the unused ones, but the dev server loads all of
+  it on each page load, which made every navigation about half a second
+  slower and pushed `e2e/colors.spec.ts` past its time limit.
+  `src/ui/icons.ts` imports each glyph from its own module
+  (`@phosphor-icons/react/dist/csr/<Name>`) and re-exports it, and the
+  `no-restricted-imports` rule in `.oxlintrc.json` keeps every other file
+  importing from there.
 - ADR-0011's choice of Tabler is superseded; its other decisions stand.

@@ -529,7 +529,9 @@ event chips radius sm, 500 weight title.
 ## Icons
 
 `@phosphor-icons/react`, ADR-0018, always through `src/ui/Icon.tsx`, which
-sets size and weight. Sizes: `text` 16px (in a line of text or an input:
+sets size and weight. The glyphs come from `src/ui/icons.ts`, which imports
+each from its own module; the lint config refuses the package anywhere
+else, so a new icon is added there first. Sizes: `text` 16px (in a line of text or an input:
 the back link, the admin search, the logo mark, the streak chip, the
 landing preview), `control` 20px, the default (nav items, the command
 palette, buttons and action icons, empty states, the streak tile),
