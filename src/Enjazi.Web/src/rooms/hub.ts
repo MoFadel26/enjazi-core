@@ -1,3 +1,4 @@
+import { getToken } from '@clerk/react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
@@ -18,7 +19,9 @@ export function useRoomFeed(roomId: string, enabled: boolean) {
     if (!enabled) return
 
     const connection = new HubConnectionBuilder()
-      .withUrl('/hubs/rooms')
+      // A WebSocket upgrade cannot carry an Authorization header, so SignalR
+      // sends this as ?access_token=, which the API reads for the hub only.
+      .withUrl('/hubs/rooms', { accessTokenFactory: async () => (await getToken()) ?? '' })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Warning)
       .build()

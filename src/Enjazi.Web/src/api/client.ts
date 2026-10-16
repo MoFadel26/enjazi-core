@@ -1,3 +1,4 @@
+import { getToken } from '@clerk/react'
 import createFetchClient from 'openapi-fetch'
 import createQueryClient from 'openapi-react-query'
 import type { paths } from './schema'
@@ -5,16 +6,25 @@ import { queryClient } from '../queryClient'
 import { currentUserKey } from '../auth/keys'
 
 // Paths are relative: the Vite dev server proxies /api to the API, and in
-// production the two are served from one host. The cookie rides along.
+// production the two are served from one host.
 export const fetchClient = createFetchClient<paths>()
 
 fetchClient.use({
-  onResponse({ request, response }) {
-    // A 401 from anything but the auth endpoints means the cookie expired or
-    // was dropped server-side. Marking the current user as signed out makes
-    // RequireAuth redirect on the next render, wherever the 401 came from.
-    // Login and /me produce 401 as a normal answer, so they are excluded.
-    if (response.status === 401 && !new URL(request.url).pathname.startsWith('/api/auth/')) {
+  // The Clerk session token, as a bearer token. getToken refreshes it first
+  // when it is about to expire, so a tab left in the background does not send
+  // a stale one. ADR-0015.
+  async onRequest({ request }) {
+    const token = await getToken()
+    if (token) request.headers.set('Authorization', `Bearer ${token}`)
+    return request
+  },
+
+  onResponse({ response }) {
+    // Clerk still has a session but the API refuses it: the account was
+    // disabled, or the session ended elsewhere. Marking the current user as
+    // signed out makes RequireAuth end the Clerk session too, wherever the
+    // 401 came from.
+    if (response.status === 401) {
       queryClient.setQueryData(currentUserKey, null)
     }
 

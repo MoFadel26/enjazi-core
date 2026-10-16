@@ -4,54 +4,6 @@
  */
 
 export interface paths {
-    "/api/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["Auth_Register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["Auth_Login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["Auth_Logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/auth/me": {
         parameters: {
             query?: never;
@@ -329,10 +281,6 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        LoginRequest: {
-            email: string;
-            password: string;
-        };
         MessageResponse: {
             /** Format: uuid */
             id: string;
@@ -366,11 +314,6 @@ export interface components {
             status?: null | number | string;
             detail?: null | string;
             instance?: null | string;
-        };
-        RegisterRequest: {
-            email: string;
-            displayName: string;
-            password: string;
         };
         RoomMemberResponse: {
             /** Format: uuid */
@@ -488,102 +431,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    Auth_Register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterRequest"];
-                "text/json": components["schemas"]["RegisterRequest"];
-                "application/*+json": components["schemas"]["RegisterRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": components["schemas"]["UserResponse"];
-                    "application/json": components["schemas"]["UserResponse"];
-                    "text/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": components["schemas"]["ValidationProblemDetails"];
-                    "application/json": components["schemas"]["ValidationProblemDetails"];
-                    "text/json": components["schemas"]["ValidationProblemDetails"];
-                };
-            };
-        };
-    };
-    Auth_Login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginRequest"];
-                "text/json": components["schemas"]["LoginRequest"];
-                "application/*+json": components["schemas"]["LoginRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": components["schemas"]["UserResponse"];
-                    "application/json": components["schemas"]["UserResponse"];
-                    "text/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": components["schemas"]["ProblemDetails"];
-                    "application/json": components["schemas"]["ProblemDetails"];
-                    "text/json": components["schemas"]["ProblemDetails"];
-                };
-            };
-        };
-    };
-    Auth_Logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     Auth_Me: {
         parameters: {
             query?: never;

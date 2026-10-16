@@ -1,18 +1,18 @@
+import { useAuth, useClerk } from '@clerk/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { fetchClient } from '../api/client'
 import type { components } from '../api/schema'
 import { currentUserKey } from './keys'
 
 export type User = components['schemas']['UserResponse']
-type LoginRequest = components['schemas']['LoginRequest']
-type RegisterRequest = components['schemas']['RegisterRequest']
 
-// The signed-in user lives in the query cache under one key. null means
-// "asked the API and nobody is signed in", which is distinct from undefined
-// (not asked yet). Login and register write the user straight into the cache
-// so the app never refetches /me to learn what it just received.
+// Clerk says whether someone is signed in; the API says who they are here:
+// the local id and roles. The user lives in the query cache under one key.
+// null means signed out, which is distinct from undefined (not known yet).
 export function useCurrentUser() {
-  return useQuery({
+  const { isLoaded, isSignedIn } = useAuth()
+  const query = useQuery({
     queryKey: currentUserKey,
     queryFn: async (): Promise<User | null> => {
       const { data, response } = await fetchClient.GET('/api/auth/me')
@@ -21,53 +21,37 @@ export function useCurrentUser() {
       return data
     },
     staleTime: Infinity,
+    enabled: isSignedIn === true,
   })
-}
 
-export function useLogin() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (body: LoginRequest) => {
-      const { data, response } = await fetchClient.POST('/api/auth/login', { body })
-      if (data === undefined) {
-        throw new Error(
-          response.status === 401
-            ? 'Wrong email or password, or the account is locked.'
-            : `Login failed (${response.status}).`,
-        )
-      }
-      return data
-    },
-    onSuccess: (user) => queryClient.setQueryData(currentUserKey, user),
-  })
-}
-
-export function useRegister() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (body: RegisterRequest) => {
-      const { data, error, response } = await fetchClient.POST('/api/auth/register', { body })
-      if (data === undefined) {
-        const reasons = Object.values(error?.errors ?? {}).flat()
-        throw new Error(reasons.length > 0 ? reasons.join(' ') : `Registration failed (${response.status}).`)
-      }
-      return data
-    },
-    onSuccess: (user) => queryClient.setQueryData(currentUserKey, user),
-  })
+  if (!isLoaded) return { data: undefined, isPending: true } as const
+  if (!isSignedIn) return { data: null, isPending: false } as const
+  return query
 }
 
 export function useLogout() {
+  const clerk = useClerk()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      const { response } = await fetchClient.POST('/api/auth/logout')
-      if (!response.ok) throw new Error(`Logout failed (${response.status}).`)
-    },
-    onSuccess: () => {
-      // Drop everything the previous user loaded, then record the sign-out.
-      queryClient.clear()
-      queryClient.setQueryData(currentUserKey, null)
-    },
+    mutationFn: () => clerk.signOut(),
+    // Drop everything the previous user loaded.
+    onSuccess: () => queryClient.clear(),
   })
+}
+
+// Signed in to Clerk, refused by the API: a disabled account, or a token the
+// API does not accept. Ends the Clerk session, so the app does not bounce
+// between /login, which sees a session, and screens that cannot load.
+// Returns true until that has happened.
+export function useEndRefusedSession(user: User | null | undefined) {
+  const { isSignedIn } = useAuth()
+  const logout = useLogout()
+  const refused = isSignedIn === true && user === null
+  const { mutate, isIdle } = logout
+
+  useEffect(() => {
+    if (refused && isIdle) mutate()
+  }, [refused, isIdle, mutate])
+
+  return refused
 }

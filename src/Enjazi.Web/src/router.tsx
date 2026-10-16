@@ -14,8 +14,9 @@ import { TasksScreen } from './tasks/TasksScreen'
 
 export const router = createBrowserRouter([
   { path: '/landing', element: <LandingScreen /> },
-  { path: '/login', element: <LoginScreen /> },
-  { path: '/register', element: <RegisterScreen /> },
+  // The splat gives Clerk's own steps, such as /login/factor-one, a route.
+  { path: '/login/*', element: <LoginScreen /> },
+  { path: '/register/*', element: <RegisterScreen /> },
   {
     // Everything below renders through RequireAuth:
     // - Unauthenticated visitors at / see the landing screen.
