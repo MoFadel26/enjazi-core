@@ -96,11 +96,11 @@ above it.
 `theme.autoContrast` is on. A filled element's label is `theme.black` or
 white, whichever reads on the fill, decided by Mantine at a luminance
 threshold of 0.25 (`theme.luminanceThreshold`; Mantine's default is 0.3).
-Three palettes need it: Nord's and Dracula's dark-scheme primary is the pale
-end of the accent ramp, and Enjazi's amber takes a near-black label in both
-schemes. Enjazi's light primary has a luminance of 0.28, which Mantine's 0.3
-would give a white label at 3.2:1; no other fill the app paints with a label
-lies between 0.25 and 0.3.
+Nord's and Dracula's dark-scheme primary is the pale end of the accent ramp
+and takes the dark label that way. Enjazi's amber sets its own label,
+`#1a1305`, through the optional `primary` of the scheme. Every primary fill
+is under 0.17 or over 0.33, so 0.25 and Mantine's 0.3 give the same labels;
+0.25 was set for an earlier, darker amber.
 
 ### Contrast
 
@@ -121,7 +121,9 @@ axe-core in both schemes. The rules the values were chosen against:
   set through the optional `text.accent` of the scheme, which overrides
   `--mantine-color-accent-text` and `--mantine-color-anchor`.
 - A filled primary stands 3:1 apart from the canvas behind it, and its label
-  clears 4.5:1 on the fill and on the hover fill.
+  clears 4.5:1 on the fill, the hover fill and the press fill. Enjazi's
+  softened light amber is the exception: 2.6:1 against the canvas. The
+  button is still found by its dark label, 6.9:1 on the fill.
 - `red`, `green`, `orange` and `yellow` as text clear 4.5:1 on every
   surface, which Mantine's own ramps do not: `--mantine-color-red-text` is
   shade 6 in light, 3.2:1 on white. Each palette overrides the four
@@ -141,7 +143,11 @@ discs.
 
 Warm neutrals and an amber accent, ADR-0016. Primary shade 7 in light, 6 in
 dark; both take the near-black label. No blue-grey: every neutral leans
-warm.
+warm. Shades 5 to 8 are a softened amber, so the primary can lighten one
+shade on hover and darken one on press. Only Enjazi does this: in Nord and
+Solarized a white label falls under 4.5:1 on the lighter shade, so the other
+palettes keep Mantine's hover, the next shade down the ramp, and no press
+fill.
 
 | Index | accent | `dark` | `gray` |
 |---|---|---|---|
@@ -150,10 +156,10 @@ warm.
 | 2 | `#fbe0a0` | `#9c978f` | `#eeece9` |
 | 3 | `#f9cc66` | `#8c877f` | `#ebe9e6` |
 | 4 | `#fbbf24` | `#2a2826` | `#e7e5e2` |
-| 5 | `#f8ab12` | `#201f1d` | `#75706a` |
-| 6 | `#f59e0b` | `#1a1917` | `#6b665f` |
-| 7 | `#d97706` | `#121110` | `#57534e` |
-| 8 | `#c86d06` | `#262523` | `#3a3733` |
+| 5 | `#edb05a` | `#201f1d` | `#75706a` |
+| 6 | `#e9a23b` | `#1a1917` | `#6b665f` |
+| 7 | `#d98e1f` | `#121110` | `#57534e` |
+| 8 | `#c27c14` | `#262523` | `#3a3733` |
 | 9 | `#a64b07` | `#2e2c2a` | `#1c1a17` |
 
 `black` `#1c1a17`, `white` `#faf9f7` (the light canvas).
@@ -168,8 +174,10 @@ warm.
 | hairline — `--mantine-color-default-border` | `#e7e5e2` | `#2a2826` |
 | ink — `--mantine-color-text` | `#1c1a17` | `#edebe8` |
 | dimmed — `--mantine-color-dimmed` | `#6b665f` | `#9c978f` |
-| primary fill / hover | `#d97706` / `#c86d06` | `#f59e0b` / `#d97706` |
-| label on the primary | `#1c1a17` | `#1c1a17` |
+| primary fill / hover / press | `#d98e1f` / `#e9a23b` / `#c27c14` | `#e9a23b` / `#edb05a` / `#d98e1f` |
+| label on the primary — `--mantine-primary-color-contrast` | `#1a1305` | `#1a1305` |
+| secondary border — `--enjazi-control-border` | `#d6d3ce` | `#44403c` |
+| secondary hover — `--enjazi-control-hover` | `#f2f0ec` | `#24211f` |
 | accent text — `--mantine-color-accent-text`, `--mantine-color-anchor` | `#a64b07` | `#fbbf24` |
 | `--enjazi-accent-tint` | `#f59e0b` at 0.10 | `#f59e0b` at 0.10 |
 | `--mantine-color-red-text` | `#bd2424` | `#ff6b6b` |
@@ -177,10 +185,11 @@ warm.
 | `--mantine-color-orange-text` | `#b33a09` | `#ff922b` |
 | `--mantine-color-yellow-text` | `#935805` | `#fcc419` |
 
-Measured: the label on the light primary 5.5:1 and on its hover 4.7:1; the
-light primary against the canvas 3.0:1; accent text on the light canvas
+Measured: the label on the light primary 6.9:1, on its hover 8.5:1 and on
+its press 5.4:1; on the dark primary 8.5:1, hover 9.6:1, press 6.9:1; the
+light primary against the canvas 2.6:1; accent text on the light canvas
 5.5:1 and on surface-3 4.9:1; dimmed on surface-3 4.8:1 (light) and 5.3:1
-(dark); the dark label on the dark primary 8.1:1.
+(dark).
 
 ### Nord — `nord`
 
@@ -282,15 +291,15 @@ Mantine's own `red`, `green`, `yellow`, `orange` tuples are kept, with the
 stay separate from the accent, so "Done" and an error never read as the
 brand. Use: `red` for destructive actions, errors and overdue; `green` for
 success, done and active status; `orange` for warnings, such as the streak
-about to break; `yellow` for the admin self-edit notice; `blue` for "in
+about to break; `yellow` for the admin self-edit notice and for "in
 progress". The streak itself — the flame, the days of the current run and
 the points moment — is the accent. Priority markers: Low `gray`, Medium the
 accent, High `red`.
 
 **Status pills** (`Badge`, `variant="light"`) take the tint of their
-meaning's colour, never the accent: "Done" `green`, "In progress" `blue`.
-The green pill sets its label to `c="green"`, the `-text` override, because
-Mantine's own `green-9` on `green-1` is 3.8:1.
+meaning's colour, never the accent: "Done" `green`, "In progress" `yellow`.
+Both set their label to `c="green"` or `c="yellow"`, the `-text` override,
+because Mantine's own `green-9` on `green-1` is 3.8:1.
 
 ### Avatar discs — `src/theme/avatars.ts`
 
@@ -485,8 +494,8 @@ action shows `N`, and every palette action shows its keys.
 
 | Component | Defaults and styles |
 |---|---|
-| `Button` | `size: 'sm'`, weight 500, radius md. `variant="default"` is the secondary button: surface-1 background, hairline border. Destructive: `color="red"`, `variant="subtle"` in rows, `variant="light"` as a page action. |
-| `ActionIcon` | `variant: 'subtle'`, `color: 'gray'`, `size: 'md'`. Every one carries `aria-label`. |
+| `Button` | `size: 'sm'`, weight 500, radius md. Primary (filled accent, one per view): the palette's label, no shadow, press fill from the palette where it has one (`--button-active`, painted in `global.css`). `variant="default"` is the secondary button: transparent, 1px `--enjazi-control-border`, ink text, hover `--enjazi-control-hover`. Primary and secondary side by side share a size. `subtle` only for minor actions, and its text still clears 4.5:1. Focus: Mantine's ring, 2px of the primary at 2px offset, on keyboard focus. Destructive: `color="red"`, `variant="subtle"` in rows, `variant="light"` as a page action. |
+| `ActionIcon` | `variant: 'subtle'`, `color: 'gray'`, `size: 'md'`. `variant="default"` matches the secondary button. Every one carries `aria-label`. |
 | `Input` (all inputs) | `size: 'sm'`, radius md, surface-1 background, hairline border, accent focus ring. Labels weight 500, size sm. |
 | `Paper` / `Card` | `withBorder`, radius md, padding lg, background `--enjazi-surface-1`. |
 | `Modal` | radius md, content and header on `--enjazi-surface-raised`, overlay 55% black, title weight 600 size lg. |
@@ -501,7 +510,7 @@ action shows `N`, and every palette action shows its keys.
 | `Loader` | the accent. Only for app boot; screens use `Skeleton`. |
 | `Skeleton` | `--enjazi-surface-3` in both schemes, radius sm; Mantine's pulse. |
 | `Kbd` | size xs, `--enjazi-surface-2` background, hairline border, radius sm, dimmed text, weight 500. |
-| `Spotlight` | content on `--enjazi-surface-raised`, radius md, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the primary colour on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
+| `Spotlight` | content on `--enjazi-surface-raised`, radius md, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the accent text colour (`--mantine-color-accent-text`) on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
 
 Transitions for each component are in the "Motion" table and set in the
 same `theme.components` entries.
@@ -573,10 +582,14 @@ type, surfaces and the few UX additions named here.
   divider labelled "or skip the account" and a full-width `default`
   "Try as guest" button (icon `IconUserQuestion`), hidden while a guest
   session exists.
-- **Landing** — the hero's actions are "Get started for free" (primary),
-  "Try as guest" (`default`, same size, with its icon, so it reads as the
-  second way in rather than a footnote) and "Sign in" (`subtle` gray). The
-  navbar repeats "Try as guest" at `xs` from `sm` up. ADR-0017.
+- **Landing** — navbar: wordmark left; theme toggle, "Sign in" (`default`)
+  and "Get started" (primary), all `xs`, on the right. Hero: an h1 at the
+  display size (`src/theme/display.ts`, 34px on mobile and 52px from `sm`,
+  line height 1.1), one dimmed subtitle, then "Get started free" (primary)
+  and "Try as guest" (`default`, with its icon), both `md`, and one dimmed
+  line under them: "No account needed to try. Guest data is kept for 7
+  days." The dashboard preview follows with `xl` margin and `xl` padding
+  above it; the four feature cards are the only list of benefits. ADR-0017.
 - **Guest banner** — while signed in as a guest, every screen starts with a
   flat bar above the `PageHeader`: `Paper` on `--enjazi-accent-tint`, padding
   sm, margin-bottom lg, the sentence "Guest session — your data is deleted
@@ -677,7 +690,7 @@ keeps its name through `aria-label`.
   empty state), `Start a room` (rooms empty state), `Search` (sidebar, opens
   the palette; its name ends in the shortcut, "Search ⌘K"), each task's
   title (the inline-rename button), and `Try as guest` (landing hero, inside
-  `main`; landing navbar; sign-in and sign-up screens).
+  `main`; sign-in and sign-up screens).
 - Dialogs: `Command palette` (open only), `New task`, `Edit task`,
   `Delete event`.
 - Progress bars (skeletons, present only while loading): `Loading tasks`,
