@@ -569,7 +569,22 @@ type, surfaces and the few UX additions named here.
   shadows are off (`colorShadow` transparent) and its primary-button
   gradient is removed, so the card is a flat surface with a 1px ring like
   every other card. The card's title ("Sign in to …") is the application
-  name set in the Clerk dashboard, not in this code.
+  name set in the Clerk dashboard, not in this code. Below the card, a
+  divider labelled "or skip the account" and a full-width `default`
+  "Try as guest" button (icon `IconUserQuestion`), hidden while a guest
+  session exists.
+- **Landing** — the hero's actions are "Get started for free" (primary),
+  "Try as guest" (`default`, same size, with its icon, so it reads as the
+  second way in rather than a footnote) and "Sign in" (`subtle` gray). The
+  navbar repeats "Try as guest" at `xs` from `sm` up. ADR-0017.
+- **Guest banner** — while signed in as a guest, every screen starts with a
+  flat bar above the `PageHeader`: `Paper` on `--enjazi-accent-tint`, padding
+  sm, margin-bottom lg, the sentence "Guest session — your data is deleted
+  on `<MMM D>`. Sign up to keep it." (the date from the account's
+  `expiresAt`) and a primary `xs` "Sign up" link to `/register`. Not
+  dismissible. For a guest the sidebar's user row shows "Guest session"
+  instead of the address, the dashboard's description reads "Trying Enjazi
+  as a guest.", and Rooms hides "New room" and the empty state's action.
 - **Dashboard** — `PageHeader` "Dashboard" with the "Signed in as …"
   sentence as its description. Four `StatCard`s in a 1/2/4 grid: Streak
   (flame icon next to the number, the week row, the warning in `orange`),
@@ -654,13 +669,15 @@ keeps its name through `aria-label`.
 
 - Links (nav): `Dashboard`, `Tasks` (exact — the dashboard also has
   "All tasks"), `Calendar`, `Rooms`, `Settings`, `Users` (admins only, and
-  absent for members), `Register`, `Log in`, `All rooms`, `Open` (rooms card).
+  absent for members), `Register`, `Log in`, `All rooms`, `Open` (rooms card),
+  `Sign up` (the guest banner).
 - Buttons: `Log in`, `Create account`, `Log out` (a real button, not a menu
   item), `New task`, `New event`, `New room`, `Create`, `Save`, `Cancel`,
   `Delete`, `Edit`, `Remove`, `Leave`, `Join`, `Send`, `Add a task` (tasks
   empty state), `Start a room` (rooms empty state), `Search` (sidebar, opens
-  the palette; its name ends in the shortcut, "Search ⌘K"), and each task's
-  title (the inline-rename button).
+  the palette; its name ends in the shortcut, "Search ⌘K"), each task's
+  title (the inline-rename button), and `Try as guest` (landing hero, inside
+  `main`; landing navbar; sign-in and sign-up screens).
 - Dialogs: `Command palette` (open only), `New task`, `Edit task`,
   `Delete event`.
 - Progress bars (skeletons, present only while loading): `Loading tasks`,
@@ -685,7 +702,8 @@ keeps its name through `aria-label`.
   query an existing test makes on the same page — which is why the empty
   states say "Add a task" and "Start a room" rather than "Create task" or
   "New room". The command palette's actions exist only while it is open.
-- Text: `Signed in as <email>.`, `No tasks here.`, `No messages yet.`,
+- Text: `Signed in as <email>.`, `Trying Enjazi as a guest.`, the guest
+  banner sentence, `No tasks here.`, `No messages yet.`,
   `Settings saved.`, `Done` (exact, the filter), `0-day streak`,
   `1-day streak, completed today`, `Longest 1 · 10 points`, `All` (exact,
   the filter), `Add your first task to start a streak.`, priority label

@@ -14,6 +14,11 @@
 #                      keys that sign session tokens from it.
 #   ADMIN_EMAIL        optional; the account Bootstrap:AdminEmail makes an
 #                      admin on its first sign-in.
+#   GUEST_SIGNING_KEY  optional; base64, 32 or more bytes (openssl rand
+#                      -base64 48). Signs guest tokens (ADR-0017). Without it
+#                      guest mode is off. Pass it on every run once set: the
+#                      configuration below replaces the app's secrets and
+#                      environment, so a run without it removes it.
 #
 # The README, "Deploy", gives the order this fits into.
 set -euo pipefail
@@ -34,6 +39,7 @@ if ! [[ "$PG_ADMIN_PASSWORD" =~ ^[A-Za-z0-9]{16,}$ ]]; then
   exit 1
 fi
 ADMIN_EMAIL="${ADMIN_EMAIL:-}"
+GUEST_SIGNING_KEY="${GUEST_SIGNING_KEY:-}"
 : "${CLERK_AUTHORITY:?set CLERK_AUTHORITY, e.g. https://example-1.clerk.accounts.dev}"
 
 echo "-- CLI extension and resource providers"
@@ -111,6 +117,17 @@ if [ -n "$ADMIN_EMAIL" ]; then
             value: \"$ADMIN_EMAIL\""
 fi
 
+guest_secret=""
+guest_env=""
+if [ -n "$GUEST_SIGNING_KEY" ]; then
+  guest_secret="
+      - name: guest-signing-key
+        value: \"$GUEST_SIGNING_KEY\""
+  guest_env="
+          - name: Guest__SigningKey
+            secretRef: guest-signing-key"
+fi
+
 # The spec holds the connection string, so it is private and deleted on exit.
 spec=$(mktemp)
 chmod 600 "$spec"
@@ -135,7 +152,7 @@ properties:
       allowInsecure: false
     secrets:
       - name: db-connection
-        value: "$CONNECTION"
+        value: "$CONNECTION"$guest_secret
   template:
     containers:
       - name: $APP_NAME
@@ -151,7 +168,7 @@ properties:
           - name: Clerk__Authority
             value: "$CLERK_AUTHORITY"
           - name: Clerk__AuthorizedParties__0
-            value: "$APP_ORIGIN"$admin_env
+            value: "$APP_ORIGIN"$admin_env$guest_env
         probes:
           - type: Startup
             httpGet:

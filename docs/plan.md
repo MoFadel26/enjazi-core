@@ -219,6 +219,27 @@ browser suite, which includes `e2e/colors.spec.ts`: 32 screens, four
 palettes by two schemes by four screens, with axe-core finding no contrast
 failure. ADR-0013 records what the check found.
 
+## Phase 10 — guest mode
+
+"Try as guest" on the landing page and the sign-in screens. The API creates
+a temporary account with sample data and signs its own token for it; the
+account and everything it owns are deleted after `Guest:LifetimeDays`, or
+become the visitor's account if they sign up in the same browser. ADR-0017
+records the decisions.
+
+Verify: a guest gets a seven-day account with sample data; creation is
+limited per client address; a guest joins and chats but cannot create a
+room or reach the admin panel, and is never promoted; an expired guest gets
+401; cleanup removes the guest and every row it owns and nothing else;
+signing up with the guest token keeps the guest's data; room messages are
+limited per user; in the browser, "Try as guest" opens the dashboard with
+the sample and the banner, and a refused guest returns to the landing page.
+
+Done. `GuestTests` covers the API and `e2e/guest.spec.ts` the browser.
+`Guest:SigningKey` comes from user secrets locally and a Container Apps
+secret in production; without it guest mode is off and nothing else
+changes.
+
 ## Out of scope
 
 - **OAuth integrations.** The previous version declared five (Google, Slack,

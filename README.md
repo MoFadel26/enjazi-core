@@ -13,6 +13,7 @@ something every day.
 - **Settings** — light or dark theme, time zone, notification preferences.
 - **Admin panel** — search accounts, assign roles, disable users.
 - **Keyboard** — `N` for a new task, `G` then a letter to switch screens, `⌘K` for everything else.
+- **Guest mode** — "Try as guest" opens the app with sample data and no account. The guest's data is deleted after 7 days, or kept if they sign up (ADR-0017).
 
 Everything is private to you unless it's in a room. That's enforced in the
 database layer, not by checks scattered through the code.
@@ -49,6 +50,13 @@ Clerk, once:
 4. For the browser tests only: put `CLERK_SECRET_KEY=sk_test_...` in
    `src/Enjazi.Web/.env.test.local`. Both `.env` files are ignored by git.
 
+Guest mode needs a signing key, kept in user secrets, outside the repository
+(ADR-0017):
+
+```sh
+dotnet user-secrets set Guest:SigningKey "$(openssl rand -base64 48)" --project src/Enjazi.Api
+```
+
 Then:
 
 ```sh
@@ -60,6 +68,24 @@ cd src/Enjazi.Web && npm install && npm run dev    # app
 ```
 
 Then open `http://127.0.0.1:5182` and register an account.
+
+### Tests
+
+`scripts/verify-phase-3.sh` runs the API tests against a throwaway Postgres
+container. `scripts/verify-phase-9.sh` runs every check, ending in the
+browser suite against the API on 5180; `npm run e2e` in `src/Enjazi.Web` runs
+the browser suite alone.
+
+Most browser tests sign in through the Clerk development instance, which
+rate-limits. Under parallel workers they can time out inside Clerk's sign-in
+(`e2e/session.ts`) or fail with "fetch failed" from Clerk's API, with nothing
+wrong in the app. If that happens, re-run what failed with one worker:
+
+```sh
+npx playwright test --last-failed --workers=1
+```
+
+or the whole suite with `--workers=1`. The guest tests do not use Clerk.
 
 ## Deploy
 
@@ -92,6 +118,9 @@ is in `appsettings*.json` or in the image.
 | `Clerk__Authority` | `infra/deploy.sh`, from `CLERK_AUTHORITY` | Clerk Frontend API URL. Session tokens are checked against its signing keys |
 | `Clerk__AuthorizedParties__0` | `infra/deploy.sh` | `https://<app>.<environment domain>`, the only origin whose tokens are accepted |
 | `Bootstrap__AdminEmail` | `infra/deploy.sh`, from `ADMIN_EMAIL`, only if set | Account made admin on its first sign-in |
+| `Guest__SigningKey` | `infra/deploy.sh`, from `GUEST_SIGNING_KEY`, as the Container Apps secret `guest-signing-key`, only if set | Base64, 32 or more bytes (`openssl rand -base64 48`). Signs guest tokens. Without it guest mode is off and `POST /api/auth/guest` answers 503 |
+| `Guest__LifetimeDays` | not set; default `7` | Days until a guest account and its data are deleted |
+| `Guest__PermitsPerHour` | not set; default `5` | Guest accounts one client address can create per hour |
 | `ASPNETCORE_HTTPS_PORT` | `infra/deploy.sh` | `443`, the port HTTP requests are redirected to |
 | `Database__MigrateOnStartup` | `Dockerfile` | `true`. Applies pending migrations before the app starts |
 | `ASPNETCORE_HTTP_PORTS` | `Dockerfile` | `8080` |
@@ -105,6 +134,7 @@ is in `appsettings*.json` or in the image.
 | `IMAGE` | first run | Image to run. Later runs keep the running one unless this is set |
 | `CLERK_AUTHORITY` | always | Clerk Frontend API URL, e.g. `https://example-1.clerk.accounts.dev` |
 | `ADMIN_EMAIL` | no | Becomes `Bootstrap__AdminEmail` |
+| `GUEST_SIGNING_KEY` | no, but pass it on every run once set | Becomes `Guest__SigningKey`. A run without it removes the secret |
 
 The image build reads `VITE_CLERK_PUBLISHABLE_KEY`, the Clerk publishable
 key, which Vite writes into the bundle. The workflow passes it from the
