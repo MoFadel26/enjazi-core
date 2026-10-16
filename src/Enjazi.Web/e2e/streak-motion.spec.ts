@@ -27,7 +27,8 @@ test('a completion fills the week row and shows the points gained', async ({ pag
   await page.getByRole('link', { name: 'Dashboard' }).click()
   await expect(page.getByRole('img', { name: '1 of the last 7 days in the current streak', exact: true })).toBeVisible()
   await expect(page.getByText('1-day streak, completed today')).toBeVisible()
-  await expect(page.getByText('Longest 1 · 10 points')).toBeVisible()
+  await expect(page.getByText('Longest streak 1 day')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '1 day 10 points' })).toBeVisible()
 })
 
 // Both run on durations.base, 0.18s; under the OS setting Mantine runs them at zero.

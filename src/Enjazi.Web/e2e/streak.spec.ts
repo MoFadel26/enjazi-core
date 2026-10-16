@@ -18,5 +18,6 @@ test('completing a task starts the streak on the dashboard', async ({ page }) =>
 
   await page.getByRole('link', { name: 'Dashboard' }).click()
   await expect(page.getByText('1-day streak, completed today')).toBeVisible()
-  await expect(page.getByText('Longest 1 · 10 points')).toBeVisible()
+  await expect(page.getByText('Longest streak 1 day')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '1 day 10 points' })).toBeVisible()
 })

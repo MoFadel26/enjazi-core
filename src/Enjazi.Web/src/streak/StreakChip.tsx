@@ -3,11 +3,12 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { offsets, transitions } from '../theme/motion'
 import { Icon } from '../ui/Icon'
-import { FireIcon } from '../ui/icons'
+import { FireIcon, StarIcon } from '../ui/icons'
 import { useStreak } from './queries'
 import { useStreakMoment } from './useStreakMoment'
 
-// The streak in the Tasks header, where completions happen. Not a button:
+// The streak and the points in the Tasks header, where completions happen,
+// each with its icon, in the accent once above zero. Not a button:
 // there is nothing to do on click, and a name here could collide with the
 // page's own buttons (docs/design.md, "Test contract").
 export function StreakChip() {
@@ -28,25 +29,31 @@ export function StreakChip() {
       pos="relative"
     >
       <Tooltip label={`${current}-day streak · ${points} points`}>
-        <Group gap={4} wrap="nowrap" fw={500} c={current > 0 ? 'accent' : 'dimmed'}>
-          {/* Remounted on each growth of the run and swells as it mounts.
-              Before any growth there is no animate at all: initial={false}
-              would still play when StrictMode remounts it. Reduced motion
-              drops the swell. */}
-          <Box
-            key={pop}
-            component={m.span}
-            display="inline-flex"
-            aria-hidden
-            animate={pop === undefined ? undefined : { scale: [1, offsets.pop, 1] }}
-            transition={transitions.moment}
-          >
-            <Icon icon={FireIcon} size="text" />
-          </Box>
+        <Group gap="sm" wrap="nowrap" fw={500}>
+          <Group gap={4} wrap="nowrap" c={current > 0 ? 'accent' : 'dimmed'}>
+            {/* Remounted on each growth of the run and swells as it mounts.
+                Before any growth there is no animate at all: initial={false}
+                would still play when StrictMode remounts it. Reduced motion
+                drops the swell. */}
+            <Box
+              key={pop}
+              component={m.span}
+              display="inline-flex"
+              aria-hidden
+              animate={pop === undefined ? undefined : { scale: [1, offsets.pop, 1] }}
+              transition={transitions.moment}
+            >
+              <Icon icon={FireIcon} size="text" />
+            </Box>
+            <span aria-hidden>{current}</span>
+          </Group>
+          <Group gap={4} wrap="nowrap" c={points > 0 ? 'accent' : 'dimmed'} aria-hidden>
+            <Icon icon={StarIcon} size="text" />
+            <span>{points}</span>
+          </Group>
           {/* The tooltip is hover-only, so a screen reader gets the line from
-              hidden text instead of the bare number. Absent while loading,
+              hidden text instead of the bare numbers. Absent while loading,
               when it would read 0. */}
-          <span aria-hidden>{current}</span>
           {streak && <VisuallyHidden>{`${current}-day streak, ${points} points`}</VisuallyHidden>}
         </Group>
       </Tooltip>
