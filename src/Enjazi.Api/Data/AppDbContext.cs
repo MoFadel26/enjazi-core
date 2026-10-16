@@ -1,12 +1,13 @@
 using Enjazi.Api.Auth;
 using Enjazi.Api.Data.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enjazi.Api.Data;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser)
-    : IdentityDbContext<User, Role, Guid>(options)
+    : IdentityDbContext<User, Role, Guid>(options), IDataProtectionKeyContext
 {
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<CalendarEvent> Events => Set<CalendarEvent>();
@@ -15,6 +16,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<UserSettings> Settings => Set<UserSettings>();
     public DbSet<Streak> Streaks => Set<Streak>();
+
+    /// <summary>
+    /// The keys that sign the auth cookie. Kept in the database so a new
+    /// container reads the same keys and existing cookies stay valid.
+    /// </summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     /// <summary>
     /// Read by the query filter below. A property on the context rather than a

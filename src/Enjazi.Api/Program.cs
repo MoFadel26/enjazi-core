@@ -4,6 +4,8 @@ using Enjazi.Api.Data.Entities;
 using Enjazi.Api.Hubs;
 using Enjazi.Api.Streaks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options => options
     .UseNpgsql(builder.Configuration.GetConnectionString("Default"))
     .UseSnakeCaseNamingConvention());
+
+// The keys that sign the auth cookie live in the database. The default is a
+// folder inside the container, which a restart or a new revision replaces,
+// and every cookie signed with the old keys stops working. The application
+// name fixes the key isolation, which otherwise follows the content root path.
+builder.Services.AddDataProtection()
+    .SetApplicationName("enjazi-core")
+    .PersistKeysToDbContext<AppDbContext>();
+
+builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
+// Azure Container Apps ends TLS at its ingress and forwards plain HTTP, adding
+// X-Forwarded-For and X-Forwarded-Proto. Reading them makes a request that
+// arrived over HTTPS look like one, so the HTTPS redirect does not loop and
+// the request scheme matches the Secure cookie. The ingress proxy's address
+// is not fixed, so every proxy is trusted; the container has no other way in.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
@@ -114,18 +138,46 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+// Set by the container image only. Not tied to the Production environment,
+// because the build-time OpenAPI generator also runs this file as Production
+// and has no database. One replica at most, so no two instances race to
+// migrate. Runs before the host starts, so before AdminBootstrap.
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+}
+
+app.UseForwardedHeaders();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+// Before the HTTPS redirect: the platform's health probes call the container
+// directly over plain HTTP, and a redirect would pass as healthy without the
+// database being checked.
+app.UseHealthChecks("/healthz");
+
 app.UseHttpsRedirection();
+
+// The built React app, copied into wwwroot by the Dockerfile. In development
+// there is no wwwroot and Vite serves the app instead.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<RoomHub>("/hubs/rooms");
+
+// Client routes such as /tasks are the React router's, so a hard refresh on
+// one gets index.html. Paths under /api and /hubs are excluded and stay 404,
+// so a wrong API call fails instead of answering with a web page. nonfile
+// keeps a missing /assets/x.js a 404 too.
+app.MapFallbackToFile("{*path:nonfile:regex(^(?!(api|hubs)(/|$)))}", "index.html");
 
 app.Run();
 
