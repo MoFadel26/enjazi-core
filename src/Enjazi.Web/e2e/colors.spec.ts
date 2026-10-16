@@ -114,6 +114,9 @@ async function contrastFailures(page: Page) {
 
 for (const palette of cases) {
   test(`the ${palette.label} palette paints its canvas and reads in both schemes`, async ({ page }) => {
+    // A sign-in, eight page loads and an axe run on each: near the default
+    // 30 seconds alone, and over it beside another worker. Slow triples it.
+    test.slow()
     await registerAndSignIn(page, `colors-${palette.id}`)
     await page.goto('/')
     const yesterday = await page.evaluate(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
