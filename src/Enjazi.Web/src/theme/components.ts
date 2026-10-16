@@ -20,12 +20,13 @@ import {
   Switch,
   Table,
   Title,
+  type MantineTheme,
   type MantineThemeComponents,
   type TitleOrder,
 } from '@mantine/core'
 import { durations, easing } from './motion'
 import { overlays } from './overlays'
-import { dimmed, hairline, raised } from './refs'
+import { control, dimmed, hairline, ink, raised } from './refs'
 
 // Mantine's heading sizes carry no tracking field, so Title adds it by order.
 const tracking: Record<TitleOrder, string> = { 1: '-0.5px', 2: '-0.4px', 3: '-0.2px', 4: '0', 5: '0', 6: '0' }
@@ -36,6 +37,15 @@ const fast = { transitionDuration: 'var(--enjazi-duration-fast)', transitionTimi
 // instant, and movement belongs to the motion library.
 const colour = { transitionProperty: 'background-color, border-color, color', ...fast }
 
+// The secondary button, variant="default": no fill of its own, a border that
+// reads on every surface, body text, and a faint fill on hover.
+const secondary = { bg: 'transparent', bd: `1px solid ${control.border}`, hover: control.hover, color: ink }
+
+// The filled accent, which takes the palette's press fill where it has one.
+// Mantine has no press colour; global.css paints --button-active under :active.
+const isPrimary = (theme: MantineTheme, props: { variant?: string; color?: string }) =>
+  (props.variant ?? 'filled') === 'filled' && (props.color === undefined || props.color === theme.primaryColor)
+
 // The Components table in docs/design.md, one entry per row. defaultProps
 // where a prop exists; styles or vars only where it does not. Raised layers
 // that enter and leave (Modal, Popover, Menu, Tooltip, Spotlight) are in
@@ -43,11 +53,31 @@ const colour = { transitionProperty: 'background-color, border-color, color', ..
 export const components: MantineThemeComponents = {
   Button: Button.extend({
     defaultProps: { size: 'sm' },
-    vars: (theme) => ({ root: { '--button-fz': theme.fontSizes.md, '--button-padding-x': '14px' } }),
+    vars: (theme, props) => ({
+      root: {
+        '--button-fz': theme.fontSizes.md,
+        '--button-padding-x': '14px',
+        ...(props.variant === 'default' && {
+          '--button-bg': secondary.bg,
+          '--button-bd': secondary.bd,
+          '--button-hover': secondary.hover,
+          '--button-color': secondary.color,
+        }),
+        ...(isPrimary(theme, props) && ({ '--button-active': 'var(--enjazi-primary-active, var(--button-hover))' } as Record<string, string>)),
+      },
+    }),
     styles: { root: colour },
   }),
+  // The default variant matches the secondary button, as the landing
+  // navbar's theme toggle sits beside one.
   ActionIcon: ActionIcon.extend({
     defaultProps: { variant: 'subtle', color: 'gray', size: 'md' },
+    vars: (_theme, props) => ({
+      root:
+        props.variant === 'default'
+          ? { '--ai-bg': secondary.bg, '--ai-bd': secondary.bd, '--ai-hover': secondary.hover, '--ai-color': secondary.color }
+          : {},
+    }),
     styles: { root: colour },
   }),
   Input: Input.extend({

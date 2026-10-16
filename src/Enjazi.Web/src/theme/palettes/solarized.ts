@@ -53,6 +53,7 @@ export const solarized: Palette = {
       surface3: '#eee8d5',
       raised: '#fdf6e3',
       accentTint: 'rgba(38, 139, 210, 0.12)',
+      control: { border: '#cfd1c4', hover: '#f0ecda' },
       text: {
         red: '#c62728',
         green: '#0e772d',
@@ -66,6 +67,7 @@ export const solarized: Palette = {
       surface3: '#1c424d',
       raised: '#1c424d',
       accentTint: 'rgba(38, 139, 210, 0.16)',
+      control: { border: '#224952', hover: '#0b3642' },
       text: {
         red: '#ff8787',
         green: '#51cf66',

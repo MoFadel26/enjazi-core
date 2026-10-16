@@ -54,6 +54,7 @@ export const nord: Palette = {
       surface3: '#d8dee9',
       raised: '#f9fafc',
       accentTint: 'rgba(94, 129, 172, 0.14)',
+      control: { border: '#d4d6da', hover: '#eff0f3' },
       text: {
         red: '#be1c22',
         green: '#007026',
@@ -67,6 +68,7 @@ export const nord: Palette = {
       surface3: '#434c5e',
       raised: '#3b4252',
       accentTint: 'rgba(94, 129, 172, 0.18)',
+      control: { border: '#595f6b', hover: '#3d4452' },
       text: {
         red: '#ffa8a8',
         green: '#69db7c',

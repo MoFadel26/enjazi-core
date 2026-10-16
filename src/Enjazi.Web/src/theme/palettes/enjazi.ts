@@ -3,7 +3,9 @@ import type { Palette } from './types'
 // Enjazi's own palette: warm neutrals and one amber accent. The amber fill
 // takes a near-black label in both schemes, which is why the light scheme's
 // primary is the deeper shade 7 and links there are shade 9: shade 7 reads as
-// a button on the off-white canvas but not as text. docs/design.md.
+// a button on the off-white canvas but not as text. Shades 5 to 8 are a
+// softened amber; the primary lightens one shade on hover and darkens one on
+// press, which only a dark label survives. docs/design.md.
 export const enjazi: Palette = {
   id: 'enjazi',
   label: 'Enjazi',
@@ -17,10 +19,10 @@ export const enjazi: Palette = {
       '#fbe0a0',
       '#f9cc66',
       '#fbbf24',
-      '#f8ab12',
-      '#f59e0b',
-      '#d97706',
-      '#c86d06',
+      '#edb05a',
+      '#e9a23b',
+      '#d98e1f',
+      '#c27c14',
       '#a64b07',
     ],
     dark: [
@@ -55,6 +57,8 @@ export const enjazi: Palette = {
       surface3: '#eeece9',
       raised: '#ffffff',
       accentTint: 'rgba(245, 158, 11, 0.10)',
+      control: { border: '#d6d3ce', hover: '#f2f0ec' },
+      primary: { label: '#1a1305', hover: '#e9a23b', active: '#c27c14' },
       text: {
         accent: '#a64b07',
         red: '#bd2424',
@@ -69,6 +73,8 @@ export const enjazi: Palette = {
       surface3: '#262523',
       raised: '#262523',
       accentTint: 'rgba(245, 158, 11, 0.10)',
+      control: { border: '#44403c', hover: '#24211f' },
+      primary: { label: '#1a1305', hover: '#edb05a', active: '#d98e1f' },
       text: {
         red: '#ff6b6b',
         green: '#40c057',

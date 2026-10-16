@@ -39,8 +39,8 @@ export function themeFor(palette: Palette): MantineThemeOverride {
     // Two palettes' dark primary is the pale end of their accent ramp, which
     // needs a dark label rather than a white one. Mantine decides per fill.
     autoContrast: true,
-    // Mantine's 0.3 gives Enjazi's light amber (0.28) a white label at 3.2:1.
-    // No other fill the app paints with a label sits between 0.25 and 0.3.
+    // Mantine's default is 0.3. Every primary fill is under 0.17 or over
+    // 0.33, so both give the same labels; 0.25 was set for a darker amber.
     luminanceThreshold: 0.25,
     variantColorResolver,
     black: palette.black,

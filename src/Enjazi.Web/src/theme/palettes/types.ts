@@ -17,6 +17,12 @@ export type SchemeColors = {
   surface3: string
   raised: string
   accentTint: string
+  // The secondary button's border and hover fill. Its own fill is transparent.
+  control: { border: string; hover: string }
+  // The primary's label, hover fill and press fill, where Mantine's own do
+  // not fit: its label is theme.black or white, its hover the next shade
+  // down the ramp, and it has no press fill.
+  primary?: { label: string; hover: string; active: string }
   // accent only where the filled shade is too pale to read as text; links
   // and the accent's -text variable then use it instead.
   text: { accent?: string; red: string; green: string; orange: string; yellow: string }

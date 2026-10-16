@@ -53,6 +53,7 @@ export const dracula: Palette = {
       surface3: '#efe9d5',
       raised: '#fffdf7',
       accentTint: 'rgba(149, 96, 228, 0.12)',
+      control: { border: '#d7d5d0', hover: '#f4f2ec' },
       text: {
         red: '#c62728',
         green: '#11782e',
@@ -66,6 +67,7 @@ export const dracula: Palette = {
       surface3: '#393c4c',
       raised: '#343746',
       accentTint: 'rgba(149, 96, 228, 0.17)',
+      control: { border: '#565862', hover: '#383a47' },
       text: {
         red: '#ff8787',
         green: '#40c057',

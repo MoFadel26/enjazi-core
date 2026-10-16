@@ -10,13 +10,16 @@ import type { Palette, SchemeColors } from './palettes'
 // to the filled shade in light and shade 4 in dark, and neither clears 4.5:1
 // on every surface. Overriding them here means a screen keeps writing c="red".
 // A palette whose filled accent is too pale for text overrides the accent's
-// -text and the anchor colour the same way.
+// -text and the anchor colour the same way, and one with its own primary
+// states overrides Mantine's label and hover for the primary fill.
 const scheme = (colors: SchemeColors) => ({
   '--enjazi-surface-1': colors.surface1,
   '--enjazi-surface-2': colors.surface2,
   '--enjazi-surface-3': colors.surface3,
   '--enjazi-surface-raised': colors.raised,
   '--enjazi-accent-tint': colors.accentTint,
+  '--enjazi-control-border': colors.control.border,
+  '--enjazi-control-hover': colors.control.hover,
   '--mantine-color-red-text': colors.text.red,
   '--mantine-color-green-text': colors.text.green,
   '--mantine-color-orange-text': colors.text.orange,
@@ -24,6 +27,12 @@ const scheme = (colors: SchemeColors) => ({
   ...(colors.text.accent && {
     '--mantine-color-accent-text': colors.text.accent,
     '--mantine-color-anchor': colors.text.accent,
+  }),
+  ...(colors.primary && {
+    '--mantine-primary-color-contrast': colors.primary.label,
+    '--mantine-primary-color-filled-hover': colors.primary.hover,
+    '--mantine-color-accent-filled-hover': colors.primary.hover,
+    '--enjazi-primary-active': colors.primary.active,
   }),
 })
 

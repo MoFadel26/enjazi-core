@@ -14,6 +14,12 @@
   background: var(--enjazi-accent-tint);
 }
 
+/* Mantine has no press colour for Button. The filled accent sets
+   --button-active (components.ts); every other button keeps its hover. */
+.mantine-Button-root:active:where(:not([data-loading], :disabled, [data-disabled])) {
+  background-color: var(--button-active, var(--button-hover));
+}
+
 /* SegmentedControl has a variable for the active label only. */
 .mantine-SegmentedControl-label:not([data-active], [data-disabled]) {
   color: var(--mantine-color-dimmed);
@@ -41,8 +47,10 @@
 
 /* Spotlight fixes its hover to a gray and its selection to the primary
    colour; both keep ink text here. Hover is surface-2. surface-2 barely
-   differs from the raised panel, so the selection is the accent tint with a
-   primary bar on its leading edge, and stays so under the pointer. */
+   differs from the raised panel, so the selection is the accent tint with an
+   accent bar on its leading edge, and stays so under the pointer. The bar is
+   the accent's text colour, which clears 3:1 on the panel where Enjazi's
+   light primary does not. */
 .mantine-Spotlight-action:hover,
 .mantine-Spotlight-action[data-selected] {
   color: inherit;
@@ -56,7 +64,7 @@
 
 .mantine-Spotlight-action[data-selected] {
   background-color: var(--enjazi-accent-tint);
-  box-shadow: inset 2px 0 0 var(--mantine-primary-color-filled);
+  box-shadow: inset 2px 0 0 var(--mantine-color-accent-text);
 }
 
 /* Group labels are ::before content: eyebrows, xs, 500, +0.4px, uppercase, dimmed. */
