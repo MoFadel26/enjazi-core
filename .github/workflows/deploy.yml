@@ -1,7 +1,7 @@
 # Tests, image, deploy. Every push to main that passes the tests becomes the
 # running revision on Azure Container Apps. The one-time setup this relies on
 # (the container app, the federated credential, the three secrets, the Clerk
-# variable) is in the README under "Deploy".
+# variable) is in docs/deploy.md.
 name: deploy
 
 on:

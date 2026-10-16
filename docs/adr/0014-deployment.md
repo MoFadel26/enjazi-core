@@ -117,6 +117,6 @@ outside Azure to create it, which the firewall does not allow.
 - Scaling past one replica needs the migration moved out of startup, and a
   SignalR backplane so a message reaches users connected to other replicas.
 - The first push after setup has a failing deploy job, because the container
-  app is created after the first image exists. The README gives the order.
+  app is created after the first image exists. docs/deploy.md gives the order.
 - The image on GHCR is public, so Container Apps pulls it without a stored
   credential. It contains no secrets.

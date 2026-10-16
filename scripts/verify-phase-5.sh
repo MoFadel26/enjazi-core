@@ -17,7 +17,7 @@
 # 4. Playwright drives every screen against the real API, plus the Phase 4
 #    auth tests. Needs the local enjazi_core database migrated, Clerk:Authority
 #    in appsettings.Development.json and the Clerk keys in $web/.env.local and
-#    $web/.env.test.local (README, "Running it").
+#    $web/.env.test.local (docs/development.md).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 web=src/Enjazi.Web

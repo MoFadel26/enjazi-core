@@ -24,7 +24,7 @@
 #                      account (ADR-0019). Without it that answers 503. Pass
 #                      it on every run once set, as GUEST_SIGNING_KEY.
 #
-# The README, "Deploy", gives the order this fits into.
+# docs/deploy.md gives the order this fits into.
 set -euo pipefail
 
 LOCATION=centralindia

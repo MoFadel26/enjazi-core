@@ -172,7 +172,7 @@ other requests may still be reading it.
 - New configuration: `Guest:SigningKey` (required for guest mode),
   `Guest:LifetimeDays` (default 7), `Guest:PermitsPerHour` (default 5;
   100 in `appsettings.Development.json`, so repeated local browser runs
-  from one address do not hit it). The README lists them.
+  from one address do not hit it). docs/deploy.md lists them.
 - `infra/deploy.sh` takes an optional `GUEST_SIGNING_KEY`. It replaces the
   app's secrets and environment on every run, so once set it has to be
   passed on every run.
