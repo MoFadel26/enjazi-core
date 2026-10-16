@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Checkbox, Group, Table, Text } from '@mantine/core'
-import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import { formatDateTime } from '../lib/dates'
 import { Icon } from '../ui/Icon'
+import { PencilSimpleIcon, TrashIcon } from '../ui/icons'
 import { columnWidths } from './columns'
 import type { Task, TaskPriority } from './queries'
 import { MotionTr, rowMotion } from './rowMotion'

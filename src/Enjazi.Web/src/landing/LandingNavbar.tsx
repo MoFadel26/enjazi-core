@@ -1,9 +1,9 @@
 import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
-import { LightningIcon, MoonIcon, SunIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { useSaveTheme } from '../settings/queries'
 import { Icon } from '../ui/Icon'
+import { LightningIcon, MoonIcon, SunIcon } from '../ui/icons'
 import { hiddenWhilePending } from './hiddenWhilePending'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.

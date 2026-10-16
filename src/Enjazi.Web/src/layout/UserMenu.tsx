@@ -1,9 +1,9 @@
 import { ActionIcon, Group, Stack, Text } from '@mantine/core'
-import { SignOutIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router'
 import { useCurrentUser, useLogout } from '../auth/session'
 import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
+import { SignOutIcon } from '../ui/icons'
 
 // The user row pinned to the bottom of the sidebar.
 export function UserMenu() {

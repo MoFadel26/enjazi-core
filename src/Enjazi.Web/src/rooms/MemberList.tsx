@@ -1,8 +1,8 @@
 import { ActionIcon, Badge, Box, Group, Skeleton, Table, Text } from '@mantine/core'
-import { UserMinusIcon } from '@phosphor-icons/react'
 import { formatDate } from '../lib/dates'
 import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
+import { UserMinusIcon } from '../ui/icons'
 import type { RoomMember } from './queries'
 
 type Props = {

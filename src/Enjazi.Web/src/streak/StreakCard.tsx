@@ -1,7 +1,7 @@
 import { Box, Group, Text } from '@mantine/core'
-import { FireIcon } from '@phosphor-icons/react'
 import { Icon } from '../ui/Icon'
 import { StatCard } from '../ui/StatCard'
+import { FireIcon } from '../ui/icons'
 import { useStreak } from './queries'
 import { WeekRow } from './WeekRow'
 

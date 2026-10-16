@@ -1,8 +1,8 @@
 import { Kbd, NavLink } from '@mantine/core'
 import { useOs } from '@mantine/hooks'
 import { spotlight } from '@mantine/spotlight'
-import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { Icon } from '../ui/Icon'
+import { MagnifyingGlassIcon } from '../ui/icons'
 
 // Opens the command palette. Looks like a nav link but is a button outside
 // the nav list, so the active-link indicator never lands on it.

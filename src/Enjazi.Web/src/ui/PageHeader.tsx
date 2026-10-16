@@ -1,8 +1,8 @@
 import { Anchor, Box, Divider, Group, Text, Title } from '@mantine/core'
-import { ArrowLeftIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Icon } from './Icon'
+import { ArrowLeftIcon } from './icons'
 
 type Props = {
   title: string

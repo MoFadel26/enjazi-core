@@ -1,7 +1,7 @@
 import { Button, Kbd } from '@mantine/core'
-import { ListChecksIcon } from '@phosphor-icons/react'
 import { EmptyState } from '../ui/EmptyState'
 import { Icon } from '../ui/Icon'
+import { ListChecksIcon } from '../ui/icons'
 import type { Filter } from './useTasksView'
 
 type Props = {

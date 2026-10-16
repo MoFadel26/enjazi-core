@@ -1,5 +1,4 @@
 import { Alert, Box, Button, Group, Paper, ScrollArea, Stack, Text, TextInput, VisuallyHidden } from '@mantine/core'
-import { ChatCircleIcon } from '@phosphor-icons/react'
 import dayjs from 'dayjs'
 import { useEffect, useRef, useState } from 'react'
 import { describeError } from '../api/errors'
@@ -7,6 +6,7 @@ import { useCurrentUser } from '../auth/session'
 import { EmptyState } from '../ui/EmptyState'
 import { Icon } from '../ui/Icon'
 import { UserAvatar } from '../ui/UserAvatar'
+import { ChatCircleIcon } from '../ui/icons'
 import { useRoomFeed } from './hub'
 import { useMessages, useSendMessage, type Message } from './queries'
 

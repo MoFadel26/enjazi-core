@@ -1,6 +1,4 @@
-import type { Icon as Glyph } from '@phosphor-icons/react'
-
-export type { Glyph }
+import type { Glyph } from './icons'
 
 // Every icon in the app is a Phosphor glyph drawn through this component, so
 // size and weight are decided here. text sits in a line of text or an input,

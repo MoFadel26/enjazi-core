@@ -1,12 +1,4 @@
-import {
-  CalendarBlankIcon,
-  ChatsCircleIcon,
-  GearIcon,
-  ListChecksIcon,
-  PlusIcon,
-  SquaresFourIcon,
-  UsersIcon,
-} from '@phosphor-icons/react'
+import { CalendarBlankIcon, ChatsCircleIcon, GearIcon, ListChecksIcon, PlusIcon, SquaresFourIcon, UsersIcon } from '../ui/icons'
 
 // Where the sidebar, the command palette and the shortcuts go. `shortcut` is
 // tinykeys' syntax: 'g d' is G then D.

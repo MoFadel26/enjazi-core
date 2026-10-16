@@ -1,10 +1,10 @@
 import { Button, Container, Group, Stack, Text, Title } from '@mantine/core'
-import { ArrowRightIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 import { display } from '../theme/display'
 import { Icon } from '../ui/Icon'
+import { ArrowRightIcon } from '../ui/icons'
 import { hiddenWhilePending } from './hiddenWhilePending'
 
 // Hero section: product headline, value proposition and CTAs.

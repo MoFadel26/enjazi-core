@@ -1,9 +1,9 @@
 import { Kbd } from '@mantine/core'
 import { Spotlight, type SpotlightActionData, type SpotlightActionGroupData } from '@mantine/spotlight'
-import { SquareIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router'
 import { useTasks } from '../tasks/queries'
 import { Icon } from '../ui/Icon'
+import { SquareIcon } from '../ui/icons'
 import { adminLinks, links, newTask, shortcutLabel, type Destination } from './destinations'
 
 type Props = { isAdmin: boolean }

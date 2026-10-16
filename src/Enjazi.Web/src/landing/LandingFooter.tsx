@@ -1,7 +1,7 @@
 import { Anchor, Container, Group, Stack, Text, ThemeIcon } from '@mantine/core'
-import { LightningIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { Icon } from '../ui/Icon'
+import { LightningIcon } from '../ui/icons'
 
 // Minimalist landing page footer.
 export function LandingFooter() {

@@ -9,19 +9,20 @@ import {
   Text,
   ThemeIcon,
 } from '@mantine/core'
+import { Icon } from '../ui/Icon'
 import {
   CalendarBlankIcon,
+  ChatsCircleIcon,
   CheckCircleIcon,
   CheckIcon,
-  ChatsCircleIcon,
   CircleIcon,
   FireIcon,
   GearIcon,
   LightningIcon,
   ListChecksIcon,
   SquaresFourIcon,
-} from '@phosphor-icons/react'
-import { Icon, type Glyph } from '../ui/Icon'
+  type Glyph,
+} from '../ui/icons'
 
 // App preview mockup showing the Enjazi interface inside window chrome.
 export function LandingAppPreview() {

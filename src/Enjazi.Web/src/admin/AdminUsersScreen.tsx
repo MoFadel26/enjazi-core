@@ -1,12 +1,12 @@
 import { Alert, Badge, Box, Group, Text, TextInput } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { DataTable } from 'mantine-datatable'
 import { useState } from 'react'
 import { describeError } from '../api/errors'
 import { formatDate } from '../lib/dates'
 import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
+import { MagnifyingGlassIcon } from '../ui/icons'
 import { EditUserModal } from './EditUserModal'
 import { pageSize, useAdminUsers, type AdminUser } from './queries'
 

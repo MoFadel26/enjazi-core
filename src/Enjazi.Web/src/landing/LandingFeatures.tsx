@@ -1,6 +1,6 @@
 import { Card, Container, SimpleGrid, Text, ThemeIcon, Title } from '@mantine/core'
-import { CalendarBlankIcon, ChatsCircleIcon, FireIcon, ListChecksIcon } from '@phosphor-icons/react'
 import { Icon } from '../ui/Icon'
+import { CalendarBlankIcon, ChatsCircleIcon, FireIcon, ListChecksIcon } from '../ui/icons'
 
 const features = [
   {

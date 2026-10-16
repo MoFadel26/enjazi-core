@@ -1,9 +1,9 @@
 import { Box, Group, Skeleton, Tooltip, VisuallyHidden } from '@mantine/core'
-import { FireIcon } from '@phosphor-icons/react'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { offsets, transitions } from '../theme/motion'
 import { Icon } from '../ui/Icon'
+import { FireIcon } from '../ui/icons'
 import { useStreak } from './queries'
 import { useStreakMoment } from './useStreakMoment'
 

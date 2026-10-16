@@ -1,7 +1,7 @@
 import { Anchor, Box, Divider, Group, Paper, Skeleton } from '@mantine/core'
-import { ArrowLeftIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { Icon } from '../ui/Icon'
+import { ArrowLeftIcon } from '../ui/icons'
 import { MemberListSkeleton } from './MemberList'
 import { RoomBody } from './RoomBody'
 import { chatHeight } from './RoomChat'

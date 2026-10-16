@@ -1,8 +1,8 @@
 import { Center, Divider, Group, Stack, Text, ThemeIcon } from '@mantine/core'
-import { LightningIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 import { Icon } from '../ui/Icon'
+import { LightningIcon } from '../ui/icons'
 
 // The centred column both anonymous screens render, with the wordmark above
 // Clerk's card, and below it the way in without an account (ADR-0017). The
