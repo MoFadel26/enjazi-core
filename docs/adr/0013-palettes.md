@@ -1,6 +1,7 @@
 # ADR-0013: Colour palettes
 
-**Status:** accepted
+**Status:** accepted. Since 2026-10-16 the default is `nord`, not `enjazi`;
+accounts saved before then keep theirs.
 **Date:** 2026-09-26
 
 ## Context

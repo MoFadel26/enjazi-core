@@ -62,7 +62,9 @@ works.
 | `solarized` | Solarized | Solarized | blue |
 | `dracula` | Dracula | Dracula (dark) and Alucard (light) | purple |
 
-`enjazi` is the default. Its ramp is also registered as `theme.colors.enjazi`
+`nord` is the default: new accounts, guests and visitors on the landing and
+sign-in pages get it. Accounts saved before 2026-10-16, when it replaced
+`enjazi`, keep their palette. Enjazi's ramp is also registered as `theme.colors.enjazi`
 (`themeFor` registers every palette's accent under the palette's id), so
 `color="enjazi"` and `color="accent"` paint the same amber.
 
