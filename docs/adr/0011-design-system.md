@@ -1,7 +1,8 @@
 # ADR-0011: One design system — Linear's dark, Cal.com's light, one accent
 
 **Status:** accepted. The `enjazi` palette's colours and the card radius
-are superseded by ADR-0016; the structural decisions stand.
+are superseded by ADR-0016, and the Tabler icons by ADR-0018; the
+structural decisions stand.
 **Date:** 2026-09-24
 
 ## Context

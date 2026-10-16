@@ -528,8 +528,16 @@ event chips radius sm, 500 weight title.
 
 ## Icons
 
-`@tabler/icons-react`, the set Mantine's documentation uses. Default size 18,
-stroke 1.75. Icons appear in: sidebar items, page-header actions, row
+`@phosphor-icons/react`, ADR-0018, always through `src/ui/Icon.tsx`, which
+sets size and weight. Sizes: `text` 16px (in a line of text or an input:
+the back link, the admin search, the logo mark, the streak chip, the
+landing preview), `control` 20px, the default (nav items, the command
+palette, buttons and action icons, empty states, the streak tile),
+`feature` 24px (the landing feature cards, in a `ThemeIcon` of size `lg`).
+Weight `regular`; `fill` only for the active item: the active sidebar link
+and, in the landing preview, the active mock link and the done check.
+Icons take the text's colour; the accent only where it already applied.
+Icons appear in: sidebar items, page-header actions, row
 actions (as `ActionIcon` with `aria-label`), priority and status markers,
 empty states, the streak tile. A button whose only content is an icon has an
 `aria-label` equal to the text it replaced, so the accessible name is
@@ -580,7 +588,7 @@ type, surfaces and the few UX additions named here.
   every other card. The card's title ("Sign in to …") is the application
   name set in the Clerk dashboard, not in this code. Below the card, a
   divider labelled "or skip the account" and a full-width `default`
-  "Try as guest" button (icon `IconUserQuestion`), hidden while a guest
+  "Try as guest" button (icon `UserCircleDashedIcon`), hidden while a guest
   session exists.
 - **Landing** — navbar: wordmark left; theme toggle, "Sign in" (`default`)
   and "Get started" (primary), all `xs`, on the right. Hero: an h1 at the
