@@ -17,6 +17,9 @@ public static class TestTokens
 
     public static readonly SymmetricSecurityKey Key = new(RandomNumberGenerator.GetBytes(32));
 
+    /// <summary>Guest:SigningKey for the test host, as configuration holds it.</summary>
+    public static readonly string GuestKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
     public static string NewClerkUserId() => $"user_{Guid.NewGuid():n}";
 
     public static string Create(

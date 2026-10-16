@@ -100,6 +100,13 @@ public sealed class UsersController(
             return NotFound();
         }
 
+        // A guest holds no role, ever (ADR-0017).
+        if (user.IsGuest && request.Roles.Count > 0)
+        {
+            ModelState.AddModelError(nameof(request.Roles), "A guest cannot be given a role.");
+            return ValidationProblem(ModelState);
+        }
+
         // Lockout is Identity's own mechanism. ClerkAuthentication checks it
         // on every request, so the account's next API call is refused. An open
         // hub connection lasts until it reconnects; ADR-0015 notes the trade.

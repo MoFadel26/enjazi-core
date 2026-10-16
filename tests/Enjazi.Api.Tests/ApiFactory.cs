@@ -41,6 +41,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.UseSetting("ConnectionStrings:Default", _postgres.GetConnectionString());
         builder.UseSetting("Clerk:AuthorizedParties:0", TestTokens.Origin);
+        builder.UseSetting("Guest:SigningKey", TestTokens.GuestKey);
+        // The production default. The test host runs as Development, whose
+        // appsettings raise it for local browser runs.
+        builder.UseSetting("Guest:PermitsPerHour", "5");
         builder.ConfigureTestServices(services =>
         {
             services.AddKeyedSingleton<TimeProvider>(StreakClock.Key, Clock);

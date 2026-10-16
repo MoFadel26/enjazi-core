@@ -49,8 +49,11 @@ public sealed class RoomsController(AppDbContext db, ICurrentUser currentUser) :
         return room is null ? NotFound() : room;
     }
 
+    /// <summary>Guests join and chat, but cannot create rooms (ADR-0017).</summary>
     [HttpPost]
+    [Authorize(Policy = Policies.NotGuest)]
     [ProducesResponseType<RoomResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<RoomResponse>> Create(CreateRoomRequest request)
     {
         var now = Timestamps.UtcNow();

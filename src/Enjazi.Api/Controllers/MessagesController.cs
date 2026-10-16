@@ -5,6 +5,7 @@ using Enjazi.Api.Data.Entities;
 using Enjazi.Api.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,9 +51,11 @@ public sealed class MessagesController(
     }
 
     [HttpPost]
+    [EnableRateLimiting(RateLimits.Messages)]
     [ProducesResponseType<MessageResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<MessageResponse>> Send(Guid roomId, SendMessageRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Body))

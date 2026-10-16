@@ -31,9 +31,13 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 // arrived over HTTPS look like one, so the HTTPS redirect does not loop and
 // the request scheme matches the Secure cookie. The ingress proxy's address
 // is not fixed, so every proxy is trusted; the container has no other way in.
+// ForwardLimit 1 reads only the last X-Forwarded-For entry, the one the
+// ingress appended, so a client cannot choose its own address by sending the
+// header itself. The guest rate limit counts by that address (ADR-0017).
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
     options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
@@ -53,15 +57,32 @@ builder.Services
     .AddRoles<Role>()
     .AddEntityFrameworkStores<AppDbContext>();
 
+// Two issuers. Clerk signs real users' tokens; this API signs guests' with
+// Guest:SigningKey (ADR-0017). The default scheme looks at the token's issuer
+// and forwards to the scheme that validates it. Both produce the same
+// principal, so nothing downstream knows which ran.
+builder.Services.AddSingleton<GuestTokens>();
 builder.Services.AddScoped<ClerkUserProvisioner>();
+builder.Services.AddScoped<GuestAccounts>();
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => ClerkAuthentication.Configure(options, builder.Configuration));
+    .AddAuthentication(GuestAuthentication.ClerkOrGuest)
+    .AddPolicyScheme(GuestAuthentication.ClerkOrGuest, null, options =>
+        options.ForwardDefaultSelector = GuestAuthentication.SelectScheme)
+    .AddJwtBearer(options => ClerkAuthentication.Configure(options, builder.Configuration))
+    .AddJwtBearer(GuestAuthentication.Scheme, _ => { });
+builder.Services.AddOptions<JwtBearerOptions>(GuestAuthentication.Scheme)
+    .Configure<GuestTokens>(GuestAuthentication.Configure);
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin));
+    .AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin))
+    .AddPolicy(Policies.NotGuest, policy => policy
+        .RequireAuthenticatedUser()
+        .RequireAssertion(context => !context.User.IsInRole(Roles.Guest)));
+
+builder.Services.AddRateLimiter(options => RateLimits.Configure(options, builder.Configuration));
 
 builder.Services.AddHostedService<AdminBootstrap>();
+builder.Services.AddHostedService<GuestCleanup>();
 
 // The streak asks the clock what day it is, and the tests move that clock
 // rather than wait for midnight. It is keyed so it is the streak's clock and
@@ -133,6 +154,9 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// After authentication, so the message limit can count per user.
+app.UseRateLimiter();
 
 app.MapControllers();
 app.MapHub<RoomHub>("/hubs/rooms");

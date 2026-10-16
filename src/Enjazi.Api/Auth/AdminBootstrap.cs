@@ -6,11 +6,20 @@ namespace Enjazi.Api.Auth;
 public static class Roles
 {
     public const string Admin = "Admin";
+
+    /// <summary>
+    /// Added to a guest's principal by <see cref="GuestAuthentication"/>. Not a
+    /// stored role: nobody can be given it, and a guest holds no other.
+    /// </summary>
+    public const string Guest = "Guest";
 }
 
 public static class Policies
 {
     public const string Admin = "Admin";
+
+    /// <summary>Signed in with an account, not as a guest.</summary>
+    public const string NotGuest = "NotGuest";
 }
 
 /// <summary>
@@ -46,8 +55,9 @@ public sealed class AdminBootstrap(IServiceProvider services, IConfiguration con
         var users = scoped.GetRequiredService<UserManager<User>>();
         var roles = scoped.GetRequiredService<RoleManager<Role>>();
 
+        // A guest is never promoted, whatever address it carries (ADR-0017).
         var user = await users.FindByEmailAsync(email);
-        if (user is null)
+        if (user is null || user.IsGuest)
         {
             return false;
         }

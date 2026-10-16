@@ -11,6 +11,10 @@
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
     <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/../..</OpenApiDocumentsDirectory>
     <OpenApiGenerateDocumentsOptions>--file-name openapi</OpenApiGenerateDocumentsOptions>
+
+    <!-- Local secrets, such as Guest:SigningKey, live in the user profile,
+         never in the repository: dotnet user-secrets. -->
+    <UserSecretsId>enjazi-core-api</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

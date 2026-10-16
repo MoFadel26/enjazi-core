@@ -41,6 +41,39 @@ public static class SignedInClient
     }
 
     /// <summary>
+    /// A client carrying a new guest's token. Each call comes from its own
+    /// made-up address unless one is given, because guest creation is limited
+    /// per address and the database outlives one test.
+    /// </summary>
+    public static async Task<(HttpClient Client, GuestSessionResponse Session, UserResponse User)> StartGuestAsync(
+        this WebApplicationFactory<Program> factory, string? address = null)
+    {
+        var response = await factory.PostGuestAsync(address ?? NewAddress());
+        response.EnsureSuccessStatusCode();
+        var session = (await response.Content.ReadFromJsonAsync<GuestSessionResponse>())!;
+
+        var client = factory.CreateHttpsClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.Token);
+        var user = await client.GetFromJsonAsync<UserResponse>("/api/auth/me");
+        return (client, session, user!);
+    }
+
+    /// <summary>
+    /// POST /api/auth/guest as if from that address: the forwarded header the
+    /// ingress would add, which Program.cs turns into RemoteIpAddress.
+    /// </summary>
+    public static Task<HttpResponseMessage> PostGuestAsync(
+        this WebApplicationFactory<Program> factory, string address, string? timeZone = "UTC")
+    {
+        var client = factory.CreateHttpsClient();
+        client.DefaultRequestHeaders.Add("X-Forwarded-For", address);
+        return client.PostAsJsonAsync("/api/auth/guest", new StartGuestRequest(timeZone));
+    }
+
+    public static string NewAddress() =>
+        $"10.{Random.Shared.Next(256)}.{Random.Shared.Next(256)}.{Random.Shared.Next(1, 255)}";
+
+    /// <summary>
     /// Production redirects plain HTTP to HTTPS, so the test client starts on
     /// https. TestServer honours the scheme of the base address without doing
     /// real TLS.

@@ -39,15 +39,20 @@ public static class ClerkAuthentication
     /// the token as ?access_token=. Accepted on the hub only: anywhere else a
     /// token in the URL would end up in logs and history for no reason.
     /// </summary>
-    private static Task ReadHubToken(MessageReceivedContext context)
+    internal static Task ReadHubToken(MessageReceivedContext context)
     {
-        string? token = context.Request.Query["access_token"];
-        if (!string.IsNullOrEmpty(token) && context.Request.Path.StartsWithSegments("/hubs/rooms"))
+        if (HubToken(context.Request) is { } token)
         {
             context.Token = token;
         }
 
         return Task.CompletedTask;
+    }
+
+    internal static string? HubToken(HttpRequest request)
+    {
+        string? token = request.Query["access_token"];
+        return !string.IsNullOrEmpty(token) && request.Path.StartsWithSegments("/hubs/rooms") ? token : null;
     }
 
     private static async Task OnTokenValidatedAsync(TokenValidatedContext context, string[] authorizedParties)
@@ -64,8 +69,11 @@ public static class ClerkAuthentication
             return;
         }
 
+        // A guest signing up in the same browser sends its guest token along,
+        // and a new account takes over the guest's row instead (ADR-0017).
         var services = context.HttpContext.RequestServices;
-        var user = await services.GetRequiredService<ClerkUserProvisioner>().FindOrCreateAsync(principal);
+        string? guestToken = context.Request.Headers[GuestAuthentication.UpgradeHeader];
+        var user = await services.GetRequiredService<ClerkUserProvisioner>().FindOrCreateAsync(principal, guestToken);
         if (user is null)
         {
             context.Fail("The session token has no usable email claim, or its address belongs to another account.");
