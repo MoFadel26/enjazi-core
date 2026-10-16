@@ -4,7 +4,30 @@
   "rules": {
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }],
-    "typescript/no-explicit-any": "error"
+    "typescript/no-explicit-any": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@phosphor-icons/react",
+            "message": "Import icons from src/ui/icons.ts. The package's main entry loads every icon in development."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["@phosphor-icons/react/**"],
+            "message": "Add the icon to src/ui/icons.ts and import it from there."
+          }
+        ]
+      }
+    ]
   },
+  "overrides": [
+    {
+      "files": ["src/ui/icons.ts"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ],
   "ignorePatterns": ["src/api/schema.d.ts"]
 }
