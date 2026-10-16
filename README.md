@@ -57,6 +57,14 @@ Guest mode needs a signing key, kept in user secrets, outside the repository
 dotnet user-secrets set Guest:SigningKey "$(openssl rand -base64 48)" --project src/Enjazi.Api
 ```
 
+Deleting a Clerk account from Settings needs the instance's secret key, in
+user secrets too (ADR-0019). Without it the API answers 503 and nothing is
+deleted; guests can delete theirs either way:
+
+```sh
+dotnet user-secrets set Clerk:SecretKey sk_test_... --project src/Enjazi.Api
+```
+
 Then:
 
 ```sh
@@ -119,6 +127,7 @@ is in `appsettings*.json` or in the image.
 | `Clerk__AuthorizedParties__0` | `infra/deploy.sh` | `https://<app>.<environment domain>`, the only origin whose tokens are accepted |
 | `Bootstrap__AdminEmail` | `infra/deploy.sh`, from `ADMIN_EMAIL`, only if set | Account made admin on its first sign-in |
 | `Guest__SigningKey` | `infra/deploy.sh`, from `GUEST_SIGNING_KEY`, as the Container Apps secret `guest-signing-key`, only if set | Base64, 32 or more bytes (`openssl rand -base64 48`). Signs guest tokens. Without it guest mode is off and `POST /api/auth/guest` answers 503 |
+| `Clerk__SecretKey` | `infra/deploy.sh`, from `CLERK_SECRET_KEY`, as the Container Apps secret `clerk-secret-key`, only if set | Clerk secret key. Deletes the Clerk user when someone deletes their account (ADR-0019). Without it `DELETE /api/auth/me` answers 503 for a Clerk account; a guest can still delete theirs |
 | `Guest__LifetimeDays` | not set; default `7` | Days until a guest account and its data are deleted |
 | `Guest__PermitsPerHour` | not set; default `5` | Guest accounts one client address can create per hour |
 | `ASPNETCORE_HTTPS_PORT` | `infra/deploy.sh` | `443`, the port HTTP requests are redirected to |
@@ -135,6 +144,7 @@ is in `appsettings*.json` or in the image.
 | `CLERK_AUTHORITY` | always | Clerk Frontend API URL, e.g. `https://example-1.clerk.accounts.dev` |
 | `ADMIN_EMAIL` | no | Becomes `Bootstrap__AdminEmail` |
 | `GUEST_SIGNING_KEY` | no, but pass it on every run once set | Becomes `Guest__SigningKey`. A run without it removes the secret |
+| `CLERK_SECRET_KEY` | no, but pass it on every run once set | Becomes `Clerk__SecretKey`. A run without it removes the secret |
 
 The image build reads `VITE_CLERK_PUBLISHABLE_KEY`, the Clerk publishable
 key, which Vite writes into the bundle. The workflow passes it from the

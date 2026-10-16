@@ -19,6 +19,10 @@
 #                      guest mode is off. Pass it on every run once set: the
 #                      configuration below replaces the app's secrets and
 #                      environment, so a run without it removes it.
+#   CLERK_SECRET_KEY   optional; the Clerk instance's secret key (sk_...).
+#                      Deletes the Clerk user when someone deletes their
+#                      account (ADR-0019). Without it that answers 503. Pass
+#                      it on every run once set, as GUEST_SIGNING_KEY.
 #
 # The README, "Deploy", gives the order this fits into.
 set -euo pipefail
@@ -40,6 +44,7 @@ if ! [[ "$PG_ADMIN_PASSWORD" =~ ^[A-Za-z0-9]{16,}$ ]]; then
 fi
 ADMIN_EMAIL="${ADMIN_EMAIL:-}"
 GUEST_SIGNING_KEY="${GUEST_SIGNING_KEY:-}"
+CLERK_SECRET_KEY="${CLERK_SECRET_KEY:-}"
 : "${CLERK_AUTHORITY:?set CLERK_AUTHORITY, e.g. https://example-1.clerk.accounts.dev}"
 
 echo "-- CLI extension and resource providers"
@@ -128,6 +133,17 @@ if [ -n "$GUEST_SIGNING_KEY" ]; then
             secretRef: guest-signing-key"
 fi
 
+clerk_secret=""
+clerk_env=""
+if [ -n "$CLERK_SECRET_KEY" ]; then
+  clerk_secret="
+      - name: clerk-secret-key
+        value: \"$CLERK_SECRET_KEY\""
+  clerk_env="
+          - name: Clerk__SecretKey
+            secretRef: clerk-secret-key"
+fi
+
 # The spec holds the connection string, so it is private and deleted on exit.
 spec=$(mktemp)
 chmod 600 "$spec"
@@ -152,7 +168,7 @@ properties:
       allowInsecure: false
     secrets:
       - name: db-connection
-        value: "$CONNECTION"$guest_secret
+        value: "$CONNECTION"$guest_secret$clerk_secret
   template:
     containers:
       - name: $APP_NAME
@@ -168,7 +184,7 @@ properties:
           - name: Clerk__Authority
             value: "$CLERK_AUTHORITY"
           - name: Clerk__AuthorizedParties__0
-            value: "$APP_ORIGIN"$admin_env$guest_env
+            value: "$APP_ORIGIN"$admin_env$guest_env$clerk_env
         probes:
           - type: Startup
             httpGet:
