@@ -34,6 +34,8 @@ export async function ensureClerkUser(email: string, password: string, displayNa
 async function signInAs(page: Page, email: string) {
   await page.addInitScript(() => {
     window.apiFetch = async (input, init) => {
+      // After a navigation, Clerk's script may not have loaded yet.
+      while (!window.Clerk?.loaded) await new Promise((resolve) => setTimeout(resolve, 50))
       const token = await window.Clerk.session?.getToken()
       const headers = new Headers(init?.headers)
       if (token) headers.set('Authorization', `Bearer ${token}`)
@@ -65,10 +67,11 @@ export async function signIn(page: Page, credentials: { email: string; password:
 }
 
 // Every Clerk user these specs made, except the admin, which is kept so its
-// local row and role persist between runs.
+// local row and role persist between runs. A development instance holds at
+// most 100 users. The search matches nothing when the query contains the +.
 export async function deleteTestUsers() {
   for (;;) {
-    const { data } = await clerkApi.users.getUserList({ query: testEmailSuffix, limit: 100 })
+    const { data } = await clerkApi.users.getUserList({ query: 'clerk_test', limit: 100 })
     const doomed = data.filter((user) =>
       user.emailAddresses.every((address) => address.emailAddress !== admin.email && address.emailAddress.endsWith(testEmailSuffix)),
     )

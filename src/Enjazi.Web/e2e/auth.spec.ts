@@ -59,7 +59,8 @@ test('a wrong password stays on the login page with a message', async ({ page })
   await page.goto('/login')
   await signInWithForm(page, 'not-the-password')
 
-  await expect(page.getByText(/password is incorrect/i)).toBeVisible()
+  // Clerk shows the message under the field and repeats it in a live region.
+  await expect(page.getByText(/password is incorrect/i).first()).toBeVisible()
   await expect(page).toHaveURL(/\/login/)
 })
 

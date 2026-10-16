@@ -16,6 +16,10 @@ export default defineConfig({
   globalSetup: './e2e/global-setup.ts',
   globalTeardown: './e2e/global-teardown.ts',
   fullyParallel: false,
+  // Every test loads Clerk and signs in against the development instance over
+  // the network. With the default of half the cores, those calls queue long
+  // enough to time out; two workers pass reliably.
+  workers: 2,
   retries: 0,
   reporter: 'list',
   use: {
