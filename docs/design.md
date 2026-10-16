@@ -8,15 +8,16 @@ Two published systems were taken as sources, both fetched with
 `npx getdesign@latest add <name>` and reduced to what an application (not a
 marketing site) needs:
 
-- **Linear** (`linear.app`) — the dark scheme, the surface ladder, the single
-  lavender accent, type weights and tracking, radius scale, density.
-- **Cal.com** (`cal`) — the light scheme, the calendar's grid surfaces, the
-  pill segmented control, avatar treatment, 40px controls.
+- **Linear** (`linear.app`) — the surface ladder, type weights and tracking,
+  radius scale, density.
+- **Cal.com** (`cal`) — the calendar's grid surfaces, the pill segmented
+  control, avatar treatment, 40px controls.
 
-Where they disagree the rule is: Linear decides structure and accent, Cal.com
-decides the light palette. ADR-0011 records why.
+Where they disagree the rule is: Linear decides structure, Cal.com the
+calendar. ADR-0011 records why.
 
-Those two are the `enjazi` palette. Structure, type, space and motion are
+The `enjazi` palette's colours are its own: warm neutrals and one amber
+accent, ADR-0016. Structure, type, space and motion are
 fixed for the whole app; colour is a palette, and three more published ones
 sit beside it — Nord, Solarized and Dracula. ADR-0013 records why and how
 one is chosen.
@@ -41,6 +42,10 @@ one is chosen.
 6. **Quiet, not static.** Every change the user causes answers at once and
    moves for 120–180ms. Motion confirms a change; it never decorates. Under
    the OS's reduced-motion setting nothing moves, and nothing is lost.
+7. **Flat fills only.** No gradient anywhere: not on a background, button,
+   text, border or glow. Every fill is one colour. This includes what third
+   parties paint: Clerk's primary button carries a gradient overlay, which
+   `src/auth/clerkAppearance.ts` removes.
 
 ## Colour
 
@@ -52,13 +57,14 @@ works.
 
 | Id | Name | Source | Accent |
 |---|---|---|---|
-| `enjazi` | Enjazi | Linear (dark) and Cal.com (light) | lavender |
+| `enjazi` | Enjazi | Enjazi's own, ADR-0016 | amber |
 | `nord` | Nord | Nord | frost blue |
 | `solarized` | Solarized | Solarized | blue |
 | `dracula` | Dracula | Dracula (dark) and Alucard (light) | purple |
 
-`enjazi` is the default and is the Phase 7 system unchanged except where the
-contrast rule below moved a value.
+`enjazi` is the default. Its ramp is also registered as `theme.colors.enjazi`
+(`themeFor` registers every palette's accent under the palette's id), so
+`color="enjazi"` and `color="accent"` paint the same amber.
 
 ### Roles
 
@@ -88,10 +94,13 @@ paints `Paper`, `Card`, `Modal` and `AppShell` panels with
 above it.
 
 `theme.autoContrast` is on. A filled element's label is `theme.black` or
-white, whichever reads on the fill, decided by Mantine at a 0.3 luminance
-threshold. Two palettes need it: their dark-scheme primary is the pale end
-of the accent ramp, because the mid ramp is too close to their canvas to
-read as a button at all.
+white, whichever reads on the fill, decided by Mantine at a luminance
+threshold of 0.25 (`theme.luminanceThreshold`; Mantine's default is 0.3).
+Three palettes need it: Nord's and Dracula's dark-scheme primary is the pale
+end of the accent ramp, and Enjazi's amber takes a near-black label in both
+schemes. Enjazi's light primary has a luminance of 0.28, which Mantine's 0.3
+would give a white label at 3.2:1; no other fill the app paints with a label
+lies between 0.25 and 0.3.
 
 ### Contrast
 
@@ -105,10 +114,14 @@ axe-core in both schemes. The rules the values were chosen against:
   paints its own surface-1 background wherever it sits.
 - The accent as text — links, and an own message's author name — clears
   4.5:1 on the canvas, on surface-1 and on the accent tint over surface-1.
-  The light scheme's `primaryShade` is the first shade that does all three
-  and still carries its own label; that is why it is 7 and not 6 in
-  `enjazi`.
-- A filled primary stands 3:1 apart from the canvas behind it.
+  In the other three palettes the light scheme's `primaryShade` is the first
+  shade that does all three and still carries its own label. Amber cannot:
+  a shade dark enough to read as text on white no longer takes a dark label.
+  So `enjazi`'s light primary is shade 7, and its accent text is shade 9,
+  set through the optional `text.accent` of the scheme, which overrides
+  `--mantine-color-accent-text` and `--mantine-color-anchor`.
+- A filled primary stands 3:1 apart from the canvas behind it, and its label
+  clears 4.5:1 on the fill and on the hover fill.
 - `red`, `green`, `orange` and `yellow` as text clear 4.5:1 on every
   surface, which Mantine's own ramps do not: `--mantine-color-red-text` is
   shade 6 in light, 3.2:1 on white. Each palette overrides the four
@@ -126,34 +139,48 @@ discs.
 
 ### Enjazi — `enjazi`
 
-Linear (dark) and Cal.com (light), lavender accent. Primary shade 7 in light, 6 in dark.
+Warm neutrals and an amber accent, ADR-0016. Primary shade 7 in light, 6 in
+dark; both take the near-black label. No blue-grey: every neutral leans
+warm.
 
 | Index | accent | `dark` | `gray` |
 |---|---|---|---|
-| 0 | `#eef0fb` | `#f7f8f8` | `#f8f9fa` |
-| 1 | `#dfe3f8` | `#d0d6e0` | `#f3f4f6` |
-| 2 | `#c5cbf1` | `#8a8f98` | `#eff1f3` |
-| 3 | `#a8b1ea` | `#797d84` | `#eaecef` |
-| 4 | `#8b96e3` | `#23252a` | `#e5e7eb` |
-| 5 | `#7480da` | `#141516` | `#757575` |
-| 6 | `#5e6ad2` | `#0f1011` | `#676e7c` |
-| 7 | `#5560bd` | `#010102` | `#4e5766` |
-| 8 | `#47509e` | `#18191a` | `#374151` |
-| 9 | `#383f7e` | `#191a1b` | `#111111` |
+| 0 | `#fff8e6` | `#edebe8` | `#f4f3f0` |
+| 1 | `#fdedc4` | `#d4d0cb` | `#f1efec` |
+| 2 | `#fbe0a0` | `#9c978f` | `#eeece9` |
+| 3 | `#f9cc66` | `#8c877f` | `#ebe9e6` |
+| 4 | `#fbbf24` | `#2a2826` | `#e7e5e2` |
+| 5 | `#f8ab12` | `#201f1d` | `#75706a` |
+| 6 | `#f59e0b` | `#1a1917` | `#6b665f` |
+| 7 | `#d97706` | `#121110` | `#57534e` |
+| 8 | `#c86d06` | `#262523` | `#3a3733` |
+| 9 | `#a64b07` | `#2e2c2a` | `#1c1a17` |
 
-`black` `#111111`, `white` `#ffffff`.
+`black` `#1c1a17`, `white` `#faf9f7` (the light canvas).
 
-| Variable | Light | Dark |
+| Token | Light | Dark |
 |---|---|---|
-| `--enjazi-surface-1` | `#ffffff` | `#0f1011` |
-| `--enjazi-surface-2` | `#f8f9fa` | `#141516` |
-| `--enjazi-surface-3` | `#f3f4f6` | `#18191a` |
-| `--enjazi-surface-raised` | `#ffffff` | `#18191a` |
-| `--enjazi-accent-tint` | accent 6 at 0.08 | accent 6 at 0.14 |
-| `--mantine-color-red-text` | `#c92a2a` | `#fa5252` |
-| `--mantine-color-green-text` | `#1d7f34` | `#2f9e44` |
-| `--mantine-color-orange-text` | `#ca3a00` | `#e8590c` |
-| `--mantine-color-yellow-text` | `#b65000` | `#e67700` |
+| canvas — `--mantine-color-body` | `#faf9f7` | `#121110` |
+| `--enjazi-surface-1` (cards, inputs) | `#ffffff` | `#1a1917` |
+| `--enjazi-surface-2` (sidebar, hover) | `#f4f3f0` | `#201f1d` |
+| `--enjazi-surface-3` | `#eeece9` | `#262523` |
+| `--enjazi-surface-raised` | `#ffffff` | `#262523` |
+| hairline — `--mantine-color-default-border` | `#e7e5e2` | `#2a2826` |
+| ink — `--mantine-color-text` | `#1c1a17` | `#edebe8` |
+| dimmed — `--mantine-color-dimmed` | `#6b665f` | `#9c978f` |
+| primary fill / hover | `#d97706` / `#c86d06` | `#f59e0b` / `#d97706` |
+| label on the primary | `#1c1a17` | `#1c1a17` |
+| accent text — `--mantine-color-accent-text`, `--mantine-color-anchor` | `#a64b07` | `#fbbf24` |
+| `--enjazi-accent-tint` | `#f59e0b` at 0.10 | `#f59e0b` at 0.10 |
+| `--mantine-color-red-text` | `#bd2424` | `#ff6b6b` |
+| `--mantine-color-green-text` | `#17722d` | `#40c057` |
+| `--mantine-color-orange-text` | `#b33a09` | `#ff922b` |
+| `--mantine-color-yellow-text` | `#935805` | `#fcc419` |
+
+Measured: the label on the light primary 5.5:1 and on its hover 4.7:1; the
+light primary against the canvas 3.0:1; accent text on the light canvas
+5.5:1 and on surface-3 4.9:1; dimmed on surface-3 4.8:1 (light) and 5.3:1
+(dark); the dark label on the dark primary 8.1:1.
 
 ### Nord — `nord`
 
@@ -251,11 +278,19 @@ Dracula (dark) and Alucard (light), purple accent. Primary shade 8 in light, 4 i
 ### Semantic colours
 
 Mantine's own `red`, `green`, `yellow`, `orange` tuples are kept, with the
-`-text` variable of each overridden per palette and scheme as above. Use:
-`red` for destructive actions and overdue; `green` for success and active
-status; `orange` for the streak — the flame, the warning, the days of the
-current run and the points moment; `yellow` for the admin self-edit
-notice. Priority markers: Low `gray`, Medium the accent, High `red`.
+`-text` variable of each overridden per palette and scheme as above. They
+stay separate from the accent, so "Done" and an error never read as the
+brand. Use: `red` for destructive actions, errors and overdue; `green` for
+success, done and active status; `orange` for warnings, such as the streak
+about to break; `yellow` for the admin self-edit notice; `blue` for "in
+progress". The streak itself — the flame, the days of the current run and
+the points moment — is the accent. Priority markers: Low `gray`, Medium the
+accent, High `red`.
+
+**Status pills** (`Badge`, `variant="light"`) take the tint of their
+meaning's colour, never the accent: "Done" `green`, "In progress" `blue`.
+The green pill sets its label to `c="green"`, the `-text` override, because
+Mantine's own `green-9` on `green-1` is 3.8:1.
 
 ### Avatar discs — `src/theme/avatars.ts`
 
@@ -302,9 +337,10 @@ on `order`, because Mantine's heading sizes carry no tracking field.
 ## Shape and space
 
 - **Radius** (`theme.radius`): xs 4, sm 6, md 8, lg 12, xl 16;
-  `defaultRadius: 'md'`. Buttons, inputs, menu items and nav items are `md`;
-  cards, modals and the calendar frame are `lg`; badges, avatars and the
-  segmented control are pill.
+  `defaultRadius: 'md'`. One radius for every box: buttons, inputs, menu
+  items, nav items, cards, modals and the calendar frame are all `md`.
+  Badges, avatars and the segmented control are pill; checkboxes and menu
+  items inside a dropdown `sm`.
 - **Spacing** (`theme.spacing`): xs 8, sm 12, md 16, lg 24, xl 32.
 - **Controls**: buttons and inputs are 36px tall at their default size
   (`size: 'sm'`), 14px label, weight 500, 14px horizontal padding.
@@ -452,8 +488,8 @@ action shows `N`, and every palette action shows its keys.
 | `Button` | `size: 'sm'`, weight 500, radius md. `variant="default"` is the secondary button: surface-1 background, hairline border. Destructive: `color="red"`, `variant="subtle"` in rows, `variant="light"` as a page action. |
 | `ActionIcon` | `variant: 'subtle'`, `color: 'gray'`, `size: 'md'`. Every one carries `aria-label`. |
 | `Input` (all inputs) | `size: 'sm'`, radius md, surface-1 background, hairline border, accent focus ring. Labels weight 500, size sm. |
-| `Paper` / `Card` | `withBorder`, radius lg, padding lg, background `--enjazi-surface-1`. |
-| `Modal` | radius lg, content and header on `--enjazi-surface-raised`, overlay 55% black, title weight 600 size lg. |
+| `Paper` / `Card` | `withBorder`, radius md, padding lg, background `--enjazi-surface-1`. |
+| `Modal` | radius md, content and header on `--enjazi-surface-raised`, overlay 55% black, title weight 600 size lg. |
 | `Popover`, `Menu`, `Notification`, `Tooltip` | dropdown on `--enjazi-surface-raised`, radius md, shadow md (light only). Menu items radius sm. |
 | `Badge` | `variant: 'light'`, pill, weight 500, `textTransform: 'none'`, size sm. |
 | `SegmentedControl` | pill; track `--enjazi-surface-2`; indicator `--enjazi-surface-raised` with shadow xs; active label ink, inactive dimmed. |
@@ -465,7 +501,7 @@ action shows `N`, and every palette action shows its keys.
 | `Loader` | the accent. Only for app boot; screens use `Skeleton`. |
 | `Skeleton` | `--enjazi-surface-3` in both schemes, radius sm; Mantine's pulse. |
 | `Kbd` | size xs, `--enjazi-surface-2` background, hairline border, radius sm, dimmed text, weight 500. |
-| `Spotlight` | content on `--enjazi-surface-raised`, radius lg, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the primary colour on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
+| `Spotlight` | content on `--enjazi-surface-raised`, radius md, overlay as `Modal`; search input 48px, borderless, hairline below; actions radius md, hover `--enjazi-surface-2`; the keyboard-selected action `--enjazi-accent-tint` with a 2px inset bar in the primary colour on its left, because the selection is the only sign of what Enter will run; group labels eyebrow-styled. |
 
 Transitions for each component are in the "Motion" table and set in the
 same `theme.components` entries.
@@ -475,7 +511,8 @@ same `theme.components` entries.
 `--enjazi-surface-2` in `src/theme/global.css`.
 
 `FullCalendar` is driven by `src/calendar/mantine-bridge.css`, remapped:
-primary and events in the accent; today column `--enjazi-accent-tint`; selection
+primary and events in the accent, labelled with
+`--mantine-primary-color-contrast`; today column `--enjazi-accent-tint`; selection
 highlight the same at double strength; now line `red`; borders hairline;
 header cells eyebrow-styled; toolbar buttons match the default Mantine button;
 event chips radius sm, 500 weight title.
@@ -525,9 +562,14 @@ Desktop has no top bar; each screen starts with its own `PageHeader`.
 Each screen keeps its behaviour, hooks and modals. What changes is the frame,
 type, surfaces and the few UX additions named here.
 
-- **Login / Register** — wordmark centred above a 400px card on the canvas;
-  title `h1`; inputs full width; the primary button full width; the switch
-  link in the footer. Error `Alert` between the fields and the button.
+- **Login / Register** — wordmark centred above Clerk's card on the canvas.
+  `src/auth/clerkAppearance.ts` paints the card with the theme's variables:
+  surface-1 card, ink text, the primary fill and its contrast label, the
+  primary as the focus ring, and the anchor colour for links. Clerk's drop
+  shadows are off (`colorShadow` transparent) and its primary-button
+  gradient is removed, so the card is a flat surface with a 1px ring like
+  every other card. The card's title ("Sign in to …") is the application
+  name set in the Clerk dashboard, not in this code.
 - **Dashboard** — `PageHeader` "Dashboard" with the "Signed in as …"
   sentence as its description. Four `StatCard`s in a 1/2/4 grid: Streak
   (flame icon next to the number, the week row, the warning in `orange`),
@@ -535,8 +577,8 @@ type, surfaces and the few UX additions named here.
   week (next three events), Rooms (joined / to join, first three joined).
   - **Week row** — the streak tile's first row: seven 10px dots for the
     last seven days, oldest on the left, each over its weekday initial (xs,
-    dimmed). A day in the current run is a filled `orange` dot. Today, not
-    yet completed, is a ring: `orange` while the run is alive (the day that
+    dimmed). A day in the current run is a filled accent dot. Today, not
+    yet completed, is a ring: the accent while the run is alive (the day that
     keeps it), hairline when there is no run. Every other day is a
     `--enjazi-surface-3` disc. The API stores the run, not a log of days
     (ADR-0012), so a day that belonged to an earlier, broken run shows
@@ -545,10 +587,10 @@ type, surfaces and the few UX additions named here.
     streak"; the dots and initials are `aria-hidden`.
 - **Tasks** — `PageHeader` with the streak chip, the filter
   `SegmentedControl` and "New task" (tooltip `N`) as the actions.
-  - **Streak chip** — the flame and the current length, `orange` when the
+  - **Streak chip** — the flame and the current length, the accent when the
     run is alive and dimmed otherwise, with a tooltip "`<n>`-day streak ·
     `<p>` points". Visually hidden text makes it read "`<n>`-day streak,
-    `<p>` points" to a screen reader, since the tooltip is hover-only. When the streak's points rise, `+<Δ>` in `orange` floats
+    `<p>` points" to a screen reader, since the tooltip is hover-only. When the streak's points rise, `+<Δ>` in the accent floats
     up from it and fades (see "Motion") and a visually hidden live region
     says "`+<Δ>` points"; when the length rises the flame pops. The
     delta is read from the streak query before and after, not assumed.
@@ -581,10 +623,10 @@ type, surfaces and the few UX additions named here.
   - `?new` opens the create modal and `?edit=<id>` the edit modal of that
     task once the list has loaded; closing either removes the parameter.
 - **Calendar** — `PageHeader` with "New event"; the grid inside a `Paper`
-  with radius lg and hidden overflow, filling the viewport height below the
+  with radius md and hidden overflow, filling the viewport height below the
   header.
 - **Rooms** — cards with a room avatar (initials of the name), name at 500,
-  member count as a badge, description clamped to two lines, Open or Join.
+  member count as a neutral `variant="default"` badge, description clamped to two lines, Open or Join.
   Empty state: "No rooms yet." / "Create the first one." with the action
   "Start a room", which opens the same modal as "New room".
 - **Room** — `PageHeader` with the "All rooms" back link, description, and
