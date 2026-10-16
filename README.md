@@ -25,7 +25,29 @@ drift apart.
 
 ## Running it
 
-Needs .NET 10, Node 22+ and PostgreSQL 16+.
+Needs .NET 10, Node 22+, PostgreSQL 16+ and a Clerk application, which
+handles sign-up and sign-in (ADR-0015).
+
+Clerk, once:
+
+1. In the Clerk Dashboard, under Sessions, "Customize session token", set
+   `{"email":"{{user.primary_email_address}}","name":"{{user.full_name}}"}`.
+   The API creates its own user row from these two claims.
+2. Write the publishable key to `src/Enjazi.Web/.env.local`:
+
+   ```sh
+   cd src/Enjazi.Web
+   npx -y clerk@latest auth login
+   npx -y clerk@latest link --app <application id>
+   npx -y clerk@latest env pull
+   ```
+
+3. Set `Clerk:Authority` in `src/Enjazi.Api/appsettings.Development.json` to
+   the instance's Frontend API URL, e.g. `https://example-1.clerk.accounts.dev`.
+4. For the browser tests only: put `CLERK_SECRET_KEY=sk_test_...` in
+   `src/Enjazi.Web/.env.test.local`. Both `.env` files are ignored by git.
+
+Then:
 
 ```sh
 createdb enjazi_core
@@ -41,9 +63,8 @@ Then open `http://127.0.0.1:5182` and register an account.
 
 Production is one container on Azure Container Apps, in front of Azure
 Database for PostgreSQL Flexible Server 16. The container serves the API,
-the chat hub at `/hubs/rooms` and the built React app from one origin, which
-the auth cookie and the hub depend on (ADR-0008). ADR-0014 records the
-decisions.
+the chat hub at `/hubs/rooms` and the built React app from one origin
+(ADR-0008). ADR-0014 records the decisions; ADR-0015 covers sign-in.
 
 - `Dockerfile` builds the image: Node builds the app, the .NET SDK publishes
   the API, and the app goes into the API's `wwwroot`. It listens on 8080 as a
@@ -66,7 +87,9 @@ is in `appsettings*.json` or in the image.
 | Variable | Set by | Value |
 |---|---|---|
 | `ConnectionStrings__Default` | `infra/deploy.sh`, as the Container Apps secret `db-connection` | Npgsql connection string with `SSL Mode=VerifyFull` |
-| `Bootstrap__AdminEmail` | `infra/deploy.sh`, from `ADMIN_EMAIL`, only if set | Account promoted to admin at startup, once it is registered |
+| `Clerk__Authority` | `infra/deploy.sh`, from `CLERK_AUTHORITY` | Clerk Frontend API URL. Session tokens are checked against its signing keys |
+| `Clerk__AuthorizedParties__0` | `infra/deploy.sh` | `https://<app>.<environment domain>`, the only origin whose tokens are accepted |
+| `Bootstrap__AdminEmail` | `infra/deploy.sh`, from `ADMIN_EMAIL`, only if set | Account made admin on its first sign-in |
 | `ASPNETCORE_HTTPS_PORT` | `infra/deploy.sh` | `443`, the port HTTP requests are redirected to |
 | `Database__MigrateOnStartup` | `Dockerfile` | `true`. Applies pending migrations before the app starts |
 | `ASPNETCORE_HTTP_PORTS` | `Dockerfile` | `8080` |
@@ -78,7 +101,13 @@ is in `appsettings*.json` or in the image.
 |---|---|---|
 | `PG_ADMIN_PASSWORD` | always | 16 or more letters and digits. Use the same value on every run; the server is set to it |
 | `IMAGE` | first run | Image to run. Later runs keep the running one unless this is set |
+| `CLERK_AUTHORITY` | always | Clerk Frontend API URL, e.g. `https://example-1.clerk.accounts.dev` |
 | `ADMIN_EMAIL` | no | Becomes `Bootstrap__AdminEmail` |
+
+The image build reads `VITE_CLERK_PUBLISHABLE_KEY`, the Clerk publishable
+key, which Vite writes into the bundle. The workflow passes it from the
+repository variable of the same name. It is public, so it is a variable and
+not a secret.
 
 The workflow reads three repository secrets: `AZURE_CLIENT_ID`,
 `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`. They identify the Azure
@@ -116,6 +145,7 @@ Needs the Azure CLI and the GitHub CLI, both signed in.
    gh secret set AZURE_CLIENT_ID --body "$APP_ID"
    gh secret set AZURE_TENANT_ID --body "$TENANT_ID"
    gh secret set AZURE_SUBSCRIPTION_ID --body "$SUBSCRIPTION_ID"
+   gh variable set VITE_CLERK_PUBLISHABLE_KEY --body "pk_test_..."
    ```
 
 3. Push `main` and wait for the workflow:
@@ -140,6 +170,7 @@ Needs the Azure CLI and the GitHub CLI, both signed in.
    export PG_ADMIN_PASSWORD=$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)
    echo "$PG_ADMIN_PASSWORD"    # store it; every later run needs the same value
    export IMAGE=ghcr.io/mofadel26/enjazi-core:$(git rev-parse origin/main)
+   export CLERK_AUTHORITY=https://example-1.clerk.accounts.dev
    export ADMIN_EMAIL=you@example.com    # optional
    infra/deploy.sh
    ```
@@ -154,14 +185,8 @@ Needs the Azure CLI and the GitHub CLI, both signed in.
    gh run rerun --failed
    ```
 
-7. If `ADMIN_EMAIL` was set: register that account in the app, then restart
-   the app so the bootstrap promotes it.
-
-   ```sh
-   az containerapp revision restart --name enjazi-core --resource-group enjazi-core-rg \
-     --revision "$(az containerapp show --name enjazi-core --resource-group enjazi-core-rg \
-       --query properties.latestRevisionName -o tsv)"
-   ```
+7. If `ADMIN_EMAIL` was set: sign up in the app with that address. It is an
+   admin from its first request.
 
 From then on every push to `main` that passes the checks is deployed.
 
@@ -171,9 +196,11 @@ From then on every push to `main` that passes the checks is deployed.
 docker network create enjazi
 docker run -d --name enjazi-pg --network enjazi \
   -e POSTGRES_PASSWORD=local -e POSTGRES_DB=enjazi_core postgres:16
-docker build -t enjazi-core .
+docker build -t enjazi-core --build-arg VITE_CLERK_PUBLISHABLE_KEY=pk_test_... .
 docker run --rm --name enjazi-app --network enjazi -p 127.0.0.1:8080:8080 \
   -e ConnectionStrings__Default="Host=enjazi-pg;Database=enjazi_core;Username=postgres;Password=local" \
+  -e Clerk__Authority=https://example-1.clerk.accounts.dev \
+  -e Clerk__AuthorizedParties__0=http://127.0.0.1:8080 \
   enjazi-core
 ```
 

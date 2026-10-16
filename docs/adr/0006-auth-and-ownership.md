@@ -1,6 +1,7 @@
 # ADR-0006: Cookie auth, and ownership enforced by a query filter
 
-**Status:** accepted
+**Status:** accepted. Cookie authentication, passwords and the sign-in
+endpoints are superseded by ADR-0015; the ownership rules stand.
 **Date:** 2026-09-23
 
 ## Context

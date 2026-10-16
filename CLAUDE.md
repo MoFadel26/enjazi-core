@@ -11,6 +11,7 @@ made. Those files are the source of truth, not any chat history.
 - API: ASP.NET Core 10, PostgreSQL, EF Core
 - Frontend: React 19, Vite, TypeScript, Mantine 9
 - Admin tables: mantine-datatable. Scheduler: see ADR-0004.
+- Auth: Clerk for sign-in, local users table for ids and roles. See ADR-0015.
 - Do not add Tailwind or shadcn/ui. ADR-0003 explains why.
 - `mantine-react-table` is unmaintained. Do not use it.
 
@@ -34,12 +35,14 @@ Set `strictPort: true` in Vite so a taken port fails loudly instead of moving.
 
 ## Cookie isolation
 
-Serve the frontend on `127.0.0.1:5182`, not `localhost:5182`, and name the auth
-cookie `enjazi_core_auth`.
+Serve the frontend on `127.0.0.1:5182`, not `localhost:5182`.
 
-Cookies are scoped by hostname and ignore the port. An older project on this
-machine sets a cookie named `jwt` on `localhost`. Sharing a hostname or a cookie
-name with it causes silent logouts that look like bugs in this codebase.
+Cookies are scoped by hostname and ignore the port. Clerk keeps its session in
+cookies on the app's hostname (`__session`, `__client_uat`, and `__clerk_db_jwt`
+for a development instance). An older project on this machine sets a cookie
+named `jwt` on `localhost`, and any other Clerk app on `localhost` uses the same
+cookie names as this one. Sharing a hostname causes silent logouts that look like
+bugs in this codebase. ADR-0015.
 
 ## Conventions
 
