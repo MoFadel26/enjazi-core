@@ -41,6 +41,23 @@ public sealed class GuestTests(ApiFactory factory)
         Assert.True(streak.CompletedToday);
     }
 
+    [Theory]
+    [InlineData("dark", "dark")]
+    [InlineData("light", "light")]
+    [InlineData("sepia", "system")]
+    [InlineData(null, "system")]
+    public async Task A_guest_starts_with_the_theme_picked_on_the_landing_page(string? picked, string expected)
+    {
+        var response = await factory.PostGuestAsync(SignedInClient.NewAddress(), theme: picked);
+        response.EnsureSuccessStatusCode();
+        var session = (await response.Content.ReadFromJsonAsync<GuestSessionResponse>())!;
+        var client = factory.CreateHttpsClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.Token);
+
+        var settings = await client.GetFromJsonAsync<SettingsResponse>("/api/settings");
+        Assert.Equal(expected, settings!.Theme);
+    }
+
     [Fact]
     public async Task Guest_creation_is_limited_to_five_an_hour_per_address()
     {

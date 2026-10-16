@@ -50,7 +50,7 @@ public sealed class AuthController(
             return Problem(title: "Guest mode is not available.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
 
-        var guest = await guests.CreateAsync(request.TimeZone);
+        var guest = await guests.CreateAsync(request.TimeZone, request.Theme);
 
         // The address the rate limit counted, after the forwarded headers.
         // Logged so the ingress setup can be checked against a real request.

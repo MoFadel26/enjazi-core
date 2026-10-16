@@ -1,14 +1,24 @@
-import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useMantineColorScheme } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { LightningIcon, MoonIcon, SunIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
+import { useSaveTheme } from '../settings/queries'
 import { Icon } from '../ui/Icon'
 import { hiddenWhilePending } from './hiddenWhilePending'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.
 export function LandingNavbar() {
   const { data: user, isPending } = useCurrentUser()
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
+  const { setColorScheme } = useMantineColorScheme()
+  // What is on screen, which "auto" alone does not say.
+  const shown = useComputedColorScheme('light')
+  const saveTheme = useSaveTheme(Boolean(user))
+
+  const toggle = () => {
+    const next = shown === 'dark' ? 'light' : 'dark'
+    setColorScheme(next)
+    saveTheme(next)
+  }
 
   return (
     <BoxNav>
@@ -30,9 +40,9 @@ export function LandingNavbar() {
               variant="default"
               size="md"
               aria-label="Toggle color scheme"
-              onClick={() => toggleColorScheme()}
+              onClick={toggle}
             >
-              {colorScheme === 'dark' ? <Icon icon={SunIcon} /> : <Icon icon={MoonIcon} />}
+              {shown === 'dark' ? <Icon icon={SunIcon} /> : <Icon icon={MoonIcon} />}
             </ActionIcon>
 
             {user ? (

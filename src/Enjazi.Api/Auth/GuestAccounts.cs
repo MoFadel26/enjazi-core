@@ -1,3 +1,4 @@
+using Enjazi.Api.Controllers;
 using Enjazi.Api.Data;
 using Enjazi.Api.Data.Entities;
 using Enjazi.Api.Streaks;
@@ -16,7 +17,7 @@ public sealed class GuestAccounts(
     GuestTokens tokens,
     [FromKeyedServices(StreakClock.Key)] TimeProvider streakClock)
 {
-    public async Task<User> CreateAsync(string? timeZone)
+    public async Task<User> CreateAsync(string? timeZone, string? theme = null)
     {
         var zone = timeZone is not null && TimeZoneInfo.TryFindSystemTimeZoneById(timeZone, out var found)
             ? found
@@ -44,7 +45,7 @@ public sealed class GuestAccounts(
             throw new InvalidOperationException($"Creating a guest failed: {string.Join("; ", result.Errors.Select(e => e.Description))}");
         }
 
-        Seed(guest.Id, zone, now);
+        Seed(guest.Id, zone, theme is not null && SettingsController.Themes.Contains(theme) ? theme : "system", now);
         await db.SaveChangesAsync();
         await transaction.CommitAsync();
         return guest;
@@ -56,7 +57,7 @@ public sealed class GuestAccounts(
     /// and a three-day streak that includes today's completed task. Times are
     /// in the guest's own time zone, so "today" is the guest's today.
     /// </summary>
-    private void Seed(Guid ownerId, TimeZoneInfo zone, DateTimeOffset now)
+    private void Seed(Guid ownerId, TimeZoneInfo zone, string theme, DateTimeOffset now)
     {
         var local = TimeZoneInfo.ConvertTime(now, zone);
         var today = DateOnly.FromDateTime(local.DateTime);
@@ -97,7 +98,7 @@ public sealed class GuestAccounts(
             Event("Team check-in", today.AddDays(1), 10, 30),
             Event("Lunch with Sam", today.AddDays(2), 13, 60));
 
-        db.Settings.Add(new UserSettings { UserId = ownerId, Data = new SettingsData { TimeZone = zone.Id }, UpdatedAt = now });
+        db.Settings.Add(new UserSettings { UserId = ownerId, Data = new SettingsData { TimeZone = zone.Id, Theme = theme }, UpdatedAt = now });
         db.Streaks.Add(new Streak
         {
             UserId = ownerId,

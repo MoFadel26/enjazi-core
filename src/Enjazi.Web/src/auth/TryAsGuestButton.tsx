@@ -1,10 +1,11 @@
-import { Button, type ButtonProps } from '@mantine/core'
+import { Button, useMantineColorScheme, type ButtonProps } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { UserCircleDashedIcon } from '@phosphor-icons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { fetchClient } from '../api/client'
 import { setGuestSession, useGuestSession } from '../api/guestSession'
+import { toTheme } from '../settings/queries'
 import { Icon } from '../ui/Icon'
 import { currentUserKey } from './keys'
 
@@ -14,10 +15,13 @@ export function TryAsGuestButton(props: ButtonProps) {
   const guest = useGuestSession()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  // The scheme picked on the landing page, so the guest's account starts
+  // with it and the app does not switch back to the device's.
+  const { colorScheme } = useMantineColorScheme()
   const start = useMutation({
     mutationFn: async () => {
       const { data, response } = await fetchClient.POST('/api/auth/guest', {
-        body: { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+        body: { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, theme: toTheme(colorScheme) },
       })
       if (data === undefined) throw new Error(failure(response.status))
       return data

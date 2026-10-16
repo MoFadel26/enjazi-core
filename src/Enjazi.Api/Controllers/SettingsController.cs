@@ -17,7 +17,8 @@ namespace Enjazi.Api.Controllers;
 [Authorize]
 public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser) : ControllerBase
 {
-    private static readonly string[] Themes = ["light", "dark", "system"];
+    /// <summary>Public because a new guest can start with one (GuestAccounts).</summary>
+    public static readonly string[] Themes = ["light", "dark", "system"];
     private static readonly string[] Palettes = ["enjazi", "nord", "solarized", "dracula"];
 
     /// <summary>

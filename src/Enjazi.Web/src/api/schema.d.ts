@@ -397,6 +397,7 @@ export interface components {
         };
         StartGuestRequest: {
             timeZone: null | string;
+            theme?: null | string;
         };
         StreakResponse: {
             /** Format: int32 */

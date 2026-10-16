@@ -63,11 +63,11 @@ public static class SignedInClient
     /// ingress would add, which Program.cs turns into RemoteIpAddress.
     /// </summary>
     public static Task<HttpResponseMessage> PostGuestAsync(
-        this WebApplicationFactory<Program> factory, string address, string? timeZone = "UTC")
+        this WebApplicationFactory<Program> factory, string address, string? timeZone = "UTC", string? theme = null)
     {
         var client = factory.CreateHttpsClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-For", address);
-        return client.PostAsJsonAsync("/api/auth/guest", new StartGuestRequest(timeZone));
+        return client.PostAsJsonAsync("/api/auth/guest", new StartGuestRequest(timeZone, theme));
     }
 
     public static string NewAddress() =>

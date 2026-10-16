@@ -14,8 +14,12 @@ public sealed record UserResponse(
     bool IsGuest,
     DateTimeOffset? ExpiresAt);
 
-/// <summary>The browser's IANA time zone, so the sample's "today" is the guest's.</summary>
-public sealed record StartGuestRequest([MaxLength(100)] string? TimeZone);
+/// <summary>
+/// The browser's IANA time zone, so the sample's "today" is the guest's, and
+/// the theme picked on the landing page, so the app keeps it. An unknown
+/// theme falls back to "system".
+/// </summary>
+public sealed record StartGuestRequest([MaxLength(100)] string? TimeZone, [MaxLength(20)] string? Theme = null);
 
 public sealed record RefreshGuestRequest([Required] string Token);
 

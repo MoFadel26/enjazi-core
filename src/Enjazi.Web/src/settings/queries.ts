@@ -17,10 +17,29 @@ export function toColorScheme(theme: string): MantineColorScheme {
   return theme === 'light' || theme === 'dark' ? theme : 'auto'
 }
 
+// The reverse, for what Mantine holds before an account exists.
+export function toTheme(scheme: MantineColorScheme): (typeof themes)[number] {
+  return scheme === 'auto' ? 'system' : scheme
+}
+
 const settingsKey = ['get', '/api/settings'] as const
 
 export function useSettings() {
   return api.useQuery('get', '/api/settings')
+}
+
+// The landing page's theme toggle, for someone signed in. The account keeps
+// the choice, so ColorSchemeSync in the app does not put the old one back.
+// PUT takes every setting, so the current ones are read first; with none
+// loaded yet the toggle only changes this browser, as for a visitor.
+export function useSaveTheme(signedIn: boolean) {
+  const { data: settings } = api.useQuery('get', '/api/settings', undefined, { enabled: signedIn })
+  const update = useUpdateSettings()
+  return (theme: 'light' | 'dark') => {
+    if (!signedIn || !settings) return
+    const { palette, timeZone, notifications } = settings
+    update.mutate({ body: { theme, palette, timeZone, notifications } })
+  }
 }
 
 // PUT answers with the saved settings, so the cache takes that answer
