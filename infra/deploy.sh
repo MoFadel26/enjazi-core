@@ -18,9 +18,9 @@
 # The README, "Deploy", gives the order this fits into.
 set -euo pipefail
 
-LOCATION=northeurope
+LOCATION=centralindia
 RESOURCE_GROUP=enjazi-core-rg            # also in .github/workflows/deploy.yml
-PG_SERVER=enjazi-core-pg                 # globally unique: <name>.postgres.database.azure.com
+PG_SERVER=enjazi-core-db                 # globally unique: <name>.postgres.database.azure.com
 PG_ADMIN_USER=enjazi
 PG_DATABASE=enjazi_core
 CONTAINERAPPS_ENV=enjazi-core-env

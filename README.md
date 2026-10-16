@@ -125,7 +125,7 @@ Needs the Azure CLI and the GitHub CLI, both signed in.
    ```sh
    az login
    az account set --subscription "<subscription name or id>"
-   az group create --name enjazi-core-rg --location northeurope
+   az group create --name enjazi-core-rg --location centralindia
    ```
 
 2. Create the identity the workflow signs in as, trust GitHub's tokens for
