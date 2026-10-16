@@ -18,7 +18,7 @@ const renderPalette = ({ option }: { option: { value: string; label: string } })
 
 // One Paper per group of settings: a card title, a sentence on what it
 // changes, then the controls. Paper carries no default padding.
-function Section({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export function Section({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
     <Paper p="lg">
       <Stack gap="md">

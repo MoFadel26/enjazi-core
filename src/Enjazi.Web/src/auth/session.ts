@@ -1,7 +1,9 @@
 import { useAuth, useClerk } from '@clerk/react'
+import { notifications } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { fetchClient } from '../api/client'
+import { useNavigate } from 'react-router'
+import { api, fetchClient } from '../api/client'
 import { setGuestSession, useGuestSession } from '../api/guestSession'
 import type { components } from '../api/schema'
 import { currentUserKey } from './keys'
@@ -48,6 +50,27 @@ export function useLogout() {
     },
     // Drop everything the previous user loaded.
     onSuccess: () => queryClient.clear(),
+  })
+}
+
+// Deletes the account (ADR-0019), then goes to the landing page and leaves
+// the way a logout does. The API has deleted the Clerk user by then, so
+// ending its session in the browser can fail, and that is not a failure of
+// the deletion. All of it is here rather than in a mutate() callback: the
+// screen that asked unmounts as the session ends, and TanStack Query drops a
+// callback whose component has gone.
+export function useDeleteAccount() {
+  const clerk = useClerk()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  return api.useMutation('delete', '/api/auth/me', {
+    onSuccess: async () => {
+      await navigate('/landing', { replace: true })
+      setGuestSession(null)
+      if (clerk.session) await clerk.signOut().catch(() => undefined)
+      queryClient.clear()
+      notifications.show({ message: 'Your account was deleted.' })
+    },
   })
 }
 

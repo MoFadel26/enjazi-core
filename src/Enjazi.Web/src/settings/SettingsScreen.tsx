@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 import { describeError } from '../api/errors'
 import { isPaletteId, setPaletteId } from '../theme'
 import { PageHeader } from '../ui/PageHeader'
+import { DeleteAccount } from './DeleteAccount'
 import { SettingsForm } from './SettingsForm'
 import { SettingsSkeleton } from './SettingsSkeleton'
 import { toColorScheme, useSettings, useUpdateSettings, type Settings } from './queries'
@@ -18,6 +19,9 @@ export function SettingsScreen() {
       {isPending && <SettingsSkeleton />}
       {error && <Alert color="red">{describeError(error)}</Alert>}
       {settings && <LoadedForm settings={settings} />}
+      <Stack maw={560} mt="md">
+        <DeleteAccount />
+      </Stack>
     </>
   )
 }
