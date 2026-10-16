@@ -9,8 +9,9 @@ export type { Palette, PaletteId, SchemeColors } from './types'
 
 export const palettes: Record<PaletteId, Palette> = { enjazi, nord, solarized, dracula }
 
-// What an account that has never chosen gets, and what the API defaults to.
-export const defaultPaletteId: PaletteId = 'enjazi'
+// What an account that has never chosen gets, what the API defaults to, and
+// what a visitor sees before signing in.
+export const defaultPaletteId: PaletteId = 'nord'
 
 // The account and localStorage both hand back a plain string.
 export function isPaletteId(value: string): value is PaletteId {

@@ -142,18 +142,18 @@ test('a palette applies while it is picked, is restored unsaved, and survives a 
   await registerAndSignIn(page, 'colors-picker')
   await page.goto('/settings')
   const html = page.locator('html')
-  await expect(html).toHaveAttribute('data-enjazi-palette', 'enjazi')
+  await expect(html).toHaveAttribute('data-enjazi-palette', 'nord')
 
   // The whole screen is the preview, so the choice lands before Save.
   await page.getByRole('combobox', { name: 'Palette' }).click()
-  await page.getByRole('option', { name: 'Nord' }).click()
-  await expect(html).toHaveAttribute('data-enjazi-palette', 'nord')
+  await page.getByRole('option', { name: 'Solarized' }).click()
+  await expect(html).toHaveAttribute('data-enjazi-palette', 'solarized')
 
   // Leaving without saving is not a silent save: the account still says
-  // enjazi, and that is what the app goes back to.
+  // nord, the default, and that is what the app goes back to.
   await page.getByRole('link', { name: 'Dashboard' }).click()
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-  await expect(html).toHaveAttribute('data-enjazi-palette', 'enjazi')
+  await expect(html).toHaveAttribute('data-enjazi-palette', 'nord')
 
   await page.goto('/settings')
   await page.getByRole('combobox', { name: 'Palette' }).click()

@@ -16,7 +16,7 @@ public sealed class SettingsTests(ApiFactory factory)
         var settings = await client.GetFromJsonAsync<SettingsResponse>("/api/settings");
 
         Assert.Equal("system", settings!.Theme);
-        Assert.Equal("enjazi", settings.Palette);
+        Assert.Equal("nord", settings.Palette);
         Assert.Equal("UTC", settings.TimeZone);
         Assert.True(settings.Notifications.EmailTaskReminders);
     }

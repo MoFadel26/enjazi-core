@@ -4,10 +4,10 @@ import { registerAndSignIn } from './session.js'
 // The Phase 7 check from docs/plan.md: the design system is applied on both
 // schemes. Each scheme is chosen through the account's setting, as a user
 // would, and then every screen is visited: it must sit on that scheme's
-// canvas (warm off-white, warm charcoal), render in Inter, start with a
-// page heading, and raise no page error.
+// canvas in the default palette, Nord (snow storm, polar night), render in
+// Inter, start with a page heading, and raise no page error.
 const screens = ['/', '/tasks', '/calendar', '/rooms', '/settings']
-const canvas = { light: 'rgb(250, 249, 247)', dark: 'rgb(18, 17, 16)' }
+const canvas = { light: 'rgb(236, 239, 244)', dark: 'rgb(46, 52, 64)' }
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`every screen renders on the ${scheme} canvas`, async ({ page }) => {
