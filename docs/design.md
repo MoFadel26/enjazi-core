@@ -604,11 +604,14 @@ type, surfaces and the few UX additions named here.
   days." The dashboard preview follows with `xl` margin and `xl` padding
   above it; the four feature cards are the only list of benefits. Until the
   user is known (Clerk loaded and `/me` answered) the signed-out actions
-  keep their space but are invisible, so a signed-in visitor never sees
-  them before "Launch App". The theme toggle shows the sun in dark and the
-  moon in light, whatever the stored setting; signed in, it also saves the
-  theme to the account, so the app keeps it, and "Try as guest" sends the
-  scheme picked here, which the new guest's account starts with. ADR-0017.
+  keep their space but are invisible when someone may be signed in: a
+  `__client_uat` cookie (suffixed or not) that is not `0`, or a saved guest
+  session. Otherwise they show at once, so a first-time visitor does not
+  wait for Clerk and a signed-in one never sees them before "Launch App".
+  The theme toggle shows the sun in dark and the moon in light, whatever the
+  stored setting; signed in, it also saves the theme to the account, so the
+  app keeps it, and "Try as guest" sends the scheme picked here, which the
+  new guest's account starts with. ADR-0017.
 - **Guest banner** — while signed in as a guest, every screen starts with a
   flat bar above the `PageHeader`: `Paper` on `--enjazi-accent-tint`, padding
   sm, margin-bottom lg, the sentence "Guest session — your data is deleted
