@@ -64,6 +64,8 @@ builder.Services
 builder.Services.AddSingleton<GuestTokens>();
 builder.Services.AddScoped<ClerkUserProvisioner>();
 builder.Services.AddScoped<GuestAccounts>();
+builder.Services.AddHttpClient<IClerkUsers, ClerkUsers>(client => client.BaseAddress = ClerkUsers.BaseAddress);
+builder.Services.AddScoped<AccountDeletion>();
 builder.Services
     .AddAuthentication(GuestAuthentication.ClerkOrGuest)
     .AddPolicyScheme(GuestAuthentication.ClerkOrGuest, null, options =>

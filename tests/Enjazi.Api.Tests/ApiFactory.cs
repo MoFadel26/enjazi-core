@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using Enjazi.Api.Auth;
 using Enjazi.Api.Data;
 using Enjazi.Api.Streaks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +39,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     /// </summary>
     public FakeClock Clock { get; } = new();
 
+    /// <summary>Stands in for Clerk's Backend API, which the tests never call.</summary>
+    public FakeClerkUsers Clerk { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Default", _postgres.GetConnectionString());
@@ -48,6 +53,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.ConfigureTestServices(services =>
         {
             services.AddKeyedSingleton<TimeProvider>(StreakClock.Key, Clock);
+            services.AddSingleton<IClerkUsers>(Clerk);
 
             // Runs after ClerkAuthentication.Configure and before the handler
             // builds its configuration manager, so with no Authority it never
@@ -73,6 +79,27 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 /// </summary>
 [CollectionDefinition(nameof(ApiCollection))]
 public sealed class ApiCollection : ICollectionFixture<ApiFactory>;
+
+/// <summary>Records the Clerk users deleted, and refuses while Fail is set.</summary>
+public sealed class FakeClerkUsers : IClerkUsers
+{
+    public ConcurrentBag<string> Deleted { get; } = [];
+
+    public bool Fail { get; set; }
+
+    public bool Enabled => true;
+
+    public Task DeleteAsync(string clerkUserId, CancellationToken cancellationToken)
+    {
+        if (Fail)
+        {
+            throw new HttpRequestException("Clerk is down.");
+        }
+
+        Deleted.Add(clerkUserId);
+        return Task.CompletedTask;
+    }
+}
 
 public sealed class FakeClock : TimeProvider
 {

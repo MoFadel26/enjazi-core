@@ -34,6 +34,47 @@ public sealed class AuthController(
     }
 
     /// <summary>
+    /// Deletes the caller's account and its Clerk user (ADR-0019). Nothing is
+    /// deleted unless Clerk deletes its user too, and the only admin is refused.
+    /// </summary>
+    [HttpDelete("me")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<IActionResult> DeleteMe([FromServices] AccountDeletion deletion, CancellationToken cancellationToken)
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            return await deletion.DeleteAsync(user.Id, cancellationToken) switch
+            {
+                AccountDeletionResult.Unavailable => Problem(
+                    title: "Account deletion is not available.",
+                    statusCode: StatusCodes.Status503ServiceUnavailable),
+                AccountDeletionResult.LastAdmin => Problem(
+                    title: "You are the only admin. Make someone else an admin in Users, then delete your account.",
+                    statusCode: StatusCodes.Status409Conflict),
+                _ => NoContent(),
+            };
+        }
+        catch (HttpRequestException e)
+        {
+            logger.LogError(e, "Clerk refused to delete the user behind {UserId}", user.Id);
+            return Problem(
+                title: "Your sign-in could not be deleted. Nothing was deleted; try again.",
+                statusCode: StatusCodes.Status502BadGateway);
+        }
+    }
+
+    /// <summary>
     /// Creates a guest with sample data and returns its first token. Limited
     /// per client address, because each call creates rows.
     /// </summary>
