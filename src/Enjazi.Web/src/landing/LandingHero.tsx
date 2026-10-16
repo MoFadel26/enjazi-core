@@ -2,6 +2,7 @@ import { Badge, Button, Container, Group, Stack, Text, Title } from '@mantine/co
 import { IconArrowRight, IconBolt, IconCheck } from '@tabler/icons-react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
+import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 
 // Hero section: eyebrow badge, product headline, value proposition and CTAs.
 export function LandingHero() {
@@ -48,7 +49,9 @@ export function LandingHero() {
               >
                 Get started for free
               </Button>
-              <Button component={Link} to="/login" variant="default" size="md">
+              {/* No account needed: the visible way in for someone just looking. */}
+              <TryAsGuestButton size="md" />
+              <Button component={Link} to="/login" variant="subtle" color="gray" size="md">
                 Sign in
               </Button>
             </>

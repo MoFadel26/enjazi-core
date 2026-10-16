@@ -1,5 +1,6 @@
 import { Center, Loader } from '@mantine/core'
 import { Navigate, Outlet, useLocation } from 'react-router'
+import { guestSessionEnded } from '../api/guestSession'
 import { LandingScreen } from '../landing/LandingScreen'
 import { useCurrentUser, useEndRefusedSession } from './session'
 
@@ -7,6 +8,8 @@ import { useCurrentUser, useEndRefusedSession } from './session'
 // answered it shows a loader rather than flashing the login page; once the
 // answer is "signed out":
 // - A visitor to the root path / sees the public LandingScreen.
+// - A guest whose session has just ended (logged out, or expired) goes back
+//   to the landing page (ADR-0017).
 // - A visitor attempting to access any protected route is redirected to
 //   /login, with redirect_url, which Clerk's SignIn returns to afterwards.
 // A signed-in user renders the requested route inside the shell.
@@ -26,6 +29,9 @@ export function RequireAuth() {
   if (!user) {
     if (location.pathname === '/') {
       return <LandingScreen />
+    }
+    if (guestSessionEnded()) {
+      return <Navigate to="/" replace />
     }
     const back = encodeURIComponent(location.pathname + location.search)
     return <Navigate to={`/login?redirect_url=${back}`} replace />

@@ -6,6 +6,7 @@ import { useCurrentUser } from '../auth/session'
 import { ColorSchemeSync } from '../settings/ColorSchemeSync'
 import { PaletteSync } from '../settings/PaletteSync'
 import { CommandPalette } from './CommandPalette'
+import { GuestBanner } from './GuestBanner'
 import { iconProps } from './destinations'
 import { NavList } from './NavList'
 import { SearchRow } from './SearchRow'
@@ -77,6 +78,7 @@ export function AppLayout() {
       </AppShell.Navbar>
 
       <AppShell.Main>
+        {user?.isGuest && user.expiresAt && <GuestBanner expiresAt={user.expiresAt} />}
         <Outlet />
       </AppShell.Main>
     </AppShell>

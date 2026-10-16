@@ -43,7 +43,7 @@ export function DashboardScreen() {
 
   return (
     <>
-      <PageHeader title="Dashboard" description={<>Signed in as {user?.email}.</>} />
+      <PageHeader title="Dashboard" description={user?.isGuest ? 'Trying Enjazi as a guest.' : <>Signed in as {user?.email}.</>} />
 
       <SimpleGrid cols={{ base: 1, md: 2, xl: 4 }}>
         <StreakCard />

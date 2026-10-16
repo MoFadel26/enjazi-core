@@ -2,30 +2,38 @@ import { useAuth, useClerk } from '@clerk/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { fetchClient } from '../api/client'
+import { setGuestSession, useGuestSession } from '../api/guestSession'
 import type { components } from '../api/schema'
 import { currentUserKey } from './keys'
 
 export type User = components['schemas']['UserResponse']
 
-// Clerk says whether someone is signed in; the API says who they are here:
-// the local id and roles. The user lives in the query cache under one key.
-// null means signed out, which is distinct from undefined (not known yet).
+// Clerk, or a guest session (ADR-0017), says whether someone is signed in;
+// the API says who they are here: the local id and roles. The user lives in
+// the query cache under one key per kind of session, so signing up from a
+// guest session asks again rather than reusing the guest's answer. null means
+// signed out, which is distinct from undefined (not known yet).
 export function useCurrentUser() {
   const { isLoaded, isSignedIn } = useAuth()
+  const guest = useGuestSession()
+  const kind = isSignedIn ? 'clerk' : 'guest'
   const query = useQuery({
-    queryKey: currentUserKey,
+    queryKey: [...currentUserKey, kind],
     queryFn: async (): Promise<User | null> => {
       const { data, response } = await fetchClient.GET('/api/auth/me')
       if (response.status === 401) return null
       if (data === undefined) throw new Error(`GET /api/auth/me returned ${response.status}`)
+      // Signed in to Clerk: any guest data has moved to the account by now
+      // (the request carried the guest token), so the guest session is done.
+      if (kind === 'clerk') setGuestSession(null)
       return data
     },
     staleTime: Infinity,
-    enabled: isSignedIn === true,
+    enabled: isSignedIn === true || guest !== null,
   })
 
   if (!isLoaded) return { data: undefined, isPending: true } as const
-  if (!isSignedIn) return { data: null, isPending: false } as const
+  if (!isSignedIn && guest === null) return { data: null, isPending: false } as const
   return query
 }
 
@@ -33,7 +41,11 @@ export function useLogout() {
   const clerk = useClerk()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => clerk.signOut(),
+    mutationFn: async () => {
+      // A guest leaving drops the token; the account expires on its own.
+      setGuestSession(null)
+      if (clerk.session) await clerk.signOut()
+    },
     // Drop everything the previous user loaded.
     onSuccess: () => queryClient.clear(),
   })

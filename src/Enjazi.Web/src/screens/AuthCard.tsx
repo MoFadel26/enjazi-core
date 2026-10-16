@@ -1,10 +1,12 @@
-import { Center, Group, Stack, Text, ThemeIcon } from '@mantine/core'
+import { Center, Divider, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import { IconBolt } from '@tabler/icons-react'
 import type { ReactNode } from 'react'
+import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 
 // The centred column both anonymous screens render, with the wordmark above
-// Clerk's card. The wordmark is written here rather than imported so the auth
-// screens do not depend on the signed-in layout.
+// Clerk's card, and below it the way in without an account (ADR-0017). The
+// wordmark is written here rather than imported so the auth screens do not
+// depend on the signed-in layout.
 export function AuthCard({ children }: { children: ReactNode }) {
   return (
     <Center mih="100vh" p="md">
@@ -18,6 +20,8 @@ export function AuthCard({ children }: { children: ReactNode }) {
           </Text>
         </Group>
         {children}
+        <Divider label="or skip the account" labelPosition="center" w="100%" />
+        <TryAsGuestButton size="md" fullWidth />
       </Stack>
     </Center>
   )

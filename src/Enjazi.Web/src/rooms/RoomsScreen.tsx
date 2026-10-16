@@ -4,6 +4,7 @@ import { IconMessages, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { describeError } from '../api/errors'
+import { useCurrentUser } from '../auth/session'
 import { EmptyState } from '../ui/EmptyState'
 import { PageHeader } from '../ui/PageHeader'
 import { UserAvatar } from '../ui/UserAvatar'
@@ -18,15 +19,20 @@ export function RoomsScreen() {
   const join = useJoinRoom()
   const navigate = useNavigate()
   const [creating, setCreating] = useState(false)
+  // Guests join and chat but cannot create rooms (ADR-0017).
+  const { data: user } = useCurrentUser()
+  const canCreate = user?.isGuest !== true
 
   return (
     <>
       <PageHeader
         title="Rooms"
         actions={
-          <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={() => setCreating(true)}>
-            New room
-          </Button>
+          canCreate && (
+            <Button leftSection={<IconPlus size={18} stroke={1.75} />} onClick={() => setCreating(true)}>
+              New room
+            </Button>
+          )
         }
       />
 
@@ -36,12 +42,14 @@ export function RoomsScreen() {
         <EmptyState
           icon={<IconMessages size={20} stroke={1.75} />}
           title="No rooms yet."
-          description="Create the first one."
+          description={canCreate ? 'Create the first one.' : 'Sign up to start one.'}
           // Named apart from "New room": tests match names as substrings. docs/design.md, "Test contract".
           action={
-            <Button variant="default" onClick={() => setCreating(true)}>
-              Start a room
-            </Button>
+            canCreate && (
+              <Button variant="default" onClick={() => setCreating(true)}>
+                Start a room
+              </Button>
+            )
           }
         />
       )}

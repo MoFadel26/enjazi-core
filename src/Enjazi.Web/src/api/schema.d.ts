@@ -20,6 +20,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/guest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_StartGuest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/guest/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_RefreshGuest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events": {
         parameters: {
             query?: never;
@@ -281,6 +313,11 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        GuestSessionResponse: {
+            token: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
         MessageResponse: {
             /** Format: uuid */
             id: string;
@@ -314,6 +351,9 @@ export interface components {
             status?: null | number | string;
             detail?: null | string;
             instance?: null | string;
+        };
+        RefreshGuestRequest: {
+            token: string;
         };
         RoomMemberResponse: {
             /** Format: uuid */
@@ -354,6 +394,9 @@ export interface components {
             notifications: components["schemas"]["NotificationSettingsContract"];
             /** Format: date-time */
             updatedAt: string;
+        };
+        StartGuestRequest: {
+            timeZone: null | string;
         };
         StreakResponse: {
             /** Format: int32 */
@@ -410,6 +453,9 @@ export interface components {
             email: string;
             displayName: string;
             roles: string[];
+            isGuest: boolean;
+            /** Format: date-time */
+            expiresAt: null | string;
         };
         ValidationProblemDetails: {
             type?: null | string;
@@ -449,6 +495,95 @@ export interface operations {
                     "text/plain": components["schemas"]["UserResponse"];
                     "application/json": components["schemas"]["UserResponse"];
                     "text/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    Auth_StartGuest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartGuestRequest"];
+                "text/json": components["schemas"]["StartGuestRequest"];
+                "application/*+json": components["schemas"]["StartGuestRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["GuestSessionResponse"];
+                    "application/json": components["schemas"]["GuestSessionResponse"];
+                    "text/json": components["schemas"]["GuestSessionResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    Auth_RefreshGuest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshGuestRequest"];
+                "text/json": components["schemas"]["RefreshGuestRequest"];
+                "application/*+json": components["schemas"]["RefreshGuestRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["GuestSessionResponse"];
+                    "application/json": components["schemas"]["GuestSessionResponse"];
+                    "text/json": components["schemas"]["GuestSessionResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -731,6 +866,17 @@ export interface operations {
                     "text/json": components["schemas"]["ProblemDetails"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     Rooms_List: {
@@ -779,6 +925,17 @@ export interface operations {
                     "text/plain": components["schemas"]["RoomResponse"];
                     "application/json": components["schemas"]["RoomResponse"];
                     "text/json": components["schemas"]["RoomResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": components["schemas"]["ProblemDetails"];
+                    "application/json": components["schemas"]["ProblemDetails"];
+                    "text/json": components["schemas"]["ProblemDetails"];
                 };
             };
         };

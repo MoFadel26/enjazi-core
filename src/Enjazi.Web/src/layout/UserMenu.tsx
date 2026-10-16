@@ -19,13 +19,14 @@ export function UserMenu() {
           {name}
         </Text>
         <Text size="xs" c="dimmed" truncate>
-          {user?.email}
+          {user?.isGuest ? 'Guest session' : user?.email}
         </Text>
       </Stack>
       <ActionIcon
         aria-label="Log out"
         loading={logout.isPending}
-        onClick={() => logout.mutate(undefined, { onSuccess: () => navigate('/login', { replace: true }) })}
+        // A guest who leaves is sent to the landing page by RequireAuth.
+        onClick={() => logout.mutate(undefined, { onSuccess: () => user?.isGuest || navigate('/login', { replace: true }) })}
       >
         <IconLogout size={18} stroke={1.75} />
       </ActionIcon>
