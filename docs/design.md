@@ -591,10 +591,12 @@ type, surfaces and the few UX additions named here.
   shadows are off (`colorShadow` transparent) and its primary-button
   gradient is removed, so the card is a flat surface with a 1px ring like
   every other card. The card's title ("Sign in to …") is the application
-  name set in the Clerk dashboard, not in this code. Below the card, a
-  divider labelled "or skip the account" and a full-width `default`
-  "Try as guest" button (icon `UserCircleDashedIcon`), hidden while a guest
-  session exists.
+  name set in the Clerk dashboard, not in this code. The full-width
+  `default` "Try as guest" button (icon `UserCircleDashedIcon`) is below
+  the card on Login, after a divider labelled "or skip the account". On
+  Register it leads: the button, the dimmed line "Guest data is kept for 7
+  days.", then a divider labelled "or create an account" above the card.
+  The button and its divider are hidden while a guest session exists.
 - **Landing** — navbar: wordmark left; theme toggle, "Sign in" (`default`)
   and "Get started" (primary), all `xs`, on the right. Hero: an h1 at the
   display size (`src/theme/display.ts`, 34px on mobile and 52px from `sm`,
