@@ -31,15 +31,15 @@ test('tasks can be created, completed, filtered, edited and deleted', async ({ p
   await expect(page.getByText('No tasks here.')).toBeVisible()
 })
 
-test('an expired session is noticed on the next API call, without a reload', async ({ page, context }) => {
+test('a 401 from the API ends the session, without a reload', async ({ page }) => {
   await registerAndSignIn(page, 'expiry')
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
 
-  // Drop the cookie behind the app's back, then navigate client-side. The
-  // cached user still says signed in; the tasks request answers 401 and the
-  // fetch middleware (ADR-0008) turns that into a redirect.
-  await context.clearCookies()
+  // The API refuses the session, as it does once the account is disabled.
+  // The cached user still says signed in; the fetch middleware turns the 401
+  // into a sign-out, and RequireAuth into a redirect.
+  await page.route('**/api/tasks*', (route) => route.fulfill({ status: 401, body: '' }))
   await page.getByRole('link', { name: 'Tasks', exact: true }).click()
-  await expect(page).toHaveURL('/login')
+  await expect(page).toHaveURL(/\/login/)
 })

@@ -32,13 +32,12 @@ const ownMessage = 'My own message, over the accent tint.'
 
 // Writes the two appearance settings into the account and leaves the rest of
 // them as they are, which is what the settings screen sends too. From inside
-// the page: Playwright's request context does not send the Secure cookie back
-// over plain http (ADR-0009).
+// the page, where the Clerk session signs the request (session.ts).
 async function setAppearance(page: Page, palette: string, theme: 'light' | 'dark') {
   const status = await page.evaluate(
     async (appearance) => {
-      const current = (await (await fetch('/api/settings')).json()) as object
-      const response = await fetch('/api/settings', {
+      const current = (await (await window.apiFetch('/api/settings')).json()) as object
+      const response = await window.apiFetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...current, ...appearance }),
@@ -56,7 +55,7 @@ function seedRoom(page: Page, name: string) {
   return page.evaluate(
     async ([roomName, body]) => {
       const send = (url: string, data: object) =>
-        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        window.apiFetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
       const created = await send('/api/rooms', { name: roomName, description: null })
       if (!created.ok) throw new Error(`creating the room failed: ${created.status}`)
       const { id } = (await created.json()) as { id: string }

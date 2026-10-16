@@ -113,7 +113,7 @@ test('a failed tick is not saved by the rename and untick made behind it', async
   ])
   expect(await readTasks(page)).toEqual([expect.objectContaining({ title: 'Pay the bills', completedAt: null })])
   // Completing a task moves the streak and reopening it does not move it back.
-  const streak = await page.evaluate(async () => (await (await fetch('/api/streak')).json()) as unknown)
+  const streak = await page.evaluate(async () => (await (await window.apiFetch('/api/streak')).json()) as unknown)
   expect(streak).toMatchObject({ points: 0 })
   await expect(box).not.toBeChecked()
 })

@@ -13,15 +13,15 @@
 #    The setting goes on the command line, not in the environment: an
 #    environment variable would also reach the build-time OpenAPI generator,
 #    which builds the host without a database and would fail on it
-#    (ADR-0007). The bootstrap only promotes an account that already exists,
-#    so on the first run the account is registered and the API restarted.
+#    (ADR-0007). The account is an admin from its first request (ADR-0015).
 # 4. Playwright drives every screen against the real API, plus the Phase 4
-#    auth tests. Needs the local enjazi_core database migrated.
+#    auth tests. Needs the local enjazi_core database migrated, Clerk:Authority
+#    in appsettings.Development.json and the Clerk keys in $web/.env.local and
+#    $web/.env.test.local (README, "Running it").
 set -euo pipefail
 cd "$(dirname "$0")/.."
 web=src/Enjazi.Web
-admin_email=phase5-admin@example.test
-admin_password=phase5-admin-password
+admin_email=phase5-admin+clerk_test@example.com
 
 echo "-- dependencies"
 [ -d "$web/node_modules" ] || (cd "$web" && npm ci)
@@ -78,16 +78,6 @@ start_api() {
 if api_ready; then
   echo "note: reusing the API already on 5180; the admin test needs it started with --Bootstrap:AdminEmail=$admin_email"
 else
-  start_api
-fi
-status=$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
-  -d "{\"email\":\"$admin_email\",\"displayName\":\"Phase Five Admin\",\"password\":\"$admin_password\"}" \
-  http://127.0.0.1:5180/api/auth/register)
-if [ "$status" = "201" ] && [ -n "$api_pid" ]; then
-  echo "registered $admin_email; restarting the API so the bootstrap promotes it"
-  kill "$api_pid"
-  wait "$api_pid" 2>/dev/null || true
-  api_pid=""
   start_api
 fi
 

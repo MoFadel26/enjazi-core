@@ -35,11 +35,11 @@ test('events can be created, edited, dragged and deleted', async ({ page }) => {
   await expect(moved).toHaveCount(0)
 })
 
-// Asked from inside the page: Playwright's own request context does not send
-// the Secure cookie over plain http, the browser on 127.0.0.1 does.
+// Asked from inside the page, where the Clerk session signs the request
+// (session.ts).
 async function currentEvent(page: import('@playwright/test').Page, email: string) {
   const events = await page.evaluate(async () => {
-    const response = await fetch('/api/events')
+    const response = await window.apiFetch('/api/events')
     return (await response.json()) as { title: string; startsAt: string }[]
   })
   const event = events.find((e) => e.title.startsWith('Phase 5 review'))

@@ -30,7 +30,8 @@ test('an admin lists, searches and disables users; everyone else is sent home', 
   await page.getByRole('button', { name: 'Save' }).click()
   await expect(row).toContainText('Disabled')
 
-  // Disabled means the account cannot sign in any more.
-  const login = await member.request.post('/api/auth/login', { data: { email: account.email, password: account.password } })
-  expect(login.status()).toBe(401)
+  // Disabled means the API refuses the account's still-valid Clerk session,
+  // and the app signs it out.
+  await member.goto('/tasks')
+  await expect(member).toHaveURL(/\/login/)
 })

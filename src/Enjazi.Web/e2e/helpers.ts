@@ -13,12 +13,12 @@ export async function openDashboard(page: Page, label: string) {
 export type Seed = { title: string; dueAt?: string | null; completed?: boolean }
 
 // Creates the tasks one after another, so creation order is the order given,
-// and returns their ids. From inside the page: Playwright's request context
-// does not send the Secure cookie back over plain http (ADR-0009).
+// and returns their ids. From inside the page, where the Clerk session signs
+// the requests (session.ts).
 export function seedTasks(page: Page, seeds: Seed[]) {
   return page.evaluate(async (items) => {
     const send = (url: string, method: string, body: object) =>
-      fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      window.apiFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const ids: string[] = []
     for (const { title, dueAt = null, completed } of items) {
       const fields = { title, description: null, priority: 'Medium', dueAt }
@@ -37,7 +37,7 @@ export function seedTasks(page: Page, seeds: Seed[]) {
 
 // What the server holds now, read the same way.
 export function readTasks(page: Page) {
-  return page.evaluate(async () => (await (await fetch('/api/tasks')).json()) as unknown)
+  return page.evaluate(async () => (await (await window.apiFetch('/api/tasks')).json()) as unknown)
 }
 
 // Mantine starts a modal's enter transition on the next animation frame, so
