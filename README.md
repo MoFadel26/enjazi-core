@@ -32,7 +32,9 @@ Clerk, once:
 
 1. In the Clerk Dashboard, under Sessions, "Customize session token", set
    `{"email":"{{user.primary_email_address}}","name":"{{user.full_name}}"}`.
-   The API creates its own user row from these two claims.
+   The API creates its own user row from these two claims. Under User &
+   authentication, turn usernames off and first and last names on; the
+   browser tests create users with an email, a password and a first name.
 2. Write the publishable key to `src/Enjazi.Web/.env.local`:
 
    ```sh
