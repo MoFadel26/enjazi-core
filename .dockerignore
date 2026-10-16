@@ -1,0 +1,17 @@
+# Only src/Enjazi.Api and src/Enjazi.Web are copied in; this keeps local build
+# output and dependencies out of the build context.
+.git
+.github
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/test-results
+**/playwright-report
+docs
+infra
+scripts
+tests
+**/.DS_Store
+**/.env
+**/.env.*
