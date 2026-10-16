@@ -18,7 +18,7 @@
   --fc-classic-ring-color: var(--mantine-primary-color-filled);
 
   --fc-classic-primary: var(--mantine-primary-color-filled);
-  --fc-classic-primary-foreground: var(--mantine-color-white);
+  --fc-classic-primary-foreground: var(--mantine-primary-color-contrast);
 
   --fc-classic-event: var(--fc-classic-primary);
   --fc-classic-event-contrast: var(--fc-classic-primary-foreground);

@@ -20,7 +20,7 @@ import { registerAndSignIn } from './session.js'
 // theme.spec.ts, so a canvas that moves in the theme shows up here as a
 // failure rather than passing against itself.
 const cases = [
-  { id: 'enjazi', label: 'Enjazi', light: 'rgb(255, 255, 255)', dark: 'rgb(1, 1, 2)' },
+  { id: 'enjazi', label: 'Enjazi', light: 'rgb(250, 249, 247)', dark: 'rgb(18, 17, 16)' },
   { id: 'nord', label: 'Nord', light: 'rgb(236, 239, 244)', dark: 'rgb(46, 52, 64)' },
   { id: 'solarized', label: 'Solarized', light: 'rgb(253, 246, 227)', dark: 'rgb(0, 43, 54)' },
   { id: 'dracula', label: 'Dracula', light: 'rgb(255, 251, 235)', dark: 'rgb(40, 42, 54)' },

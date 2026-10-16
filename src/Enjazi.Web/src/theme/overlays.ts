@@ -13,7 +13,7 @@ const overlay = { backgroundOpacity: 0.55 }
 export const overlays: MantineThemeComponents = {
   // The overlay reads the same transitionProps and fades.
   Modal: Modal.extend({
-    defaultProps: { radius: 'lg', shadow: 'md', overlayProps: overlay, transitionProps: pop },
+    defaultProps: { radius: 'md', shadow: 'md', overlayProps: overlay, transitionProps: pop },
     styles: (theme) => ({
       // The content is a Paper, so it would otherwise carry Paper's border.
       content: { backgroundColor: raised, border: 'none' },

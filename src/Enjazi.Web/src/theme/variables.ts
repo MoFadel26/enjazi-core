@@ -9,6 +9,8 @@ import type { Palette, SchemeColors } from './palettes'
 // The four <colour>-text variables are Mantine's own, overridden: it sets them
 // to the filled shade in light and shade 4 in dark, and neither clears 4.5:1
 // on every surface. Overriding them here means a screen keeps writing c="red".
+// A palette whose filled accent is too pale for text overrides the accent's
+// -text and the anchor colour the same way.
 const scheme = (colors: SchemeColors) => ({
   '--enjazi-surface-1': colors.surface1,
   '--enjazi-surface-2': colors.surface2,
@@ -19,6 +21,10 @@ const scheme = (colors: SchemeColors) => ({
   '--mantine-color-green-text': colors.text.green,
   '--mantine-color-orange-text': colors.text.orange,
   '--mantine-color-yellow-text': colors.text.yellow,
+  ...(colors.text.accent && {
+    '--mantine-color-accent-text': colors.text.accent,
+    '--mantine-color-anchor': colors.text.accent,
+  }),
 })
 
 // The fast step and the easing are for CSS colour transitions and are the same

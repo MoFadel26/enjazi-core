@@ -31,12 +31,17 @@ const variantColorResolver: VariantColorsResolver = (input) => {
 // shade per scheme, and black and white.
 export function themeFor(palette: Palette): MantineThemeOverride {
   return createTheme({
-    colors: palette.colors,
+    // The accent is also registered under the palette's id, so the Enjazi
+    // amber is theme.colors.enjazi as well as the shared accent role.
+    colors: { ...palette.colors, [palette.id]: palette.colors.accent },
     primaryColor: 'accent',
     primaryShade: palette.primaryShade,
     // Two palettes' dark primary is the pale end of their accent ramp, which
     // needs a dark label rather than a white one. Mantine decides per fill.
     autoContrast: true,
+    // Mantine's 0.3 gives Enjazi's light amber (0.28) a white label at 3.2:1.
+    // No other fill the app paints with a label sits between 0.25 and 0.3.
+    luminanceThreshold: 0.25,
     variantColorResolver,
     black: palette.black,
     white: palette.white,

@@ -58,7 +58,7 @@ export const components: MantineThemeComponents = {
   // Mantine's light border for Paper, Divider and AppShell is gray-3; the
   // hairline is gray-4, which is what --mantine-color-default-border holds.
   Paper: Paper.extend({
-    defaultProps: { withBorder: true, radius: 'lg' },
+    defaultProps: { withBorder: true, radius: 'md' },
     vars: () => ({ root: { ...({ '--paper-border-color': hairline } as Record<string, string>) } }),
     styles: { root: { backgroundColor: 'var(--enjazi-surface-1)' } },
   }),
@@ -81,7 +81,7 @@ export const components: MantineThemeComponents = {
   // The burger turns into a cross as the navbar slides, so it takes the same
   // step. It opts into the reduced-motion rule by itself.
   Burger: Burger.extend({ defaultProps: { transitionDuration: durations.base, transitionTimingFunction: easing } }),
-  Card: Card.extend({ defaultProps: { withBorder: true, radius: 'lg', padding: 'lg' } }),
+  Card: Card.extend({ defaultProps: { withBorder: true, radius: 'md', padding: 'lg' } }),
   ...overlays,
   Badge: Badge.extend({
     defaultProps: { variant: 'light', size: 'sm', radius: 'xl' },

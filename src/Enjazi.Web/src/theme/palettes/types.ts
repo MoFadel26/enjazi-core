@@ -17,7 +17,9 @@ export type SchemeColors = {
   surface3: string
   raised: string
   accentTint: string
-  text: { red: string; green: string; orange: string; yellow: string }
+  // accent only where the filled shade is too pale to read as text; links
+  // and the accent's -text variable then use it instead.
+  text: { accent?: string; red: string; green: string; orange: string; yellow: string }
 }
 
 // A palette is only colour: structure, type, space and motion are the same in
