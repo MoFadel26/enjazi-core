@@ -5,10 +5,11 @@ import { useCurrentUser } from '../auth/session'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 import { display } from '../theme/display'
 import { Icon } from '../ui/Icon'
+import { hiddenWhilePending } from './hiddenWhilePending'
 
 // Hero section: product headline, value proposition and CTAs.
 export function LandingHero() {
-  const { data: user } = useCurrentUser()
+  const { data: user, isPending } = useCurrentUser()
 
   return (
     <Container size="lg" pt="xl" pb="md">
@@ -32,7 +33,7 @@ export function LandingHero() {
             Launch App
           </Button>
         ) : (
-          <Stack align="center" gap="sm" mt="xs">
+          <Stack align="center" gap="sm" mt="xs" style={hiddenWhilePending(isPending)}>
             <Group gap="sm" justify="center">
               <Button
                 component={Link}

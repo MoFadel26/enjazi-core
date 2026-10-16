@@ -8,10 +8,11 @@ import { LandingFeatures } from './LandingFeatures'
 import { LandingFooter } from './LandingFooter'
 import { LandingHero } from './LandingHero'
 import { LandingNavbar } from './LandingNavbar'
+import { hiddenWhilePending } from './hiddenWhilePending'
 
 // The public landing page presenting Enjazi's value proposition and preview.
 export function LandingScreen() {
-  const { data: user } = useCurrentUser()
+  const { data: user, isPending } = useCurrentUser()
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -32,7 +33,7 @@ export function LandingScreen() {
                 Join Enjazi today and experience a calm, high-speed productivity
                 platform built for high-performance individuals and teams.
               </Text>
-              <Group gap="sm" mt="xs">
+              <Group gap="sm" mt="xs" style={hiddenWhilePending(isPending)}>
                 {user ? (
                   <Button
                     component={Link}

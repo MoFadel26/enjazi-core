@@ -3,10 +3,11 @@ import { LightningIcon, MoonIcon, SunIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { Icon } from '../ui/Icon'
+import { hiddenWhilePending } from './hiddenWhilePending'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.
 export function LandingNavbar() {
-  const { data: user } = useCurrentUser()
+  const { data: user, isPending } = useCurrentUser()
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
 
   return (
@@ -39,14 +40,14 @@ export function LandingNavbar() {
                 Launch App
               </Button>
             ) : (
-              <>
+              <Group gap="xs" wrap="nowrap" style={hiddenWhilePending(isPending)}>
                 <Button component={Link} to="/login" variant="default" size="xs">
                   Sign in
                 </Button>
                 <Button component={Link} to="/register" size="xs">
                   Get started
                 </Button>
-              </>
+              </Group>
             )}
           </Group>
         </Group>
