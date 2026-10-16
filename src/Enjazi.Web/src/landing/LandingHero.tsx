@@ -24,9 +24,8 @@ export function LandingHero() {
         </Title>
 
         <Text size="lg" c="dimmed" ta="center" maw={640}>
-          Enjazi brings high-velocity personal execution and collaborative team
-          focus into one quiet workspace. Built with ASP.NET Core 10, React 19,
-          and Mantine 9.
+          Plan your day, finish what matters and keep your team in step, all in
+          one quiet workspace.
         </Text>
 
         <Group gap="sm" justify="center" mt="xs">
@@ -57,9 +56,9 @@ export function LandingHero() {
         </Group>
 
         <Group gap="lg" justify="center" mt="xs" wrap="wrap">
-          <GuaranteeItem label="No credit card required" />
-          <GuaranteeItem label="Instant setup" />
-          <GuaranteeItem label="Data-layer tenant isolation" />
+          <GuaranteeItem label="Your tasks stay private" />
+          <GuaranteeItem label="Work alongside your team in real time" />
+          <GuaranteeItem label="Build a daily streak" />
         </Group>
       </Stack>
     </Container>
@@ -69,7 +68,7 @@ export function LandingHero() {
 function GuaranteeItem({ label }: { label: string }) {
   return (
     <Group gap="xs" wrap="nowrap">
-      <IconCheck size={14} stroke={2} color="var(--mantine-color-accent-6)" />
+      <IconCheck size={14} stroke={2} color="var(--mantine-color-accent-text)" />
       <Text size="xs" c="dimmed">
         {label}
       </Text>

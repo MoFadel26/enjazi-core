@@ -26,7 +26,6 @@ export function LandingAppPreview() {
     <Container size="lg" pb="xl">
       <Card
         p={0}
-        radius="lg"
         bd="1px solid var(--mantine-color-default-border)"
         bg="var(--enjazi-surface-1)"
       >
@@ -63,7 +62,7 @@ function WindowChrome() {
       <Text size="xs" c="dimmed" fw={500}>
         enjazi.app/dashboard
       </Text>
-      <Badge size="xs" variant="dot" color="teal">
+      <Badge size="xs" variant="dot" color="green">
         Realtime
       </Badge>
     </Group>
@@ -132,17 +131,17 @@ function MockDashboard() {
     <Stack gap="md">
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
         <MiniStat label="Streak" value="14 days" icon={IconFlame} color="accent" />
-        <MiniStat label="Tasks Completed" value="38 this week" icon={IconCheck} color="teal" />
-        <MiniStat label="Focus Rooms" value="4 online" icon={IconMessages} color="accent" />
+        <MiniStat label="Tasks Completed" value="38 this week" icon={IconCheck} color="green" />
+        <MiniStat label="Focus Rooms" value="4 online" icon={IconMessages} color="gray" />
       </SimpleGrid>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
         <Card p="sm" bg="var(--enjazi-surface-2)" bd="1px solid var(--mantine-color-default-border)">
           <Text size="xs" c="dimmed" fw={500} mb="xs">Today&apos;s Focus</Text>
           <Stack gap="xs">
-            <MockTaskItem title="PostgreSQL EF Core migrations" done />
-            <MockTaskItem title="Calendar week view scheduling" />
-            <MockTaskItem title="SignalR live room messaging" />
+            <MockTaskItem title="Send the weekly report" done />
+            <MockTaskItem title="Plan next week" />
+            <MockTaskItem title="Review the design draft" />
           </Stack>
         </Card>
 
@@ -164,7 +163,7 @@ function MiniStat({ label, value, icon: Icon, color }: { label: string; value: s
     <Card p="sm" bg="var(--enjazi-surface-2)" bd="1px solid var(--mantine-color-default-border)">
       <Group justify="space-between" mb="xs">
         <Text size="xs" c="dimmed" tt="uppercase" fw={500}>{label}</Text>
-        <Icon size={16} stroke={1.75} color={`var(--mantine-color-${color}-6)`} />
+        <Icon size={16} stroke={1.75} color={`var(--mantine-color-${color}-text)`} />
       </Group>
       <Text size="lg" fw={600}>{value}</Text>
     </Card>
@@ -180,7 +179,10 @@ function MockTaskItem({ title, done }: { title: string; done?: boolean }) {
         </ThemeIcon>
         <Text size="xs" td={done ? 'line-through' : undefined} c={done ? 'dimmed' : undefined}>{title}</Text>
       </Group>
-      <Badge size="xs" variant="light" color={done ? 'gray' : 'accent'}>{done ? 'Done' : 'In progress'}</Badge>
+      {/* Status pills take their meaning's colour, never the accent. */}
+      <Badge size="xs" variant="light" color={done ? 'green' : 'blue'} c={done ? 'green' : undefined}>
+        {done ? 'Done' : 'In progress'}
+      </Badge>
     </Group>
   )
 }

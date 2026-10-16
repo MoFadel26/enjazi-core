@@ -22,7 +22,6 @@ export function LandingScreen() {
         <Container size="lg" py="xl">
           <Card
             p={{ base: 'lg', sm: 'xl' }}
-            radius="lg"
             bg="var(--enjazi-surface-1)"
             bd="1px solid var(--mantine-color-default-border)"
           >

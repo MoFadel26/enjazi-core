@@ -6,27 +6,23 @@ const iconProps: IconProps = { size: 20, stroke: 1.75 }
 const features = [
   {
     icon: IconChecklist,
-    title: 'Scoped Task Management',
-    description:
-      'Ownership is enforced at the database layer with EF Core global query filters. Zero cross-user data leakage by architectural design.',
+    title: 'Your tasks stay private',
+    description: 'Only you can see your tasks. Nobody else on Enjazi can open, list or change them.',
   },
   {
     icon: IconFlame,
-    title: 'Streak & Momentum Clock',
-    description:
-      'Build daily consistency with a dedicated streak clock. Increments when tasks complete in your timezone, resetting gracefully on missed days.',
+    title: 'Build a daily streak',
+    description: 'Finish one task a day and your streak grows. Days count in your own time zone.',
   },
   {
     icon: IconCalendar,
-    title: 'Fluid FullCalendar Scheduling',
-    description:
-      'Plan your days and weeks with drag-and-drop event scheduling, seamlessly bridging your calendar with actionable daily tasks.',
+    title: 'Plan your week',
+    description: 'Drag events into place on a week view and see what the next days hold.',
   },
   {
     icon: IconMessages,
-    title: 'Real-Time Focus Rooms',
-    description:
-      'Collaborate and hold sprint rooms with teammates. Push-only SignalR notifications stream messages and presence instantly.',
+    title: 'Work alongside your team in real time',
+    description: 'Open a room with your team. Messages arrive the moment they are sent.',
   },
 ]
 
@@ -36,11 +32,11 @@ export function LandingFeatures() {
     <Container size="lg" py="xl">
       <Stack align="center" gap="sm" mb="xl">
         <Title order={2} ta="center">
-          Engineered for velocity and focus
+          Everything you need to stay on track
         </Title>
         <Text size="md" c="dimmed" ta="center" maw={560}>
-          Every feature in Enjazi was designed with clear separation of concerns,
-          strict security, and a quiet, distraction-free aesthetic.
+          Tasks, calendar, streaks and team rooms in one place, without the
+          noise.
         </Text>
       </Stack>
 
