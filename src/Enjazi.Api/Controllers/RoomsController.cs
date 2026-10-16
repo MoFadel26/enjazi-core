@@ -53,7 +53,7 @@ public sealed class RoomsController(AppDbContext db, ICurrentUser currentUser) :
     [ProducesResponseType<RoomResponse>(StatusCodes.Status201Created)]
     public async Task<ActionResult<RoomResponse>> Create(CreateRoomRequest request)
     {
-        var now = DateTimeOffset.UtcNow;
+        var now = Timestamps.UtcNow();
         var room = new Room
         {
             Id = Guid.NewGuid(),
@@ -162,7 +162,7 @@ public sealed class RoomsController(AppDbContext db, ICurrentUser currentUser) :
             RoomId = id,
             UserId = currentUser.Id,
             Role = RoomRole.Member,
-            JoinedAt = DateTimeOffset.UtcNow,
+            JoinedAt = Timestamps.UtcNow(),
         });
 
         await db.SaveChangesAsync();

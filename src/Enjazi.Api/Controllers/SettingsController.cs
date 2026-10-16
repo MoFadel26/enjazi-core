@@ -35,7 +35,7 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
             {
                 UserId = currentUser.Id,
                 Data = new SettingsData(),
-                UpdatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = Timestamps.UtcNow(),
             };
 
             db.Settings.Add(settings);
@@ -102,7 +102,7 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
                 RoomMessages = request.Notifications.RoomMessages,
             },
         };
-        settings.UpdatedAt = DateTimeOffset.UtcNow;
+        settings.UpdatedAt = Timestamps.UtcNow();
 
         await db.SaveChangesAsync();
         return ToResponse(settings);

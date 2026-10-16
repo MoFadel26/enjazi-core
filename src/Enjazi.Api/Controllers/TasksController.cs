@@ -47,7 +47,7 @@ public sealed class TasksController(AppDbContext db, ICurrentUser currentUser, S
     [ProducesResponseType<TaskResponse>(StatusCodes.Status201Created)]
     public async Task<ActionResult<TaskResponse>> Create(CreateTaskRequest request)
     {
-        var now = DateTimeOffset.UtcNow;
+        var now = Timestamps.UtcNow();
         var task = new TaskItem
         {
             Id = Guid.NewGuid(),
@@ -88,9 +88,9 @@ public sealed class TasksController(AppDbContext db, ICurrentUser currentUser, S
         task.Priority = request.Priority;
         task.DueAt = request.DueAt?.ToUniversalTime();
         task.CompletedAt = request.Completed
-            ? task.CompletedAt ?? DateTimeOffset.UtcNow
+            ? task.CompletedAt ?? Timestamps.UtcNow()
             : null;
-        task.UpdatedAt = DateTimeOffset.UtcNow;
+        task.UpdatedAt = Timestamps.UtcNow();
 
         if (completing)
         {

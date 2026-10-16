@@ -52,7 +52,7 @@ public sealed class ClerkUserProvisioner(
             Email = email,
             EmailConfirmed = true,
             DisplayName = string.IsNullOrEmpty(name) ? email.Split('@')[0] : name[..Math.Min(name.Length, DisplayNameLength)],
-            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedAt = Timestamps.UtcNow(),
         };
 
         // The row and the admin role commit together, so a concurrent request

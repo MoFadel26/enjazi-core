@@ -72,7 +72,7 @@ public sealed class MessagesController(
             RoomId = roomId,
             AuthorId = currentUser.Id,
             Body = request.Body.Trim(),
-            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedAt = Timestamps.UtcNow(),
         };
 
         db.Messages.Add(message);

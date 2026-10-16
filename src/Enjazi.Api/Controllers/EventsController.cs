@@ -70,7 +70,7 @@ public sealed class EventsController(AppDbContext db, ICurrentUser currentUser) 
             return ValidationProblem(ModelState);
         }
 
-        var now = DateTimeOffset.UtcNow;
+        var now = Timestamps.UtcNow();
         var calendarEvent = new CalendarEvent
         {
             Id = Guid.NewGuid(),
@@ -113,7 +113,7 @@ public sealed class EventsController(AppDbContext db, ICurrentUser currentUser) 
         calendarEvent.StartsAt = request.StartsAt.ToUniversalTime();
         calendarEvent.EndsAt = request.EndsAt.ToUniversalTime();
         calendarEvent.AllDay = request.AllDay;
-        calendarEvent.UpdatedAt = DateTimeOffset.UtcNow;
+        calendarEvent.UpdatedAt = Timestamps.UtcNow();
 
         await db.SaveChangesAsync();
         return ToResponse(calendarEvent);
