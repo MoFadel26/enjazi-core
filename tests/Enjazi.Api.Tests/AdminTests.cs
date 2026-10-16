@@ -29,7 +29,7 @@ public sealed class AdminTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Bootstrap_promotes_an_existing_account_and_the_cookie_carries_the_role()
+    public async Task Bootstrap_promotes_an_existing_account_and_the_next_request_carries_the_role()
     {
         var (admin, _) = await factory.SignUpAdminAsync();
 
@@ -63,27 +63,24 @@ public sealed class AdminTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Disabling_a_user_blocks_their_next_login()
+    public async Task Disabling_a_user_refuses_their_next_request()
     {
         var (admin, _) = await factory.SignUpAdminAsync();
-        var (_, victim) = await factory.SignUpAsync();
+        var (victimClient, victim) = await factory.SignUpAsync();
 
         var update = await admin.PutAsJsonAsync($"/api/admin/users/{victim.Id}",
             new AdminUpdateUserRequest(Disabled: true, Roles: []));
         update.EnsureSuccessStatusCode();
         Assert.True((await update.Content.ReadFromJsonAsync<AdminUserResponse>())!.Disabled);
 
-        var login = await factory.CreateHttpsClient().PostAsJsonAsync(
-            "/api/auth/login", new LoginRequest(victim.Email, SignedInClient.Password));
-        Assert.Equal(HttpStatusCode.Unauthorized, login.StatusCode);
+        // The same, still valid Clerk token: disabling is checked per request.
+        Assert.Equal(HttpStatusCode.Unauthorized, (await victimClient.GetAsync("/api/tasks")).StatusCode);
 
         var reenable = await admin.PutAsJsonAsync($"/api/admin/users/{victim.Id}",
             new AdminUpdateUserRequest(Disabled: false, Roles: []));
         reenable.EnsureSuccessStatusCode();
 
-        var loginAgain = await factory.CreateHttpsClient().PostAsJsonAsync(
-            "/api/auth/login", new LoginRequest(victim.Email, SignedInClient.Password));
-        Assert.Equal(HttpStatusCode.OK, loginAgain.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await victimClient.GetAsync("/api/tasks")).StatusCode);
     }
 
     [Fact]

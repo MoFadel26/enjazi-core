@@ -1,5 +1,6 @@
 using Enjazi.Api.Data;
 using Enjazi.Api.Streaks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -30,27 +31,31 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     /// <summary>
     /// The clock the streak reads, replaced under the streak's key only. It
-    /// was first registered as the plain TimeProvider, which cookie
-    /// authentication also reads: every cookie was then issued as expiring
-    /// in March 2026 and the test client's real-time cookie jar dropped it.
+    /// was first registered as the plain TimeProvider, which the cookie
+    /// authentication of the time also read: every cookie was then issued as
+    /// expiring in March 2026 and the test client's cookie jar dropped it.
     /// </summary>
     public FakeClock Clock { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Default", _postgres.GetConnectionString());
-        builder.ConfigureTestServices(services => services.AddKeyedSingleton<TimeProvider>(StreakClock.Key, Clock));
-    }
+        builder.UseSetting("Clerk:AuthorizedParties:0", TestTokens.Origin);
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddKeyedSingleton<TimeProvider>(StreakClock.Key, Clock);
 
-    /// <summary>
-    /// The auth cookie is marked Secure, so a client on http would be handed
-    /// the cookie and then never send it back. TestServer honours the scheme
-    /// of the base address without doing real TLS.
-    /// </summary>
-    public HttpClient CreateHttpsClient() => CreateClient(new WebApplicationFactoryClientOptions
-    {
-        BaseAddress = new Uri("https://localhost"),
-    });
+            // Runs after ClerkAuthentication.Configure and before the handler
+            // builds its configuration manager, so with no Authority it never
+            // fetches Clerk's JWKS and validates against the test key instead.
+            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.Authority = null;
+                options.TokenValidationParameters.ValidIssuer = TestTokens.Issuer;
+                options.TokenValidationParameters.IssuerSigningKey = TestTokens.Key;
+            });
+        });
+    }
 
     public override async ValueTask DisposeAsync()
     {

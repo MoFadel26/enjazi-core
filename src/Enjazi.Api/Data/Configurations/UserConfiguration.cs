@@ -11,6 +11,8 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("users");
         builder.Property(u => u.DisplayName).HasMaxLength(100);
+        builder.Property(u => u.ClerkUserId).HasMaxLength(64);
+        builder.HasIndex(u => u.ClerkUserId).IsUnique();
     }
 }
 

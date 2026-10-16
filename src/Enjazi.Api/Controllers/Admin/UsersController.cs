@@ -100,9 +100,9 @@ public sealed class UsersController(
             return NotFound();
         }
 
-        // Lockout is Identity's own mechanism, so PasswordSignInAsync refuses
-        // the account without any code of ours in the login path. A live
-        // cookie stays valid until it expires; ADR-0006 notes the trade.
+        // Lockout is Identity's own mechanism. ClerkAuthentication checks it
+        // on every request, so the account's next API call is refused. An open
+        // hub connection lasts until it reconnects; ADR-0015 notes the trade.
         user.LockoutEnabled = true;
         user.LockoutEnd = request.Disabled ? DateTimeOffset.MaxValue : null;
         await userManager.UpdateAsync(user);

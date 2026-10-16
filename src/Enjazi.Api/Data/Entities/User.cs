@@ -4,6 +4,12 @@ namespace Enjazi.Api.Data.Entities;
 
 public sealed class User : IdentityUser<Guid>
 {
+    /// <summary>
+    /// The Clerk user id, the session token's sub claim. Set once, when the
+    /// first request from that Clerk user creates this row (ADR-0015).
+    /// </summary>
+    public string ClerkUserId { get; set; } = string.Empty;
+
     public string DisplayName { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
 
