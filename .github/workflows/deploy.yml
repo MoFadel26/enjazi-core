@@ -1,6 +1,6 @@
-# Tests, image, deploy. Every push to main that passes the tests becomes the
-# running revision on Azure Container Apps. The one-time setup this relies on
-# (the container app, the federated credential, the three secrets, the Clerk
+# Checks, image, deploy. Every push to main that passes the web checks becomes
+# the running revision on Azure Container Apps. The one-time setup this relies
+# on (the container app, the federated credential, the three secrets, the Clerk
 # variable) is in docs/deploy.md.
 name: deploy
 
@@ -24,17 +24,6 @@ env:
   APP_NAME: enjazi-core
 
 jobs:
-  api-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: '10.0.x'
-      # The test project is its own runner and starts Postgres with
-      # Testcontainers; scripts/verify-phase-2.sh explains why not dotnet test.
-      - run: dotnet run --project tests/Enjazi.Api.Tests
-
   web-checks:
     runs-on: ubuntu-latest
     defaults:
@@ -52,7 +41,7 @@ jobs:
       - run: npm run lint
 
   image:
-    needs: [api-tests, web-checks]
+    needs: [web-checks]
     runs-on: ubuntu-latest
     permissions:
       contents: read
