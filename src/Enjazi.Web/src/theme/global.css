@@ -10,6 +10,14 @@
   --mantine-datatable-background-color-dark: var(--enjazi-surface-1);
 }
 
+/* The theme cross-fade (changeTheme.ts). The browser fades the old snapshot
+   out and the new one in; this sets how long. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--enjazi-duration-theme);
+  animation-timing-function: var(--enjazi-ease);
+}
+
 ::selection {
   background: var(--enjazi-accent-tint);
 }

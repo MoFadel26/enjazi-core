@@ -3,7 +3,7 @@ import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { useEffect, useRef } from 'react'
 import { describeError } from '../api/errors'
-import { isPaletteId, setPaletteId } from '../theme'
+import { changeTheme, isPaletteId, setPaletteId, usePaletteId } from '../theme'
 import { PageHeader } from '../ui/PageHeader'
 import { DeleteAccount } from './DeleteAccount'
 import { SettingsForm } from './SettingsForm'
@@ -30,7 +30,7 @@ export function SettingsScreen() {
 // placeholder that a later load would have to overwrite.
 function LoadedForm({ settings }: { settings: Settings }) {
   const update = useUpdateSettings()
-  const { setColorScheme } = useMantineColorScheme()
+  const { colorScheme, setColorScheme } = useMantineColorScheme()
   const form = useForm({
     initialValues: {
       theme: settings.theme,
@@ -44,6 +44,7 @@ function LoadedForm({ settings }: { settings: Settings }) {
   // picked. A ref holds what the account says, so leaving without saving puts
   // that back: the live change must not be a silent save.
   const picked = form.getValues().palette
+  const shown = usePaletteId()
   const saved = useRef(settings.palette)
 
   useEffect(() => {
@@ -51,8 +52,8 @@ function LoadedForm({ settings }: { settings: Settings }) {
   }, [settings.palette])
 
   useEffect(() => {
-    if (isPaletteId(picked)) setPaletteId(picked)
-  }, [picked])
+    if (isPaletteId(picked) && picked !== shown) changeTheme(() => setPaletteId(picked))
+  }, [picked, shown])
 
   useEffect(
     () => () => {
@@ -70,7 +71,8 @@ function LoadedForm({ settings }: { settings: Settings }) {
             onSuccess: (saved) => {
               if (saved) {
                 form.resetDirty(values)
-                setColorScheme(toColorScheme(saved.theme))
+                const next = toColorScheme(saved.theme)
+                if (next !== colorScheme) changeTheme(() => setColorScheme(next))
               }
               notifications.show({ message: 'Settings saved.' })
             },

@@ -2,6 +2,7 @@ import { ActionIcon, Anchor, Button, Container, Group, Text, ThemeIcon, useCompu
 import { Link } from 'react-router'
 import { useCurrentUser } from '../auth/session'
 import { useSaveTheme } from '../settings/queries'
+import { changeTheme } from '../theme'
 import { Icon } from '../ui/Icon'
 import { LightningIcon, MoonIcon, SunIcon } from '../ui/icons'
 import { hiddenWhilePending } from './hiddenWhilePending'
@@ -16,7 +17,7 @@ export function LandingNavbar() {
 
   const toggle = () => {
     const next = shown === 'dark' ? 'light' : 'dark'
-    setColorScheme(next)
+    changeTheme(() => setColorScheme(next))
     saveTheme(next)
   }
 

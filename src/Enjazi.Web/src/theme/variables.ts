@@ -36,12 +36,13 @@ const scheme = (colors: SchemeColors) => ({
   }),
 })
 
-// The fast step and the easing are for CSS colour transitions and are the same
-// in both schemes and every palette.
+// The fast step and the easing are for CSS colour transitions, the theme step
+// for the theme cross-fade. All are the same in both schemes and every palette.
 export function resolverFor(palette: Palette): CSSVariablesResolver {
   return () => ({
     variables: {
       '--enjazi-duration-fast': `${durations.fast}ms`,
+      '--enjazi-duration-theme': `${durations.theme}ms`,
       '--enjazi-ease': easing,
     },
     light: scheme(palette.schemes.light),

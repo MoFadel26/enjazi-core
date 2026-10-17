@@ -9,6 +9,9 @@ export const durations = {
   // Enter and leave: modals, popovers, notifications, rows, the nav marker,
   // the mobile navbar.
   base: 180,
+  // The cross-fade when the colour scheme or the palette changes. Longer than
+  // base because the whole page changes colour at once.
+  theme: 300,
   // The points float and the flame pop. The only motion longer than base.
   moment: 700,
   // How long a task completed in the Open view stays before it leaves. A
