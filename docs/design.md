@@ -385,7 +385,8 @@ all of it, and `motion.ts` holds the one set of numbers they share:
 |---|---|---|
 | `durations.fast` | 120ms | hover, press, colour changes, the checkbox tick, tooltips |
 | `durations.base` | 180ms | enter and leave: modal, popover, menu, palette, rows, the nav marker, the segmented control's indicator |
-| `durations.moment` | 700ms | the points float and the flame pop. Nothing else runs longer than `base`. |
+| `durations.theme` | 300ms | the cross-fade when the colour scheme or the palette changes |
+| `durations.moment` | 700ms | the points float and the flame pop. Apart from `theme`, nothing else runs longer than `base`. |
 | `durations.linger` | 800ms | a task completed in the Open view stays in place this long before it leaves. A pause, not an animation. |
 | `easing` | `cubic-bezier(0.2, 0, 0, 1)` | everything; decelerating |
 | `offsets.enter` | 4 | pixels an arriving task row rises |
@@ -411,6 +412,7 @@ Where motion applies:
 | Streak chip | `+N` floats up by `offsets.rise` and fades over `moment`; the flame swells to `offsets.pop` and back when the run grows |
 | Week row | a dot filling scales in, `base` |
 | Skeleton | Mantine's pulse |
+| Theme and palette switch | the whole page cross-fades from the old colours to the new, `theme`, through the browser's View Transitions API (`changeTheme` in `src/theme/changeTheme.ts`). The landing toggle, a saved theme in Settings and the palette preview use it; loading the account's saved choice does not. Browsers without the API switch at once. |
 
 Comboboxes (`Select`, the time zone list) keep Mantine's instant dropdown:
 a list you type into should not lag behind the typing.
