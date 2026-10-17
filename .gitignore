@@ -494,3 +494,7 @@ dist/
 .DS_Store
 
 CLAUDE.md
+
+# Test suites, kept locally and out of the repository
+/tests/
+/src/Enjazi.Web/e2e/
