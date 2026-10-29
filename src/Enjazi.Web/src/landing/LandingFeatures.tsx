@@ -1,13 +1,8 @@
 import { Card, Container, SimpleGrid, Text, ThemeIcon, Title } from '@mantine/core'
 import { Icon } from '../ui/Icon'
-import { CalendarBlankIcon, ChatsCircleIcon, FireIcon, ListChecksIcon } from '../ui/icons'
+import { CalendarBlankIcon, ChatsCircleIcon, FireIcon } from '../ui/icons'
 
 const features = [
-  {
-    icon: ListChecksIcon,
-    title: 'Your tasks stay private',
-    description: 'Only you can see your tasks. Nobody else on Enjazi can open, list or change them.',
-  },
   {
     icon: FireIcon,
     title: 'Build a daily streak',
@@ -33,7 +28,7 @@ export function LandingFeatures() {
         What you get
       </Title>
 
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
         {features.map((feature) => (
           <Card
             key={feature.title}
