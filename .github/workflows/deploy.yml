@@ -1,21 +1,25 @@
 # Tests, image, deploy. Every push to main that passes the tests becomes the
-# running revision on Azure Container Apps. The one-time setup this relies on
-# (the container app, the federated credential, the four secrets, the Clerk
-# variable) is in docs/deploy.md.
+# running revision on Azure Container Apps. A pull request into main runs the
+# tests only. The one-time setup this relies on (the container app, the
+# federated credential, the four secrets, the Clerk variable) is in
+# docs/deploy.md.
 name: deploy
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# A second push waits for the first deploy to finish instead of racing it.
+# A second push waits for the first deploy to finish instead of racing it. A
+# pull request has its own group, and a new push to it cancels the old run.
 concurrency:
-  group: deploy
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('tests-{0}', github.ref) || 'deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   IMAGE: ghcr.io/mofadel26/enjazi-core
@@ -108,6 +112,8 @@ jobs:
 
   image:
     needs: [api-tests, e2e, web-checks]
+    # deploy needs this job, so it is skipped with it.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read

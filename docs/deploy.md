@@ -11,7 +11,8 @@ the chat hub at `/hubs/rooms` and the built React app from one origin
 - `.github/workflows/deploy.yml` runs on every push to `main`: API tests,
   browser tests, frontend typecheck and lint, then pushes
   `ghcr.io/mofadel26/enjazi-core:<commit sha>` and points the container app
-  at it.
+  at it. A pull request into `main` runs the same tests and checks, and stops
+  there.
 - `infra/deploy.sh` creates or updates the Azure resources. It is safe to
   run again. Region and names are variables at its top; the resource group
   and app name are repeated in the workflow and must match.
