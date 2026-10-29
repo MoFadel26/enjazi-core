@@ -20,7 +20,9 @@ export default defineConfig({
   // the network. With the default of half the cores, those calls queue long
   // enough to time out; two workers pass reliably.
   workers: 2,
-  retries: 0,
+  // CI has no one to re-run a test that timed out inside Clerk's rate limit
+  // (docs/development.md, "Tests"), so it retries; locally a failure shows.
+  retries: process.env.CI ? 2 : 0,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:5182',
