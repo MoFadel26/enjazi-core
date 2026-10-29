@@ -1,6 +1,6 @@
 # Tests, image, deploy. Every push to main that passes the tests becomes the
 # running revision on Azure Container Apps. The one-time setup this relies on
-# (the container app, the federated credential, the three secrets, the Clerk
+# (the container app, the federated credential, the four secrets, the Clerk
 # variable) is in docs/deploy.md.
 name: deploy
 
@@ -35,6 +35,61 @@ jobs:
       # Testcontainers; scripts/verify-phase-2.sh explains why not dotnet test.
       - run: dotnet run --project tests/Enjazi.Api.Tests
 
+  # The browser suite against the real API and a real database, signing in
+  # through the Clerk development instance (docs/development.md, "Tests").
+  e2e:
+    runs-on: ubuntu-latest
+    # Matches the connection string in appsettings.Development.json.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: fadel
+          POSTGRES_DB: enjazi_core
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fadel -d enjazi_core"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/Enjazi.Web/package-lock.json
+      - run: npm ci
+        working-directory: src/Enjazi.Web
+      - run: npx playwright install --with-deps chromium
+        working-directory: src/Enjazi.Web
+      # Settings on the command line, not in the environment, for the reason
+      # in scripts/verify-phase-5.sh. The guest tests need a signing key; a
+      # throwaway one per run will do. The process outlives this step.
+      - name: Start the API
+        run: |
+          dotnet build src/Enjazi.Api
+          dotnet run --no-build --project src/Enjazi.Api -- \
+            --Bootstrap:AdminEmail=phase5-admin+clerk_test@example.com \
+            --Guest:SigningKey="$(openssl rand -base64 48)" \
+            --Database:MigrateOnStartup=true > "$RUNNER_TEMP/api.log" 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -s -o /dev/null http://127.0.0.1:5180/api/auth/me && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/api.log"
+          exit 1
+      - run: npm run e2e
+        working-directory: src/Enjazi.Web
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+
   web-checks:
     runs-on: ubuntu-latest
     defaults:
@@ -52,7 +107,7 @@ jobs:
       - run: npm run lint
 
   image:
-    needs: [api-tests, web-checks]
+    needs: [api-tests, e2e, web-checks]
     runs-on: ubuntu-latest
     permissions:
       contents: read
