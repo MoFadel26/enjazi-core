@@ -797,12 +797,10 @@ keeps its name through `aria-label`.
    render; the points moment appears; and reduced motion zeroes the
    durations.
 
-## Verification — `scripts/verify-phase-9.sh`
+## Verification — Phase 9
 
-1. The palette ids the frontend offers and the ones the API accepts are the
-   same list, read out of both files rather than repeated in the script.
-2. Everything `scripts/verify-phase-8.sh` checks, whose suite now includes
-   `e2e/colors.spec.ts`: each palette in each scheme paints its own canvas
-   and passes an axe-core colour-contrast check on the dashboard, the tasks
-   screen, a room and settings; picking a palette applies it before Save;
-   and a reload shows the account's palette without a flash of another one.
+Everything `scripts/verify-phase-8.sh` checks, whose suite now includes
+`e2e/colors.spec.ts`: each palette in each scheme paints its own canvas
+and passes an axe-core colour-contrast check on the dashboard, the tasks
+screen, a room and settings; picking a palette applies it before Save; and a
+reload shows the account's palette without a flash of another one.

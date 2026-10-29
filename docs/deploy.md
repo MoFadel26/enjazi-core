@@ -9,9 +9,10 @@ the chat hub at `/hubs/rooms` and the built React app from one origin
   the API, and the app goes into the API's `wwwroot`. It listens on 8080 as a
   non-root user.
 - `.github/workflows/deploy.yml` runs on every push to `main`: API tests,
-  frontend typecheck and lint, then pushes
+  browser tests, frontend typecheck and lint, then pushes
   `ghcr.io/mofadel26/enjazi-core:<commit sha>` and points the container app
-  at it.
+  at it. A pull request into `main` runs the same tests and checks, and stops
+  there.
 - `infra/deploy.sh` creates or updates the Azure resources. It is safe to
   run again. Region and names are variables at its top; the resource group
   and app name are repeated in the workflow and must match.
@@ -54,10 +55,11 @@ key, which Vite writes into the bundle. The workflow passes it from the
 repository variable of the same name. It is public, so it is a variable and
 not a secret.
 
-The workflow reads three repository secrets: `AZURE_CLIENT_ID`,
-`AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`. They identify the Azure
-identity it signs in as through OpenID Connect; no Azure password is stored
-anywhere.
+The workflow reads four repository secrets: `AZURE_CLIENT_ID`,
+`AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`, which identify the Azure
+identity it signs in as through OpenID Connect, so no Azure password is stored
+anywhere; and `CLERK_SECRET_KEY`, the development instance's secret key, which
+the browser tests use to create their Clerk users.
 
 ## One-time setup
 
@@ -94,6 +96,7 @@ Needs the Azure CLI and the GitHub CLI, both signed in.
    gh secret set AZURE_TENANT_ID --body "$TENANT_ID"
    gh secret set AZURE_SUBSCRIPTION_ID --body "$SUBSCRIPTION_ID"
    gh variable set VITE_CLERK_PUBLISHABLE_KEY --body "pk_test_..."
+   gh secret set CLERK_SECRET_KEY --body "sk_test_..."
    ```
 
 3. Push `main` and wait for the workflow:

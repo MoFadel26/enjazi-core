@@ -213,9 +213,8 @@ Done. `src/theme/palettes/` holds the four palettes, one file each, and
 lets the account's value win once settings load. Settings shows each option
 with three swatches and applies it before Save; leaving without saving puts
 the account's palette back. The API stores `palette` in the settings JSON
-with no migration. `scripts/verify-phase-9.sh` checks that the frontend and
-the API offer the same ids, then runs the Phase 8 checks and the full
-browser suite, which includes `e2e/colors.spec.ts`: 32 screens, four
+with no migration. The full browser suite (`scripts/verify-phase-8.sh`)
+includes `e2e/colors.spec.ts`: 32 screens, four
 palettes by two schemes by four screens, with axe-core finding no contrast
 failure. ADR-0013 records what the check found.
 

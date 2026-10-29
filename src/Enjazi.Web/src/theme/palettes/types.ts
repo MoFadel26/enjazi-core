@@ -1,8 +1,8 @@
 import type { MantineColorShade, MantineColorsTuple } from '@mantine/core'
 
 // The four palettes, in the order the settings picker shows them. The API
-// validates the same list (SettingsController.Palettes) and
-// scripts/verify-phase-9.sh checks the two agree.
+// validates the same list (SettingsController.Palettes); keep the two in
+// step by hand.
 export const paletteIds = ['enjazi', 'nord', 'solarized', 'dracula'] as const
 
 export type PaletteId = (typeof paletteIds)[number]
