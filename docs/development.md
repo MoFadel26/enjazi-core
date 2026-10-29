@@ -59,7 +59,7 @@ Then open `http://127.0.0.1:5182` and register an account.
 ## Tests
 
 `scripts/verify-phase-3.sh` runs the API tests against a throwaway Postgres
-container. `scripts/verify-phase-9.sh` runs every check, ending in the
+container. `scripts/verify-phase-8.sh` runs every check, ending in the
 browser suite against the API on 5180; `npm run e2e` in `src/Enjazi.Web` runs
 the browser suite alone.
 
