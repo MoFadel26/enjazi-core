@@ -8,14 +8,20 @@ export function PaletteOption({ id, label }: { id: PaletteId; label: string }) {
   const scheme = useComputedColorScheme('light')
   const palette = palettes[id]
   const canvas = scheme === 'light' ? palette.white : palette.colors.dark[7]
-  const swatches = [canvas, palette.schemes[scheme].raised, palette.colors.accent[palette.primaryShade[scheme]]]
+  const swatches = [
+    { role: 'canvas', colour: canvas },
+    { role: 'raised', colour: palette.schemes[scheme].raised },
+    { role: 'accent', colour: palette.colors.accent[palette.primaryShade[scheme]] },
+  ]
 
   return (
     <Group gap="xs" wrap="nowrap">
       <Group gap={2} wrap="nowrap" aria-hidden>
-        {swatches.map((colour) => (
+        {/* Keyed by role: two roles can share a colour, as Solarized's canvas
+            and raised surface do in light. */}
+        {swatches.map(({ role, colour }) => (
           <div
-            key={colour}
+            key={role}
             style={{
               width: 12,
               height: 12,
