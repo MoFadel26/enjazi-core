@@ -596,8 +596,9 @@ type, surfaces and the few UX additions named here.
   name set in the Clerk dashboard, not in this code. The full-width
   `default` "Try as guest" button (icon `UserCircleDashedIcon`) is below
   the card on Login, after a divider labelled "or skip the account". On
-  Register it leads: the button, the dimmed line "Guest data is kept for 7
-  days.", then a divider labelled "or create an account" above the card.
+  Register it leads, followed by a divider labelled "or create an account"
+  above the card. On both, the dimmed line "Guest data is kept for 7 days."
+  sits under the button.
   The button and its divider are hidden while a guest session exists.
 - **Landing** — navbar: wordmark left; theme toggle, "Sign in" (`default`)
   and "Get started" (primary), all `xs`, on the right. Hero: an h1 at the
@@ -606,7 +607,7 @@ type, surfaces and the few UX additions named here.
   and "Try as guest" (`default`, with its icon), both `md`, and one dimmed
   line under them: "No account needed to try. Guest data is kept for 7
   days." The dashboard preview follows with `xl` margin and `xl` padding
-  above it; the four feature cards are the only list of benefits. Until the
+  above it; the three feature cards are the only list of benefits. Until the
   user is known (Clerk loaded and `/me` answered) the signed-out actions
   keep their space but are invisible when someone may be signed in: a
   `__client_uat` cookie (suffixed or not) that is not `0`, or a saved guest

@@ -20,6 +20,14 @@ type Props = {
 // up and keep their data.
 export function AuthCard({ children, guestFirst = false }: Props) {
   const guest = useGuestSession()
+  const guestEntry = (
+    <Stack gap="xs" w="100%" align="center">
+      <TryAsGuestButton size="md" fullWidth />
+      <Text size="sm" c="dimmed">
+        Guest data is kept for 7 days.
+      </Text>
+    </Stack>
+  )
 
   return (
     <Center mih="100vh" p="md">
@@ -34,12 +42,7 @@ export function AuthCard({ children, guestFirst = false }: Props) {
         </Group>
         {guestFirst && !guest && (
           <>
-            <Stack gap="xs" w="100%" align="center">
-              <TryAsGuestButton size="md" fullWidth />
-              <Text size="sm" c="dimmed">
-                Guest data is kept for 7 days.
-              </Text>
-            </Stack>
+            {guestEntry}
             <Divider label="or create an account" labelPosition="center" w="100%" />
           </>
         )}
@@ -47,7 +50,7 @@ export function AuthCard({ children, guestFirst = false }: Props) {
         {!guestFirst && !guest && (
           <>
             <Divider label="or skip the account" labelPosition="center" w="100%" />
-            <TryAsGuestButton size="md" fullWidth />
+            {guestEntry}
           </>
         )}
       </Stack>
