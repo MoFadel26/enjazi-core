@@ -4,8 +4,9 @@ import { useCurrentUser } from '../auth/session'
 import { TryAsGuestButton } from '../auth/TryAsGuestButton'
 import { display } from '../theme/display'
 import { Icon } from '../ui/Icon'
-import { ArrowRightIcon } from '../ui/icons'
+import { ArrowRightIcon, GithubLogoIcon } from '../ui/icons'
 import { hiddenWhilePending } from './hiddenWhilePending'
+import { REPO_URL } from './repoUrl'
 
 // Hero section: product headline, value proposition and CTAs.
 export function LandingHero() {
@@ -51,6 +52,18 @@ export function LandingHero() {
             </Text>
           </Stack>
         )}
+
+        <Button
+          component="a"
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="default"
+          size="md"
+          leftSection={<Icon icon={GithubLogoIcon} />}
+        >
+          View the code on GitHub
+        </Button>
       </Stack>
     </Container>
   )
