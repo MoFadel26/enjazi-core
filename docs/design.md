@@ -595,10 +595,10 @@ type, surfaces and the few UX additions named here.
   every other card. The card's title ("Sign in to …") is the application
   name set in the Clerk dashboard, not in this code. The full-width
   `default` "Try as guest" button (icon `UserCircleDashedIcon`) is below
-  the card on Login, after a divider labelled "or skip the account". On
-  Register it leads, followed by a divider labelled "or create an account"
-  above the card. On both, the dimmed line "Guest data is kept for 7 days."
-  sits under the button.
+  the card on both Login and Register, after a divider labelled "or skip
+  the account", with the dimmed line "Guest data is kept for 7 days." under
+  it. Register does not lead with it: a visitor there already chose to make
+  an account over the landing page's "Try as guest".
   The button and its divider are hidden while a guest session exists.
 - **Landing** — navbar: wordmark left; theme toggle, "Sign in" (`default`)
   and "Get started" (primary), all `xs`, on the right. Hero: an h1 at the

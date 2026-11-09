@@ -1,11 +1,10 @@
 import { SignUp } from '@clerk/react'
 import { AuthCard } from './AuthCard'
 
-// Clerk's sign-up, routed under /register/* for its own steps (email code),
-// with "Try as guest" above it.
+// Clerk's sign-up, routed under /register/* for its own steps (email code).
 export function RegisterScreen() {
   return (
-    <AuthCard guestFirst>
+    <AuthCard>
       <SignUp routing="path" path="/register" signInUrl="/login" fallbackRedirectUrl="/" />
     </AuthCard>
   )
