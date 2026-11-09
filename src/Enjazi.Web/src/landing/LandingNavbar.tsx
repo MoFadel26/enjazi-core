@@ -4,8 +4,10 @@ import { useCurrentUser } from '../auth/session'
 import { useSaveTheme } from '../settings/queries'
 import { changeTheme } from '../theme'
 import { Icon } from '../ui/Icon'
-import { LightningIcon, MoonIcon, SunIcon } from '../ui/icons'
+import { GithubLogoIcon, LightningIcon, MoonIcon, SunIcon } from '../ui/icons'
 import { hiddenWhilePending } from './hiddenWhilePending'
+
+const REPO_URL = 'https://github.com/MoFadel26/enjazi-core'
 
 // Sticky landing page navigation bar with wordmark, theme switch and auth links.
 export function LandingNavbar() {
@@ -37,6 +39,18 @@ export function LandingNavbar() {
           </Anchor>
 
           <Group gap="xs" wrap="nowrap">
+            <ActionIcon
+              component="a"
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="default"
+              size="md"
+              aria-label="Source code on GitHub"
+            >
+              <Icon icon={GithubLogoIcon} />
+            </ActionIcon>
+
             <ActionIcon
               variant="default"
               size="md"
