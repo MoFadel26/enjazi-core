@@ -445,10 +445,10 @@ tasks"); its children are presentational, which is what placeholders are.
   and a block the size of the two row actions, so each row is as tall as a
   loaded one. The streak chip in the
   header is a `Skeleton` named "Loading streak" until the streak loads.
-- **Settings** — the three section `Paper`s, each with a title bar and a
+- **Settings** — the four section `Paper`s, each with a title bar and a
   description bar, then the fields' shapes: a label bar over a 36px control
-  bar for Theme and for Time zone, and three switch rows (a switch shape and
-  a label bar) for Notifications. Each skeleton section is the height of the
+  bar for Theme and for Time zone, one switch row (a switch shape and a
+  label bar) for Calendar, and three for Notifications. Each skeleton section is the height of the
   loaded one.
 - **Rooms** — three card skeletons in the grid.
 - **Room** — the real "All rooms" back link, bars for the title and the
@@ -533,7 +533,9 @@ primary and events in the accent, labelled with
 `--mantine-primary-color-contrast`; today column `--enjazi-accent-tint`; selection
 highlight the same at double strength; now line `red`; borders hairline;
 header cells eyebrow-styled; toolbar buttons match the default Mantine button;
-event chips radius sm, 500 weight title.
+event chips radius sm, 500 weight title. Task chips are the accent tint
+under ink text, with a 2px inset bar in the accent text colour on the
+leading edge (dimmed text and bar, and a struck title, when completed).
 
 ## Icons
 
@@ -708,6 +710,18 @@ type, surfaces and the few UX additions named here.
 - **Calendar** — `PageHeader` with "New event"; the grid inside a `Paper`
   with radius md and hidden overflow, filling the viewport height below the
   header.
+  - **Tasks** — every task with a due date is a chip in the time grid
+    beside the events (ADR-0021), from its due time for 30 minutes. A chip
+    never runs past midnight: a task due in the last half hour of its day
+    is drawn as that half hour. The chip shows the due time (`HH:mm`), a
+    `SquareIcon` or, completed, a `CheckSquareIcon`, then the title, with
+    visually hidden "Task: " or "Completed task: " before it. Completed
+    tasks show while Settings > Calendar > "Show completed tasks" is on, the
+    default. Clicking a chip opens the `Edit task` dialog. Dragging it moves
+    the due time by as much as the chip moved, on the grid's 15-minute
+    snap; the save is optimistic like a tick (ADR-0012) and a failure puts
+    the chip back with a notification. A chip cannot be resized or dropped
+    in the all-day row. Tasks with no due date are not on the calendar.
 - **Rooms** — cards with a room avatar (initials of the name), name at 500,
   member count as a neutral `variant="default"` badge, description clamped to two lines, Open or Join.
   Empty state: "No rooms yet." / "Create the first one." with the action
@@ -720,8 +734,9 @@ type, surfaces and the few UX additions named here.
   minutes share one header. A message whose author deleted their account
   reads as from "Deleted user", avatar included (ADR-0019). Composer: input
   plus a `Send` button.
-- **Settings** — three `Paper` sections with `h3` titles: Appearance
-  (scheme, then palette), Time (time zone), Notifications (three switches);
+- **Settings** — four `Paper` sections with `h3` titles: Appearance
+  (scheme, then palette), Time (time zone), Calendar ("Show completed
+  tasks", on by default), Notifications (three switches);
   Save right-aligned below. The palette `Select` shows three swatches of
   each palette beside its name — the canvas, surface-2 and the accent of
   that palette in the current scheme — and applies the choice as it is
@@ -779,7 +794,8 @@ keeps its name through `aria-label`.
 - Labels: `Name`, `Email`, `Password` (textbox role), `Title`, `Priority`
   (combobox), `Theme` (combobox, options `light`/`dark`/`system`), `Palette`
   (combobox, options `Enjazi`/`Nord`/`Solarized`/`Dracula`), `Time zone`
-  (combobox), `Room messages`, `Disabled`, `Message`, `Search users`,
+  (combobox), `Show completed tasks` (switch), `Room messages`, `Disabled`,
+  `Message`, `Search users`,
   `Complete <task title>` (the row checkbox), `Task title` (the inline-rename
   input, present only while renaming).
 - **Names are substrings.** Playwright matches a name as a case-insensitive
@@ -796,7 +812,9 @@ keeps its name through `aria-label`.
   points`, `All` (exact, the filter), `Add your first task to start a
   streak.`, priority label text (`High`) inside the task row, role text
   (`Admin`, `Member`) inside the member row.
-- Structure: task rows and member rows are `Table` rows (`role=row`); room
+- Structure: a task's chip on the calendar carries the class
+  `enjazi-fc-task`, and its text is the due time, "Task: " or "Completed
+  task: ", and the title; task rows and member rows are `Table` rows (`role=row`); room
   cards are Mantine `Card` (`.mantine-Card-root`) containing the Join button
   or Open link; the sidebar marker is `.mantine-FloatingIndicator-root`
   inside `role=navigation`, measured once it has `data-initialized`; a
