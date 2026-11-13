@@ -11,6 +11,8 @@ import '@fullcalendar/react/skeleton.css'
 import '@fullcalendar/react/themes/classic/theme.css'
 import './mantine-bridge.css'
 import type { EventRange } from './queries'
+import { TaskChip } from './TaskChip'
+import { dueAtOf, isDoneTask, taskIdOf } from './taskAdapter'
 
 const plugins = [timeGridPlugin, interactionPlugin, classicTheme]
 
@@ -21,8 +23,8 @@ type Props = {
   onRangeChange: (range: EventRange) => void
   onSelect: (info: DateSelectInfo) => void
   onEventClick: (id: string) => void
-  // Drag and resize both land here. The handler persists the move and must
-  // call info.revert() if the API refuses it. ADR-0004.
+  // Drag and resize both land here, for events and tasks alike. The handler
+  // persists the move and puts it back if the API refuses it. ADR-0004.
   onEventMove: (info: EventDropInfo | EventResizeDoneInfo) => void
 }
 
@@ -53,6 +55,20 @@ export function WeekCalendar({ events, onRangeChange, onSelect, onEventClick, on
       dayHeaderInnerClass="enjazi-fc-day-header"
       blockEventClass="enjazi-fc-event"
       eventTitleClass="enjazi-fc-event-title"
+      // Tasks draw their own content (TaskChip); events keep the default.
+      eventContent={(info) =>
+        taskIdOf(info.event.id) === undefined ? (
+          true
+        ) : (
+          <TaskChip
+            title={info.event.title}
+            dueAt={dueAtOf(info.event)}
+            done={isDoneTask(info.event)}
+            timeClass={info.timeClass}
+            titleClass={info.titleClass}
+          />
+        )
+      }
       events={events}
       datesSet={(info) => onRangeChange({ from: info.startStr, to: info.endStr })}
       select={onSelect}

@@ -7,10 +7,13 @@ import { describeError } from '../api/errors'
 import { Icon } from '../ui/Icon'
 import { PageHeader } from '../ui/PageHeader'
 import { PlusIcon } from '../ui/icons'
+import { TaskFormModal } from '../tasks/TaskFormModal'
 import { EventFormModal, type EventFormTarget } from './EventFormModal'
 import { WeekCalendar } from './WeekCalendar'
 import { movedBody, toEventInput } from './adapter'
 import { useEvents, useUpdateEvent, type EventRange } from './queries'
+import { taskIdOf } from './taskAdapter'
+import { useCalendarTasks } from './useCalendarTasks'
 
 // Everything above and below the grid, so it fills the rest of the viewport.
 // PageHeader: a 36px action row, the divider's md top margin plus its 1px
@@ -26,8 +29,10 @@ export function CalendarScreen() {
   const [target, setTarget] = useState<EventFormTarget>()
   const { data: events, error } = useEvents(range)
   const update = useUpdateEvent()
+  const tasks = useCalendarTasks()
 
-  const inputs = useMemo(() => (events ?? []).map(toEventInput), [events])
+  const eventInputs = useMemo(() => (events ?? []).map(toEventInput), [events])
+  const inputs = useMemo(() => [...eventInputs, ...tasks.inputs], [eventInputs, tasks.inputs])
 
   function newEvent() {
     const start = dayjs().add(1, 'hour').startOf('hour')
@@ -45,6 +50,8 @@ export function CalendarScreen() {
   }
 
   function edit(id: string) {
+    const taskId = taskIdOf(id)
+    if (taskId !== undefined) return tasks.edit(taskId)
     const event = events?.find((e) => e.id === id)
     if (event) setTarget({ kind: 'edit', event })
   }
@@ -52,6 +59,7 @@ export function CalendarScreen() {
   // The grid has already moved the event when this fires. Persist the move;
   // if the API refuses, put it back where the database still has it.
   function move(info: EventDropInfo | EventResizeDoneInfo) {
+    if (taskIdOf(info.event.id) !== undefined) return tasks.move(info)
     const event = events?.find((e) => e.id === info.event.id)
     if (!event) return info.revert()
     update.mutate(
@@ -84,6 +92,7 @@ export function CalendarScreen() {
         <WeekCalendar events={inputs} onRangeChange={setRange} onSelect={select} onEventClick={edit} onEventMove={move} />
       </Paper>
       <EventFormModal target={target} onClose={() => setTarget(undefined)} />
+      <TaskFormModal task={tasks.editing} onClose={tasks.close} />
     </>
   )
 }
