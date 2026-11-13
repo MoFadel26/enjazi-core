@@ -25,6 +25,9 @@ export function TaskListSkeleton() {
           </Table.Tr>
           {rows.map((row) => (
             <Table.Tr key={row}>
+              <Table.Td w={columnWidths.handle}>
+                <Skeleton height={actionIcon} width={actionIcon} />
+              </Table.Td>
               <Table.Td w={columnWidths.check}>
                 <Skeleton height={20} width={20} />
               </Table.Td>

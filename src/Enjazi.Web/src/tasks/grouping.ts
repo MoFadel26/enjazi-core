@@ -45,3 +45,12 @@ export function groupTasks(tasks: Task[], held: ReadonlySet<string>, now: number
     }))
     .filter((group) => group.tasks.length > 0)
 }
+
+// While a task is dragged, every group it can be dropped on shows, with or
+// without tasks. Overdue takes no drops, so it still shows only when it has
+// tasks.
+export function withDropTargets(shown: TaskGroup[]): TaskGroup[] {
+  return groups
+    .map(({ key, label }) => shown.find((group) => group.key === key) ?? { key, label, tasks: [] })
+    .filter((group) => group.key !== 'overdue' || group.tasks.length > 0)
+}

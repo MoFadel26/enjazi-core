@@ -22,7 +22,9 @@ test('a completion fills the week row and shows the points gained', async ({ pag
   await page.getByRole('link', { name: 'Tasks', exact: true }).click()
   await page.getByRole('checkbox', { name: `Complete ${title}` }).click()
   // The delta comes from the streak refetch after the PUT, not from the tick.
-  await expect(page.getByRole('status')).toHaveText('+10 points')
+  // The chip's live region is the one that speaks of points; the task list
+  // has its own for drags.
+  await expect(page.getByRole('status').filter({ hasText: 'points' })).toHaveText('+10 points')
 
   await page.getByRole('link', { name: 'Dashboard' }).click()
   await expect(page.getByRole('img', { name: '1 of the last 7 days in the current streak', exact: true })).toBeVisible()
