@@ -16,3 +16,7 @@ export const rowMotion = {
   layout: 'position',
   transition: transitions.base,
 } satisfies MotionProps
+
+// The row of the task being dragged stays where it was, faded, while its
+// copy follows the pointer.
+export const liftedRow = { ...rowMotion.animate, opacity: 0.4 }

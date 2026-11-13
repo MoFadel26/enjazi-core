@@ -399,6 +399,7 @@ Where motion applies:
 | Element | Motion |
 |---|---|
 | Table rows | background colour on hover, `fast`; task rows enter, leave and move with `motion`, `base` |
+| Dragged task | the row fades in place and a copy follows the pointer, with no animation of its own; a copy moved by arrow keys glides to the next group's header, `base`, and jumps under reduced motion |
 | Buttons, action icons, nav links | background, border and text colour, `fast` |
 | Checkbox | fill, border and tick, `fast` |
 | Modal | `pop` transition, `base`; overlay fades with it |
@@ -439,9 +440,10 @@ when the data arrives. The skeleton container is an indeterminate
 tasks"); its children are presentational, which is what placeholders are.
 
 - **Tasks** — one group header bar the height of the eyebrow line and five
-  rows with the real row's cells: a checkbox square, a title bar, a priority
-  dot and short bar, a date bar, and a block the size of the two row
-  actions, so each row is as tall as a loaded one. The streak chip in the
+  rows with the real row's cells: a square the size of the Move handle, a
+  checkbox square, a title bar, a priority dot and short bar, a date bar,
+  and a block the size of the two row actions, so each row is as tall as a
+  loaded one. The streak chip in the
   header is a `Skeleton` named "Loading streak" until the streak loads.
 - **Settings** — the three section `Paper`s, each with a title bar and a
   description bar, then the fields' shapes: a label bar over a 36px control
@@ -468,6 +470,9 @@ Spinners remain only where there is no layout yet: signing in on first load
 | `G` then `U` | Go to Users (admins only) |
 | `⌘K` / `Ctrl K` | Open the command palette |
 | `Esc` | Close the palette or a modal (Mantine's own) |
+| `Space` or `Enter` on a task's Move handle | Pick the task up; again to drop it on the chosen group |
+| `↑` / `↓` while a task is picked up | Choose the previous or next group that takes it |
+| `Esc` while a task is picked up | Put it back |
 
 Shortcuts are `tinykeys` subscriptions in one layout hook, one per binding:
 `n`, the `g d` … `g u` sequences (the second key within one second) and
@@ -660,15 +665,35 @@ type, surfaces and the few UX additions named here.
     is after that. Completed holds every completed task. Dated groups sort
     by due date ascending, No date by creation (newest first), Completed by
     completion (newest first).
-  - **Rows** — checkbox, title (struck and dimmed when done) with
-    description beneath, priority as a 6px dot plus label, due date dimmed or
-    red when overdue, Edit and Delete as subtle `ActionIcon`s with
-    `aria-label`s, always visible.
+  - **Rows** — the Move handle (a subtle `ActionIcon`, six dots), checkbox,
+    title (struck and dimmed when done) with description beneath, priority
+    as a 6px dot plus label, due date dimmed or red when overdue, Edit and
+    Delete as subtle `ActionIcon`s with `aria-label`s, always visible.
   - **Ticking** a box changes the row at once, before the request answers,
     and reverts with a notification if the request fails (ADR-0012). In the
     Open view a task just completed stays in its group, struck through, for
     `durations.linger`, then leaves; in All it moves to Completed after the
     same pause. Delete removes the row at once the same way.
+  - **Dragging** — a task dragged by its Move handle onto another group
+    moves there (ADR-0020). Today sets the due date to today, This week to
+    tomorrow, Later to the eighth day from today; a task that had a due
+    date keeps its time of day and one that had none gets 23:59, so a kept
+    time already past today leaves the task overdue. No date clears the
+    date. Completed ticks the task and leaves its date; a completed task
+    dropped on any other group is open again. Overdue and the task's own
+    group take no drop. The save is optimistic like the tick, without the
+    linger. While a task is dragged its row stays in place at 40% opacity,
+    a copy of it (a raised `Paper` the size of the row, six dots and the
+    title) follows the pointer, every group that takes a drop shows its
+    header even with a count of 0, and the group under the drag has the
+    accent tint on all its rows. Nothing is a target until the task has
+    been carried: half its row's height with a pointer, one arrow key with
+    the keyboard. With the keyboard, Space or Enter on the handle picks the
+    task up, Up and Down put it on the previous or next group's header,
+    Space or Enter drops it and Escape puts it back; a live region says
+    "Picked up `<title>`.", "`<title>` is over `<group>`.", "`<title>` is
+    not over a group.", "`<title>` was moved to `<group>`." and "`<title>`
+    was not moved.", and the handle's description gives the keys.
   - **Inline rename** — the title is a button; clicking it turns it into an
     input in place, labelled `Task title`, holding the title. Enter or
     leaving the field saves; Escape cancels; an unchanged or empty title
@@ -733,7 +758,8 @@ keeps its name through `aria-label`.
   `Delete`, `Edit`, `Remove`, `Leave`, `Join`, `Send`, `Add a task` (tasks
   empty state), `Start a room` (rooms empty state), `Search` (sidebar, opens
   the palette; its name ends in the shortcut, "Search ⌘K"), each task's
-  title (the inline-rename button), `Try as guest` (landing hero, inside
+  title (the inline-rename button), `Move` (exact; each task's drag
+  handle, described by the keys that drive it), `Try as guest` (landing hero, inside
   `main`; sign-in and sign-up screens), and `Delete account` (Settings,
   described by "Press and hold for 2 seconds to delete your account.").
 - Dialogs: `Command palette` (open only), `New task`, `Edit task`,
@@ -746,7 +772,10 @@ keeps its name through `aria-label`.
 - Placeholders: `Search or jump to…` (the palette's search).
 - Group headers: rows whose text is the label then the count — `Overdue`,
   `Today`, `This week`, `Later`, `No date`, `Completed`.
-- Status: the streak chip's live region, "`+<n>` points" after a completion.
+- Status: two live regions on the Tasks screen, so a test names the one it
+  means. The streak chip's says "`+<n>` points" after a completion. The
+  drag's (`id` starting `DndLiveRegion`) says the sentences under "Screens >
+  Tasks > Dragging".
 - Labels: `Name`, `Email`, `Password` (textbox role), `Title`, `Priority`
   (combobox), `Theme` (combobox, options `light`/`dark`/`system`), `Palette`
   (combobox, options `Enjazi`/`Nord`/`Solarized`/`Dracula`), `Time zone`
@@ -771,7 +800,9 @@ keeps its name through `aria-label`.
   cards are Mantine `Card` (`.mantine-Card-root`) containing the Join button
   or Open link; the sidebar marker is `.mantine-FloatingIndicator-root`
   inside `role=navigation`, measured once it has `data-initialized`; a
-  Spotlight action carries `data-selected` when the keyboard selects it; chat messages carry `data-testid="message"`; confirm dialogs
+  Spotlight action carries `data-selected` when the keyboard selects it; chat messages carry `data-testid="message"`;
+  while a task is dragged its copy carries `data-testid="dragged-task"` and
+  every row of the group under it carries `data-drop-over`; confirm dialogs
   are `role=dialog` named by their title (`Delete event`); the `html`
   element carries `data-mantine-color-scheme` and `data-enjazi-palette`.
 

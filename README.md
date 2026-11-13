@@ -7,7 +7,7 @@ and a daily streak that earns points.
 
 ## What it does
 
-- **Tasks** — create, prioritise, set a due date, tick off.
+- **Tasks** — create, prioritise, set a due date, tick off; drag a task onto another group to reschedule it.
 - **Calendar** — a week grid; drag events to move them.
 - **Rooms** — shared spaces with live chat.
 - **Streak and points** — finish a task each day to keep the streak and earn points.
