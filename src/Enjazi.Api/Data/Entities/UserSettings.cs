@@ -20,6 +20,17 @@ public sealed class SettingsData
     public string Palette { get; set; } = "nord";
     public string TimeZone { get; set; } = "UTC";
     public NotificationSettings Notifications { get; set; } = new();
+    /// <summary>
+    /// The calendar draws tasks at their due time, completed ones too until
+    /// the user turns this off. Nullable because rows saved before it existed
+    /// have no key for it: EF Core reads a missing key as the type's default,
+    /// not this class's, so a plain bool would read false for them. Null
+    /// means the default, true; <see cref="ShowsCompletedTasksOnCalendar"/>
+    /// resolves it.
+    /// </summary>
+    public bool? ShowCompletedTasksOnCalendar { get; set; }
+
+    public bool ShowsCompletedTasksOnCalendar => ShowCompletedTasksOnCalendar ?? true;
 }
 
 public sealed class NotificationSettings

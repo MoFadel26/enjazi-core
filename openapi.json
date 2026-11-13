@@ -2376,6 +2376,12 @@
           },
           "notifications": {
             "$ref": "#/components/schemas/NotificationSettingsContract"
+          },
+          "showCompletedTasksOnCalendar": {
+            "type": [
+              "null",
+              "boolean"
+            ]
           }
         }
       },
@@ -2385,6 +2391,7 @@
           "palette",
           "timeZone",
           "notifications",
+          "showCompletedTasksOnCalendar",
           "updatedAt"
         ],
         "type": "object",
@@ -2400,6 +2407,9 @@
           },
           "notifications": {
             "$ref": "#/components/schemas/NotificationSettingsContract"
+          },
+          "showCompletedTasksOnCalendar": {
+            "type": "boolean"
           },
           "updatedAt": {
             "type": "string",

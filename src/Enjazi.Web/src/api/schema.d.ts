@@ -386,12 +386,14 @@ export interface components {
             palette: string;
             timeZone: string;
             notifications: components["schemas"]["NotificationSettingsContract"];
+            showCompletedTasksOnCalendar?: null | boolean;
         };
         SettingsResponse: {
             theme: string;
             palette: string;
             timeZone: string;
             notifications: components["schemas"]["NotificationSettingsContract"];
+            showCompletedTasksOnCalendar: boolean;
             /** Format: date-time */
             updatedAt: string;
         };
