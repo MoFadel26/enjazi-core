@@ -14,6 +14,9 @@ export type TaskChanges = Partial<UpdateTaskRequest>
 
 export const priorities: TaskPriority[] = ['Low', 'Medium', 'High']
 
+// Priority markers per docs/design.md: the accent marks Medium, red marks High.
+export const priorityColor: Record<TaskPriority, string> = { Low: 'gray', Medium: 'accent', High: 'red' }
+
 // Read from the client rather than written out: a query without parameters
 // has a two-element key, which is easy to get wrong by hand.
 const listKey = api.queryOptions('get', '/api/tasks').queryKey

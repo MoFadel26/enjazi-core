@@ -84,6 +84,8 @@ test('tasks with a due date show at their due time beside the events, completed 
 
   await expect(chip(page, 'Pay the rent')).toHaveText(/^10:00\s*Task: Pay the rent$/)
   await expect(chip(page, 'Old report')).toHaveText(/^08:00\s*Completed task: Old report$/)
+  // Time and title only: no icon beside the title.
+  await expect(chip(page, 'Pay the rent').locator('svg')).toHaveCount(0)
   await expect(page.getByText('Someday maybe')).toHaveCount(0)
 
   // In today's column, below the one an hour earlier.

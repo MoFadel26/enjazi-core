@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { holdGet, seedTasks, twoFrames } from './helpers.js'
+import { holdGet, readTasks, seedTasks, twoFrames } from './helpers.js'
 import { registerAndSignIn } from './session.js'
 
 // The Phase 8 task list, from docs/design.md "Screens > Tasks" and "Loading":
@@ -145,4 +145,36 @@ test('?edit opens a task once the list loads, and an unknown id opens nothing', 
   await expect(page.getByRole('row').filter({ hasText: 'Opened from the URL' })).toBeVisible()
   await twoFrames(page)
   await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('the edit dialog shows the task in two panes, Cancel keeps nothing and Save keeps the edits', async ({ page }) => {
+  await registerAndSignIn(page, 'task-details')
+  await page.goto('/')
+  const [id] = await seedTasks(page, [{ title: 'Renew the passport', dueAt: null }])
+
+  await page.goto(`/tasks?edit=${id}`)
+  const dialog = page.getByRole('dialog', { name: 'Edit task' })
+  await expect(dialog.getByLabel('Title')).toHaveValue('Renew the passport')
+  await expect(dialog.getByRole('checkbox', { name: 'Completed' })).not.toBeChecked()
+  await expect(dialog.getByRole('button', { name: 'Due' })).toHaveText('No date')
+  await expect(dialog.getByRole('combobox', { name: 'Priority' })).toHaveValue('Medium')
+  await expect(dialog.getByText(/^Created .+Updated .+$/)).toBeVisible()
+
+  // Nothing is saved until Save.
+  await dialog.getByRole('checkbox', { name: 'Completed' }).check()
+  await dialog.getByRole('button', { name: 'Cancel' }).click()
+  await expect(dialog).toHaveCount(0)
+  expect(await readTasks(page)).toEqual([expect.objectContaining({ completedAt: null })])
+
+  await page.getByRole('row').filter({ hasText: 'Renew the passport' }).getByRole('button', { name: 'Edit' }).click()
+  await expect(dialog.getByRole('checkbox', { name: 'Completed' })).not.toBeChecked()
+  await dialog.getByLabel('Description').fill('Photos first')
+  await dialog.getByRole('combobox', { name: 'Priority' }).click()
+  await page.getByRole('option', { name: 'High' }).click()
+  await dialog.getByRole('checkbox', { name: 'Completed' }).check()
+  await dialog.getByRole('button', { name: 'Save' }).click()
+  await expect(dialog).toHaveCount(0)
+  expect(await readTasks(page)).toEqual([
+    expect.objectContaining({ description: 'Photos first', priority: 'High', completedAt: expect.any(String) }),
+  ])
 })

@@ -128,10 +128,3 @@
 .enjazi-fc-task-done .enjazi-fc-event-title {
   text-decoration: line-through;
 }
-
-/* The box beside a task's title sits on the text's baseline. */
-.enjazi-fc-task-icon {
-  display: inline-flex;
-  vertical-align: text-bottom;
-  margin-inline-end: 4px;
-}

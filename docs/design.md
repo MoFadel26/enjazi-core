@@ -705,6 +705,18 @@ type, surfaces and the few UX additions named here.
     per case: no tasks at all, "Add your first task to start a streak."; Open
     with only completed tasks, "Everything open is done."; Done, "Completed
     tasks show up here.". The action is "Add a task" with `N` in a `Kbd`.
+  - **Edit task dialog** — size `xl`, the header parted from the body by a
+    hairline. Two panes: on the left a round `Completed` checkbox (radius
+    `xl`) before the title, a borderless `lg` input at 600 that is struck
+    through and dimmed while the box is ticked, and under it a borderless
+    `Description` textarea with that placeholder. On the right, a 260px pane
+    on `--enjazi-surface-2` behind a hairline, `Due` (calendar icon,
+    placeholder "No date", clearable) and `Priority` (the priority dot) as
+    borderless fields between hairlines, then the created and updated times
+    in dimmed `xs`. Below a narrow screen's `sm` breakpoint the side pane
+    stacks under the left one. Cancel and Save sit in a footer under both
+    panes; nothing is saved until Save, which sends only the edited fields.
+    The New task dialog keeps the one-column form.
   - `?new` opens the create modal and `?edit=<id>` the edit modal of that
     task once the list has loaded; closing either removes the parameter.
 - **Calendar** — `PageHeader` with "New event"; the grid inside a `Paper`
@@ -713,9 +725,9 @@ type, surfaces and the few UX additions named here.
   - **Tasks** — every task with a due date is a chip in the time grid
     beside the events (ADR-0021), from its due time for 30 minutes. A chip
     never runs past midnight: a task due in the last half hour of its day
-    is drawn as that half hour. The chip shows the due time (`HH:mm`), a
-    `SquareIcon` or, completed, a `CheckSquareIcon`, then the title, with
-    visually hidden "Task: " or "Completed task: " before it. Completed
+    is drawn as that half hour. The chip shows the due time (`HH:mm`), then
+    the title, with visually hidden "Task: " or "Completed task: " before
+    it; no icon. Completed
     tasks show while Settings > Calendar > "Show completed tasks" is on, the
     default. Clicking a chip opens the `Edit task` dialog. Dragging it moves
     the due time by as much as the chip moved, on the grid's 15-minute

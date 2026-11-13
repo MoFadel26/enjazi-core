@@ -5,13 +5,10 @@ import { formatDateTime } from '../lib/dates'
 import { Icon } from '../ui/Icon'
 import { DotsSixVerticalIcon, PencilSimpleIcon, TrashIcon } from '../ui/icons'
 import { columnWidths } from './columns'
-import type { Task, TaskPriority } from './queries'
+import { priorityColor, type Task } from './queries'
 import { liftedRow, MotionTr, rowMotion } from './rowMotion'
 import { TaskTitle } from './TaskTitle'
 import { dragData, useGroupDrop, type GroupDrop } from './useGroupDrop'
-
-// Priority markers per docs/design.md: the accent marks Medium, red marks High.
-const priorityColor: Record<TaskPriority, string> = { Low: 'gray', Medium: 'accent', High: 'red' }
 
 type Props = {
   task: Task
