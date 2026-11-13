@@ -93,10 +93,10 @@ change that is about the calendar.
 Events are the filled accent. A task chip is the accent tint under ink
 text, with a 2px bar of the accent text colour on its leading edge, the
 same idiom as the command palette's selected action; a completed task is
-dimmed with its title struck through, as in the task list. A box icon,
-ticked when done, stands before the title, and visually hidden text says
-"Task: " or "Completed task: ", so a screen reader can tell a task from an
-event. The colours are passed per chip, because of mechanism 2.
+dimmed with its title struck through, as in the task list. Visually
+hidden text before the title says "Task: " or "Completed task: ", so a
+screen reader can tell a task from an event. A box icon before the title
+was tried and removed: the bar and the tint already set a task apart. The colours are passed per chip, because of mechanism 2.
 
 Ids are prefixed `task:`, so a click and a drop know a task from an event,
 whose id is a bare GUID.
