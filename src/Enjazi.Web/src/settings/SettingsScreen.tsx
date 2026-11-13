@@ -37,6 +37,7 @@ function LoadedForm({ settings }: { settings: Settings }) {
       palette: settings.palette,
       timeZone: settings.timeZone,
       notifications: { ...settings.notifications },
+      showCompletedTasksOnCalendar: settings.showCompletedTasksOnCalendar,
     },
   })
 

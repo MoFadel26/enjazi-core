@@ -50,6 +50,12 @@ export function SettingsForm({ form }: { form: Form }) {
       <Section title="Time" description="Due dates and events are shown in this zone.">
         <Select label="Time zone" data={timeZones} searchable allowDeselect={false} {...form.getInputProps('timeZone')} />
       </Section>
+      <Section title="Calendar" description="Tasks with a due date show on the calendar at that time.">
+        <Switch
+          label="Show completed tasks"
+          {...form.getInputProps('showCompletedTasksOnCalendar', { type: 'checkbox' })}
+        />
+      </Section>
       <Section title="Notifications" description="Choose which reminders reach you.">
         <Switch
           label="Email me task reminders"
