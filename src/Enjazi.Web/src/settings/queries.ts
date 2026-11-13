@@ -37,8 +37,8 @@ export function useSaveTheme(signedIn: boolean) {
   const update = useUpdateSettings()
   return (theme: 'light' | 'dark') => {
     if (!signedIn || !settings) return
-    const { palette, timeZone, notifications } = settings
-    update.mutate({ body: { theme, palette, timeZone, notifications } })
+    const { palette, timeZone, notifications, showCompletedTasksOnCalendar } = settings
+    update.mutate({ body: { theme, palette, timeZone, notifications, showCompletedTasksOnCalendar } })
   }
 }
 

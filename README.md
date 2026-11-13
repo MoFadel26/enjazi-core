@@ -8,7 +8,7 @@ and a daily streak that earns points.
 ## What it does
 
 - **Tasks** — create, prioritise, set a due date, tick off; drag a task onto another group to reschedule it.
-- **Calendar** — a week grid; drag events to move them.
+- **Calendar** — a week grid of events and of tasks at their due time; drag either to move it.
 - **Rooms** — shared spaces with live chat.
 - **Streak and points** — finish a task each day to keep the streak and earn points.
 - **Guest mode** — try it with sample data and no account; guest data is kept for 7 days.

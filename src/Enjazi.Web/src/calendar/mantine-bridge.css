@@ -110,3 +110,28 @@
 .enjazi-fc-event-title {
   font-weight: var(--mantine-font-weight-medium);
 }
+
+/* A task's chip (ADR-0021): the accent tint under ink text (both set per
+   chip in taskAdapter.ts), with the accent text colour as a bar on its
+   leading edge, the idiom of the palette's selected action. Events are the
+   filled accent, so the two read apart. */
+.enjazi-fc-task {
+  box-shadow: inset 2px 0 0 var(--mantine-color-accent-text);
+}
+
+/* A completed task: dimmed (taskAdapter.ts) and its title struck through,
+   as in the task list. */
+.enjazi-fc-task-done {
+  box-shadow: inset 2px 0 0 var(--mantine-color-dimmed);
+}
+
+.enjazi-fc-task-done .enjazi-fc-event-title {
+  text-decoration: line-through;
+}
+
+/* The box beside a task's title sits on the text's baseline. */
+.enjazi-fc-task-icon {
+  display: inline-flex;
+  vertical-align: text-bottom;
+  margin-inline-end: 4px;
+}

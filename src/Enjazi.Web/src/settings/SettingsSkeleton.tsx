@@ -1,7 +1,7 @@
 import { Group, Paper, Skeleton, Stack } from '@mantine/core'
 import type { ReactNode } from 'react'
 
-// SettingsForm's three sections before the settings arrive, each bar as tall
+// SettingsForm's four sections before the settings arrive, each bar as tall
 // as the line it stands for, so nothing moves when the form replaces them.
 export function SettingsSkeleton() {
   return (
@@ -12,6 +12,9 @@ export function SettingsSkeleton() {
       </SectionSkeleton>
       <SectionSkeleton>
         <SelectSkeleton labelWidth={72} />
+      </SectionSkeleton>
+      <SectionSkeleton>
+        <SwitchSkeleton labelWidth={140} />
       </SectionSkeleton>
       <SectionSkeleton>
         <SwitchSkeleton labelWidth={160} />

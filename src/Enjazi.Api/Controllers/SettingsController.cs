@@ -91,6 +91,8 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
             db.Settings.Add(settings);
         }
 
+        var showCompletedTasksOnCalendar =
+            request.ShowCompletedTasksOnCalendar ?? settings.Data.ShowCompletedTasksOnCalendar;
         settings.Data = new SettingsData
         {
             Theme = request.Theme,
@@ -102,6 +104,7 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
                 BrowserTaskReminders = request.Notifications.BrowserTaskReminders,
                 RoomMessages = request.Notifications.RoomMessages,
             },
+            ShowCompletedTasksOnCalendar = showCompletedTasksOnCalendar,
         };
         settings.UpdatedAt = Timestamps.UtcNow();
 
@@ -117,5 +120,6 @@ public sealed class SettingsController(AppDbContext db, ICurrentUser currentUser
             s.Data.Notifications.EmailTaskReminders,
             s.Data.Notifications.BrowserTaskReminders,
             s.Data.Notifications.RoomMessages),
+        s.Data.ShowsCompletedTasksOnCalendar,
         s.UpdatedAt);
 }
