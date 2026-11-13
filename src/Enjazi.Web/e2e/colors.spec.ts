@@ -5,11 +5,11 @@ import { registerAndSignIn } from './session.js'
 
 // The Phase 9 check from docs/design.md "Colour": all four palettes, in both
 // schemes, paint their own canvas and clear WCAG AA. Each palette is chosen
-// through the account, as a user would, and then four screens are visited so
+// through the account, as a user would, and then five screens are visited so
 // the coloured parts the palettes were computed against are on screen: the
 // dashboard, the tasks list with an overdue date and a struck completed
-// title, a room with an own message over the accent tint, and the settings
-// form. axe-core resolves the composited colour behind each piece of text in
+// title, the task edit dialog with its side pane, a room with an own message
+// over the accent tint, and the settings form. axe-core resolves the composited colour behind each piece of text in
 // the rendered page (ADR-0013), so what is checked is the painted app and not
 // a list of hexes. The last test covers the picker: it applies a palette
 // before Save, a screen left unsaved goes back to the account's palette, and
@@ -78,6 +78,9 @@ async function settle(page: Page, path: string) {
     await expect(page.getByRole('button', { name: overdue })).toBeVisible()
     await expect(page.getByRole('button', { name: completed })).toBeVisible()
   }
+  if (path.startsWith('/tasks?edit=')) {
+    await expect(page.getByRole('dialog', { name: 'Edit task' }).getByLabel('Title')).toHaveValue(overdue)
+  }
   if (path.startsWith('/rooms/')) {
     await expect(page.getByTestId('message')).toContainText(ownMessage)
   }
@@ -114,15 +117,18 @@ async function contrastFailures(page: Page) {
 
 for (const palette of cases) {
   test(`the ${palette.label} palette paints its canvas and reads in both schemes`, async ({ page }) => {
-    // A sign-in, eight page loads and an axe run on each: near the default
+    // A sign-in, ten page loads and an axe run on each: near the default
     // 30 seconds alone, and over it beside another worker. Slow triples it.
     test.slow()
     await registerAndSignIn(page, `colors-${palette.id}`)
     await page.goto('/')
     const yesterday = await page.evaluate(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-    await seedTasks(page, [{ title: overdue, dueAt: yesterday }, { title: completed, completed: true }])
+    const [overdueId] = await seedTasks(page, [
+      { title: overdue, dueAt: yesterday },
+      { title: completed, completed: true },
+    ])
     const roomId = await seedRoom(page, `Colours ${palette.id} ${Date.now()}`)
-    const screens = ['/', '/tasks', `/rooms/${roomId}`, '/settings']
+    const screens = ['/', '/tasks', `/tasks?edit=${overdueId}`, `/rooms/${roomId}`, '/settings']
 
     for (const scheme of ['light', 'dark'] as const) {
       await setAppearance(page, palette.id, scheme)
